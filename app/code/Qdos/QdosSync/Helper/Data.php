@@ -1074,6 +1074,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 $client->setLog("CSV Generation starts", null, $logFileName);
                 $headerflag = 0;
 
+                if (!file_exists($this->directory_list->getPath('var') . '/import/')) {
+                    mkdir($this->directory_list->getPath('var') . '/import/', 0777, true);
+                }
                 $file = fopen($productcsv, "w"); // pradeep commented
                 $fileother = fopen($productcsvother, "w"); // pradeep commented
                 //chmod($file, 0777);
@@ -2113,6 +2116,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     protected function CreateCSV($collection, $filename, $client)
     {
         try {
+            if (!file_exists($this->directory_list->getPath('var') . '/import/')) {
+                mkdir($this->directory_list->getPath('var') . '/import/', 0777, true);
+            }
             $priceCsv = $this->directory_list->getPath('var') . '/import/' . $filename;
             $headerflag = 0;
             $file = fopen($priceCsv, "w");
