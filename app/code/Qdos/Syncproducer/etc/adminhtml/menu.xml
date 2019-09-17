@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © 2015 Qdos. All rights reserved.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../Backend/etc/menu.xsd">
+    <menu>
+        <!-- <add id="Qdos_Syncproducer::qdos_syncproducer_index" title="Sync Producer" module="Qdos_Syncproducer"  sortOrder="20" dependsOnModule="Qdos_Syncproducer" action="syncproducer/syncproducer/index" resource="Qdos_Syncproducer::qdos_syncproducer_index"/> -->
+<!--AddMenu-->
+    </menu>
+</config>

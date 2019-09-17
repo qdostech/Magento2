@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+    	<add id="Neo_Mappaymentorder::order" resource="Neo_Mappaymentorder::mappaymentorder" module="Neo_Mappaymentorder" title="Sales" sortOrder="20" parent="Qdos_QdosSync::hello"/>
+    	<add id="Neo_Mappaymentorder::configuration" title="Link Payment Method to Order Status" module="Neo_Mappaymentorder" sortOrder="10" action="mappaymentorder/mappaymentorder/index" resource="Neo_Mappaymentorder::configuration" parent="Neo_Mappaymentorder::order"/>
+        <add id="Neo_Mappaymentorder::sync_order" title="View Linked Payment Method and Order Status" module="Neo_Mappaymentorder" sortOrder="20" action="ordersync/ordersync/index" resource="Neo_Mappaymentorder::mappaymentorder" parent="Neo_Mappaymentorder::order"/>
+    </menu>
+</config>

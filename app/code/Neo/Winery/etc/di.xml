@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<!--
+/** Grid di xml
+ * @category  Webkul
+ * @package   Webkul_Grid
+ * @author    Webkul
+ * @copyright Copyright (c) 2010-2017 Webkul Software Private Limited (https://webkul.com)
+ * @license   https://store.webkul.com/license.html
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <preference for="Neo\Winery\Api\Data\GridInterface" type="Neo\Winery\Model\Grape" />
+ 
+    <virtualType name="Neo\Winery\Model\ResourceModel\Grape\Grape\Collection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">grape_attribute_data</argument>
+            <argument name="resourceModel" xsi:type="string">Neo\Winery\Model\ResourceModel\Grape</argument>
+        </arguments>
+    </virtualType>
+    <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
+        <arguments>
+            <argument name="collections" xsi:type="array">
+                <item name="grid_record_grid_list_data_source" xsi:type="string">Neo\Winery\Model\ResourceModel\Grape\Collection</item>
+            </argument>
+        </arguments>
+    </type>
+</config>

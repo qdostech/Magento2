@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="admin-2columns-left" xsi:noNamespaceSchemaLocation="../../../../../../../lib/internal/Magento/Framework/View/Layout/etc/page_configuration.xsd">
+    <update handle="editor"/>
+    <body>
+        <referenceContainer name="content">
+            <block class="Qdos\CustomerSync\Block\Adminhtml\Synccustomer\Edit" name="customersync_synccustomer_edit"/>
+        </referenceContainer>
+        <referenceContainer name="left">
+            <block class="Qdos\CustomerSync\Block\Adminhtml\Synccustomer\Edit\Tabs" name="customersync_synccustomer_edit_tabs">
+                <block class="Qdos\CustomerSync\Block\Adminhtml\Synccustomer\Edit\Tab\SyncCustomer" name="customersync_synccustomer_edit_tab_synccustomer"/>
+                <action method="addTab">
+                    <argument name="name" xsi:type="string">synccustomer_section</argument>
+                    <argument name="block" xsi:type="string">customersync_synccustomer_edit_tab_syncproduct</argument>
+                </action>
+                <!--CedAddTab-->
+			</block>
+        </referenceContainer>
+    </body>
+</page>

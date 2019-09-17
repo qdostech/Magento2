@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Neo_Winery Menu
+ *
+ * @category	Neo
+ * @package		Neo_Winery
+ * @author		Pradeep Sanku
+ *
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+	<!--<menu>-->
+		<!--<add id="Neo_Winery::manager" title="Grape Attributes Manager" module="Neo_Winery" sortOrder="10" resource="Neo_Winery::manager"/>-->
+		<!--<add id="Neo_Winery::winery_syncgrape_index" title="Sync Grape Attributes" module="Neo_Winery" sortOrder="20" parent="Neo_Winery::manager" action="winery/syncgrape/index" resource="Neo_Winery::winery_syncgrape_index"/>-->
+	<!--</menu>-->
+</config>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="admin-2columns-left" xsi:noNamespaceSchemaLocation="../../../../../../../lib/internal/Magento/Framework/View/Layout/etc/page_configuration.xsd">
+     <update handle="editor"/>
+    <body>
+	   <referenceContainer name="content">
+            <block class="Neo\Storemapping\Block\Adminhtml\Storemapping\Edit" name="storemapping_storemapping_edit"/>
+        </referenceContainer>
+		 <referenceContainer name="left">
+            <block class="Neo\Storemapping\Block\Adminhtml\Storemapping\Edit\Tabs" name="storemapping_storemapping_edit_tabs">
+				<block class="Neo\Storemapping\Block\Adminhtml\Storemapping\Edit\Tab\Storemapping" name="storemapping_storemapping_edit_tab_storemapping"/>
+				 <action method="addTab">
+                    <argument name="name" xsi:type="string">storemapping_section</argument>
+                    <argument name="block" xsi:type="string">storemapping_storemapping_edit_tab_storemapping</argument>
+                </action>
+				<!--CedAddTab-->
+			</block>
+        </referenceContainer>
+    </body>
+</page>

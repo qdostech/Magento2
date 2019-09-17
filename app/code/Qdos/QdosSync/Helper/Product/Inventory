@@ -1,0 +1,143 @@
+<?php
+class Qdos_QdosSync_Helper_Product_Inventory extends Qdos_QdosSync_Helper_Product{
+    private $_schedule;
+    public function __construct(
+        \Qdos\QdosSync\Model\Batch\Schedule $schedule){
+        $this->_schedule=$schedule
+        $this->_logFile = 'qdos-update-inventory-' . date('Ymd') . '.log';
+        return parent::__construct();
+    }
+
+    public function update($productId = 0, $storeId = Mage_Core_Model_App::ADMIN_STORE_ID, $data = null)
+    {
+        $result = true;
+        $scheduleModel = $this->_schedule;
+        try{
+            $i = 0;
+            if ($data != null || is_array($data)){
+                if (!is_array($data)){
+                    $stocks = unserialize($data);
+                }else{
+                    $stocks = $data;
+                }
+            }else{
+                $stocks = $this->loadDataFromService($storeId, $productId);
+                $this->log($stocks);
+                $this->_logMsg[] = '<strong>Received: '.count($stocks).' record(s).</strong>';
+            }
+
+            if (count($stocks) > $scheduleModel->getMinToBatch('inventory')){//add to background task
+                return $scheduleModel->convertToBatchOfUpdateProduct(count($stocks),
+                    $stocks,
+                    'qdossync/product_inventory',
+                    'runUpdate',
+                    'inventory',
+                    $storeId,
+                    $this->_logMsg);
+            }
+
+            $updateStatus = array('sync_status'=>Qdos_QdosSync_Model_Activity::LOG_PENDING,
+                'last_log_id'=>null,
+                'last_sync'=>date('Y-m-d H:i:s'));
+
+            foreach ($stocks as $stock) {
+                if (isset($stock['product_id']) and is_numeric($stock['product_id'])) {
+//                    $_product = Mage::getModel('catalog/product')->load($stock['product_id']);
+//
+//                    if (!empty($_product) && $_product->getId()) {
+//                        $this->_productLogIds[] = $_product->getId();
+//                        try {
+//                            try {
+//                                Mage::getModel('qdossync/catalog_product')->updateStatus($_product, $updateStatus);
+//                            } catch (Exception $e) {
+//                                $this->_logMsg[] = $e->getMessage();
+//                            }
+//
+//                            $stockItem = Mage::getModel('cataloginventory/stock_item')->loadByProduct($_product->getId());
+//                            if (!$stockItem->getId()) {
+//                                $stockItem->assignProduct($_product);
+//                                $stockItem->setData('stock_id', 1);
+//                                $stockItem->setData('store_id', $storeId);
+//                            }
+//
+//                            unset($stock['product_id']);
+//                            $stock['qty'] = $stock['quantity'];
+//                            unset($stock['quantity']);
+//                            unset($stock['return_id']);
+//                            $this->_logMsg[] = 'Changed stock #' . $_product->getId();
+//                            foreach($stock as $field => $value) {
+//                                if ($field == 'is_in_stock'){
+//                                    $this->_logMsg[] = $field.': '.($stockItem->getData($field)?'In stock':'Out stock').' -> '.($value?'In stock':'Out stock');
+//                                }else{
+//                                    $this->_logMsg[] = $field.': '.$stockItem->getData($field).' -> '.$value;
+//                                }
+//                                $stockItem->setData($field, $value?$value:0);
+//                            }
+//                            $stockItem->save();
+//                            $i++;
+//
+//                            unset($stockItem);
+//                        } catch (Exception $e) {
+//                            $result = false;
+//                            $this->log($e->getMessage());
+//                            $this->_logMsg[] = $this->addError($e->getMessage());
+//                            $errorMsg = array('SQLSTATE[HY000]: General error: 2006 MySQL server has gone away',
+//                                'SQLSTATE[HY000]: General error: 2013 Lost connection to MySQL server during query');
+//                            if (in_array($e->getMessage(),$errorMsg)){
+//                                Mage::app()->saveCache($this->_logMsg, Qdos_QdosSync_Model_Background_Task::CACHE_KEY_MYSQL_PROBLEM, array('qdossync_mysql_problem'), null);
+//                            }
+//                        }
+//                    } else {
+//                        $result = Qdos_QdosSync_Model_Activity::LOG_WARNING;
+//                        $this->_logMsg[] = $this->addWarning('#' . $stock['product_id'] . ' is not existed.');
+//                        $this->log('#' . $stock['product_id'] . ' is not existed.');
+//                    }
+                    $this->log('Using:' . Mage::helper('qdossync/config')->convert(memory_get_peak_usage()));
+                }
+            }
+            $this->_logMsg[] = '<strong>Update success: '.$i.' record(s).</strong>';
+        }catch(Exception $e){
+            $result = false;
+            $this->_logMsg[] = $this->addError($e->getMessage());
+            $this->log($e->getMessage());
+        }
+
+        return $result;
+    }
+
+    public function loadDataFromService($storeId, $productId){
+        $store_url = Mage::getStoreConfig(self::XML_STORE_URL_PATH, $storeId);
+        $result = $this->getClient()->GetProductQuantityArray(array('store_url' => $store_url, 'product_id' => $productId));
+        if ($result->outErrorMsg && strlen($result->outErrorMsg) > 0) {
+            Mage::throwException((string)$result->outErrorMsg);
+        } else {
+            $objs = $result->GetProductQuantityArrayResult;
+            if (is_object($objs) && isset($objs->ProductQuantity)) {
+                return $this->__convertObjToArray($objs->ProductQuantity);
+            }
+        }
+        return array();
+    }
+
+    public function _prepareItemForSave($item, $product)
+    {
+        $stockData = array('qty'=>0,
+            'min_qty'=>0,
+            'use_config_manage_stock'=>0,
+            'is_decimal_divided'=>0,
+            'is_qty_decimal'=>0,
+            'is_in_stock'=>0,
+            'manage_stock'=>0,
+            'backorders'=>0,
+            'use_config_backorders'=>0,
+            'min_sale_qty'=>0,
+            'use_config_min_sale_qty'=>0,
+            'max_sale_qty'=>0,
+            'use_config_max_sale_qty'=>0);
+        $item->addData($stockData)
+            ->setProduct($product)
+            ->setProductId($product->getId())
+            ->setStockId($item->getStockId());
+        return;
+    }
+}

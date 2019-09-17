@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+    	<add id="Neo_Productlocation::productlocation" resource="Neo_Productlocation::productlocation" module="Neo_Productlocation" title="Synch Location" action="productlocation/productlocation/index" sortOrder="70" parent="Qdos_QdosSync::catalogue"/>
+        <!-- <add id="Neo_Productlocation::productlocation" resource="Neo_Productlocation::productlocation" module="Neo_Productlocation" title="Sync Qdos Location" action="productlocation/productlocation/index" sortOrder="10" parent="Qdos_QdosSync::hello"/> -->
+    </menu>
+</config>

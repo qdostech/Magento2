@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Created by wilson.sun330@gmail.com
+ * Date: 13/05/2015
+* Time: 5:02 PM
+*/
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../../lib/internal/Magento/Framework/ObjectManager/etc/config.xsd">
+    <preference for="Magento\Customer\Controller\Account\LoginPost" type="Neo\CustomLogin\Controller\Account\LoginPost" />
+    <preference for="Magento\Customer\Controller\Account\ForgotPasswordPost" type="Neo\CustomLogin\Controller\Account\ForgotPasswordPost" />
+    <preference for="Magento\Customer\Model\ResourceModel\Customer" type="Neo\CustomLogin\Model\Customer\ResourceModel\Customer" />
+</config>

@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © 2015 Qdos. All rights reserved.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../Backend/etc/menu.xsd">
+    <menu>
+       <!--  <add id="Qdos_Syncevent::qdos_syncevent_index" title="Sync Events" module="Qdos_Syncevent"  sortOrder="20" dependsOnModule="Qdos_Syncevent" action="syncevent/syncevent/index" resource="Qdos_Syncevent::qdos_syncevent_index"/> -->
+<!--AddMenu-->
+    </menu>
+</config>

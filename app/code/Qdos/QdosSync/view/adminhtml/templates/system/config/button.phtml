@@ -1,0 +1,33 @@
+<?php echo $block->getButtonHtml() ?>
+<script>
+require([
+    'jquery',
+    'prototype',
+], function(jQuery){
+    function change_status() {
+
+        params = jQuery('.control-value').text();
+
+        date =  '<?php echo $block->getCurrentDateTime() ?>';
+
+        new Ajax.Request('<?php echo $block->getAjaxUrl() ?>', {
+            loaderArea:     false,
+            asynchronous:   true,
+            parameters:    {status: params},
+            onSuccess: function(transport) {
+
+                jQuery('#row_qdosConfig_cron_status_current_cron_status .value .control-value').text('not running');
+                jQuery('#row_qdosConfig_cron_status_current_cron_status .value .control-value').css('background-color','green');
+                jQuery('#row_qdosConfig_cron_status_current_cron_updated_time .value .control-value').text(date);
+                jQuery('#row_qdosConfig_cron_status_change_status').remove();
+                
+                var response = JSON.parse(transport.responseText);
+            }
+        });
+    }
+ 
+    jQuery('#btnid').click(function () {
+        change_status();
+    });
+});
+</script>

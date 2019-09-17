@@ -1,0 +1,64 @@
+<?php
+
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$Collection = $objectManager->get('\Qdos\QdosSync\Model\ResourceModel\Log\Collection')->load();
+$logArray = array();?>
+	<?php foreach ($Collection as $log) {?>
+	<table class="log" style="display: none" id="log_<?php echo $log->getLogId()?>">
+		<tr>
+			<td><label>Activity</label></td>
+			<td><?php echo $log->getActivityType();?></td>
+		</tr>
+		<tr>
+			<td><label>Start</label></td>
+			<td><?php echo date('d/m/Y  h:i A', strtotime($log->getStartTime()));?></td>
+		</tr>
+		<tr>
+			<td><label>Finish</label></td>
+			<td><?php echo date('d/m/Y h:i A', strtotime($log->getEndTime()));?></td>
+		</tr>
+		<?php $statusLabel = $objectManager->get('\Qdos\QdosSync\Model\Activity')->getActivityTypeByKey($log->getStatus());?>
+		<tr>
+			<td><label>Status</label></td>
+			<td><?php echo $statusLabel;?></td>
+		</tr>
+		<tr>
+			<td><label>From IP</label></td>
+			<td><?php echo $log->getIpAddress();?></td>
+		</tr>
+		<tr>
+			<td><label>Log</label></td>
+			<td><?php echo $log->getDescription();?></td>
+		</tr>
+	</table>
+	<?php }?>
+<script type="text/javascript">
+	function viewLog(id) {
+		require(
+        [
+            'jquery',
+            'Magento_Ui/js/modal/modal'
+        ],
+        function(
+            $,
+            modal
+        ) {
+            var options = {
+                type: 'popup',
+                responsive: true
+                // innerScroll: true,
+                // title: 'popup mpdal title'
+            };
+
+            var popup = modal(options, $('#log_'+id));
+            $('#log_'+id).modal("openModal");
+        }
+    ); 
+	}
+</script>
+<style>
+.modal-footer{display: none}
+.modal-popup .modal-inner-wrap{width: 35%}
+.log label{margin-right: 20px;}
+.log tr{margin-bottom: 20px}
+</style>

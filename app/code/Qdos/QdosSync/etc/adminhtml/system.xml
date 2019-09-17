@@ -1,0 +1,974 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © 2015 Magento. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../Config/etc/system_file.xsd">
+    <system>
+        <section id="payment">
+            <!-- payment-group -->
+        </section>
+        <section id="carriers" translate="label" type="text" sortOrder="320" showInDefault="1" showInWebsite="1" showInStore="1">
+            <!-- carrier-group -->
+        </section>
+        <tab id="qdos" translate="label" sortOrder="150">
+    		<label>Qdos</label>
+		</tab>
+		<section id="qdosSync" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+		    <label>Configuration Crons</label>
+		    <tab>qdos</tab>
+		    <resource>Qdos_QdosSync::system_config</resource>
+
+			<group id="autoSyncProduct" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+				<label>Auto Sync Products</label>
+				<field id="auto_sync_product" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Enable Auto Sync Product</label>
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+				</field>
+				<field id="frequency" translate="label" type="select" sortOrder="2" showInDefault="1">
+					<label>Frequency</label>
+					<source_model>Qdos\QdosSync\Model\Config\Source\QdosSyncFrequency</source_model>
+					<backend_model>Qdos\QdosSync\Model\Config\ProductCronConfig</backend_model>
+					<depends>
+						<field id="qdosSync/autoSyncProduct/auto_sync_product">1</field>
+					</depends>
+				</field>
+				<field id="weekdays" translate="label" type="multiselect" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Weekdays Days</label>
+					<source_model>Magento\Config\Model\Config\Source\Locale\Weekdays</source_model>
+					<depends>
+						<field id="qdosSync/autoSyncProduct/frequency">W</field>
+						<field id="qdosSync/autoSyncProduct/auto_sync_product">1</field>
+					</depends>
+				</field>
+				<field id="daysofmonth" translate="label" type="multiselect" sortOrder="4" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Days on Month</label>
+					<source_model>Qdos\QdosSync\Model\Config\Source\QdosSyncDaysofMonth</source_model>
+					<depends>
+						<field id="qdosSync/autoSyncProduct/frequency">M</field>
+						<field id="qdosSync/autoSyncProduct/auto_sync_product">1</field>
+					</depends>
+				</field>
+				<field id="time" translate="label" type="time" sortOrder="5" showInDefault="1" showInWebsite="0" showInStore="0">
+					<label>Start Time</label>
+					<depends>
+						<field id="qdosSync/autoSyncProduct/auto_sync_product">1</field>
+						<field id="qdosSync/autoSyncProduct/frequency" separator=",">D,W,M,EH,EM</field>
+                    </depends>
+                </field>
+                <field id="add_new_sync_product_schedule" translate="label" type="select" sortOrder="8" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Add new schedule</label>
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                        <field id="qdosSync/autoSyncProduct/auto_sync_product">1</field>
+                    </depends>
+				</field>
+				<field id="time2" translate="label" type="time" sortOrder="9" showInDefault="1" showInWebsite="0" showInStore="0">
+					<label>Start Time</label>
+					<depends>
+						<field id="qdosSync/autoSyncProduct/auto_sync_product">1</field>
+						<field id="qdosSync/autoSyncProduct/add_new_sync_product_schedule">1</field>
+					</depends>
+				</field>
+                <field id="add_another_new_sync_product_schedule" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Add new schedule</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+						<field id="qdosSync/autoSyncProduct/auto_sync_product">1</field>
+                        <field id="qdosSync/autoSyncProduct/add_new_sync_product_schedule">1</field>
+                    </depends>
+                </field>
+                <field id="time3" translate="label" type="time" sortOrder="11" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Start Time</label>
+                    <depends>
+						<field id="qdosSync/autoSyncProduct/auto_sync_product">1</field>
+                        <field id="qdosSync/autoSyncProduct/add_new_sync_product_schedule">1</field>
+                        <field id="qdosSync/autoSyncProduct/add_another_new_sync_product_schedule">1</field>
+                    </depends>
+                </field>
+			</group>
+
+			<group id="autoUpdateStock" translate="label" type="text" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1">
+				<label>Auto Update Stock</label>
+				<field id="auto_update_stock" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Enable Auto Sync Update Stock</label>
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+				</field>
+				<field id="frequency" translate="label" type="select" sortOrder="2" showInDefault="1">
+					<label>Frequency</label>
+					<source_model>Qdos\QdosSync\Model\Config\Source\QdosSyncFrequency</source_model>
+					<backend_model>Qdos\QdosSync\Model\Config\UpdateStockCronConfig</backend_model>
+					<depends>
+						<field id="qdosSync/autoUpdateStock/auto_update_stock">1</field>
+					</depends>
+				</field>
+				<field id="weekdays" translate="label" type="select" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Weekdays Days</label>
+					<source_model>Magento\Config\Model\Config\Source\Locale\Weekdays</source_model>
+					<depends>
+						<field id="qdosSync/autoUpdateStock/frequency">W</field>
+						<field id="qdosSync/autoUpdateStock/auto_update_stock">1</field>
+					</depends>
+				</field>
+				<field id="daysofmonth" translate="label" type="select" sortOrder="4" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Days on Month</label>
+					<source_model>Qdos\QdosSync\Model\Config\Source\QdosSyncDaysofMonth</source_model>
+					<depends>
+						<field id="qdosSync/autoUpdateStock/frequency">M</field>
+						<field id="qdosSync/autoUpdateStock/auto_update_stock">1</field>
+					</depends>
+				</field>
+				<field id="time" translate="label" type="time" sortOrder="5" showInDefault="1" showInWebsite="0" showInStore="0">
+					<label>Start Time</label>
+					<depends>
+						<field id="qdosSync/autoUpdateStock/auto_update_stock">1</field>
+					</depends>
+				</field>
+				 <field id="add_new_update_stock_schedule" translate="label" type="select" sortOrder="8" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Add new schedule</label>
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                        <field id="qdosSync/autoUpdateStock/auto_update_stock">1</field>
+                    </depends>
+				</field>
+				<field id="time2" translate="label" type="time" sortOrder="9" showInDefault="1" showInWebsite="0" showInStore="0">
+					<label>Start Time</label>
+					<depends>
+						<field id="qdosSync/autoUpdateStock/auto_update_stock">1</field>
+						<field id="qdosSync/autoUpdateStock/add_new_update_stock_schedule">1</field>
+					</depends>
+				</field>
+                <field id="add_another_new_update_stock_schedule" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Add new schedule</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+						<field id="qdosSync/autoUpdateStock/auto_update_stock">1</field>
+                        <field id="qdosSync/autoUpdateStock/add_new_update_stock_schedule">1</field>
+                    </depends>
+                </field>
+                <field id="time3" translate="label" type="time" sortOrder="11" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Start Time</label>
+                    <depends>
+                        <field id="qdosSync/autoUpdateStock/add_another_new_update_stock_schedule">1</field>
+                    </depends>
+                </field>
+			</group>
+
+
+			<group id="autoUpdatePrice" translate="label" type="text" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="1">
+				<label>Auto Update Price</label>
+				<field id="auto_update_price" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Enable Auto Sync Update Price</label>
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+				</field>
+				<field id="frequency" translate="label" type="select" sortOrder="2" showInDefault="1">
+					<label>Frequency</label>
+					<source_model>Qdos\QdosSync\Model\Config\Source\QdosSyncFrequency</source_model>
+					<backend_model>Qdos\QdosSync\Model\Config\UpdatePriceCronConfig</backend_model>
+					<depends>
+						<field id="qdosSync/autoUpdatePrice/auto_update_price">1</field>
+					</depends>
+				</field>
+				<field id="weekdays" translate="label" type="select" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Weekdays Days</label>
+					<source_model>Magento\Config\Model\Config\Source\Locale\Weekdays</source_model>
+					<depends>
+						<field id="qdosSync/autoUpdatePrice/frequency">W</field>
+						<field id="qdosSync/autoUpdatePrice/auto_update_price">1</field>
+					</depends>
+				</field>
+				<field id="daysofmonth" translate="label" type="select" sortOrder="4" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Days on Month</label>
+					<source_model>Qdos\QdosSync\Model\Config\Source\QdosSyncDaysofMonth</source_model>
+					<depends>
+						<field id="qdosSync/autoUpdatePrice/frequency">M</field>
+						<field id="qdosSync/autoUpdatePrice/auto_update_price">1</field>
+					</depends>
+				</field>
+				<field id="time" translate="label" type="time" sortOrder="5" showInDefault="1" showInWebsite="0" showInStore="0">
+					<label>Start Time</label>
+					<depends>
+						<field id="qdosSync/autoUpdatePrice/auto_update_price">1</field>
+					</depends>
+				</field>
+				<field id="add_new_update_price_schedule" translate="label" type="select" sortOrder="8" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Add new schedule</label>
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                        <field id="qdosSync/autoUpdatePrice/auto_update_price">1</field>
+                    </depends>
+				</field>
+				<field id="time2" translate="label" type="time" sortOrder="9" showInDefault="1" showInWebsite="0" showInStore="0">
+					<label>Start Time</label>
+					<depends>
+						<field id="qdosSync/autoUpdatePrice/auto_update_price">1</field>
+						<field id="qdosSync/autoUpdatePrice/add_new_update_price_schedule">1</field>
+					</depends>
+				</field>
+                <field id="add_another_new_update_price_schedule" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Add new schedule</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+						<field id="qdosSync/autoUpdatePrice/auto_update_price">1</field>
+                        <field id="qdosSync/autoUpdatePrice/add_new_update_price_schedule">1</field>
+                    </depends>
+                </field>
+                <field id="time3" translate="label" type="time" sortOrder="11" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Start Time</label>
+                    <depends>
+                        <field id="qdosSync/autoUpdatePrice/add_another_new_update_price_schedule">1</field>
+                    </depends>
+                </field>
+			</group>
+
+			<group id="autoSyncAttribute" translate="label" type="text" sortOrder="4" showInDefault="1" showInWebsite="1">
+				<label>Auto Sync Attribute</label>
+				<field id="auto_sync_attribute" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1">
+					<label>Enable Auto Sync Attribute</label>
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+				</field>
+				<field id="frequency" translate="label" type="select" sortOrder="2" showInDefault="1">
+					<label>Frequency</label>
+					<source_model>Qdos\QdosSync\Model\Config\Source\QdosSyncFrequency</source_model>
+					<backend_model>Qdos\QdosSync\Model\Config\AttributeCronConfig</backend_model>
+					<depends>
+						<field id="qdosSync/autoSyncAttribute/auto_sync_attribute">1</field>
+					</depends>
+				</field>
+				<field id="weekdays" translate="label" type="multiselect" sortOrder="3" showInDefault="1" showInWebsite="1">
+					<label>Weekdays Days</label>
+					<source_model>Magento\Config\Model\Config\Source\Locale\Weekdays</source_model>
+					<depends>
+						<field id="qdosSync/autoSyncAttribute/frequency">W</field>
+						<field id="qdosSync/autoSyncAttribute/auto_sync_attribute">1</field>
+					</depends>
+				</field>
+				<field id="daysofmonth" translate="label" type="multiselect" sortOrder="4" showInDefault="1" showInWebsite="1">
+					<label>Days on Month</label>
+					<source_model>Qdos\QdosSync\Model\Config\Source\QdosSyncDaysofMonth</source_model>
+					<depends>
+						<field id="qdosSync/autoSyncAttribute/frequency">M</field>
+						<field id="qdosSync/autoSyncAttribute/auto_sync_attribute">1</field>
+					</depends>
+				</field>
+				<field id="time" translate="label" type="time" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1">
+						<label>Start Time</label>
+						<depends>
+							<field id="qdosSync/autoSyncAttribute/auto_sync_attribute">1</field>
+							<field id="qdosSync/autoSyncAttribute/frequency" separator=",">D,W,M,EH,EM</field>
+						</depends>
+				</field>
+				<field id="add_new_schedule" translate="label" type="select" sortOrder="6" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>add new schedule</label>
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+					<depends>
+						<field id="qdosSync/autoSyncAttribute/auto_sync_attribute">1</field>
+					</depends>
+				</field>
+				<field id="time1" translate="label" type="time" sortOrder="7" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Start Time</label>
+					<depends>
+						<field id="qdosSync/autoSyncAttribute/auto_sync_attribute">1</field>
+						<field id="qdosSync/autoSyncAttribute/add_new_schedule">1</field>
+					</depends>
+				</field>
+				<field id="add_new_sync_attribute_schedule" translate="label" type="select" sortOrder="8" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Add new schedule</label>
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                    	<field id="qdosSync/autoSyncAttribute/auto_sync_attribute">1</field>
+                        <field id="qdosSync/autoSyncAttribute/add_new_schedule">1</field>
+                    </depends>
+				</field>
+				<field id="time2" translate="label" type="time" sortOrder="9" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Start Time</label>
+					<depends>
+                    	<field id="qdosSync/autoSyncAttribute/auto_sync_attribute">1</field>
+						<field id="qdosSync/autoSyncAttribute/add_new_sync_attribute_schedule">1</field>
+					</depends>
+				</field>
+			</group>
+
+			<group id="autoSyncDeleteProduct" translate="label" type="text" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1">
+				<label>Auto Sync Delete Product</label>
+				<field id="auto_delete_product" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Enable Auto Sync Attribute</label>
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+				</field>
+				<field id="frequency" translate="label" type="select" sortOrder="2" showInDefault="1">
+					<label>Frequency</label>
+					<source_model>Qdos\QdosSync\Model\Config\Source\QdosSyncFrequency</source_model>
+					<backend_model>Qdos\QdosSync\Model\Config\DeleteProductCronConfig</backend_model>
+					<depends>
+						<field id="qdosSync/autoSyncDeleteProduct/auto_delete_product">1</field>
+					</depends>
+				</field>
+				<field id="weekdays" translate="label" type="select" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Weekdays Days</label>
+					<source_model>Magento\Config\Model\Config\Source\Locale\Weekdays</source_model>
+					<depends>
+						<field id="qdosSync/autoSyncDeleteProduct/frequency">W</field>
+						<field id="qdosSync/autoSyncDeleteProduct/auto_delete_product">1</field>
+					</depends>
+				</field>
+				<field id="daysofmonth" translate="label" type="select" sortOrder="4" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Days on Month</label>
+					<source_model>Qdos\QdosSync\Model\Config\Source\QdosSyncDaysofMonth</source_model>
+					<depends>
+						<field id="qdosSync/autoSyncDeleteProduct/frequency">M</field>
+						<field id="qdosSync/autoSyncDeleteProduct/auto_delete_product">1</field>
+					</depends>
+				</field>
+				<field id="time" translate="label" type="time" sortOrder="5" showInDefault="1" showInWebsite="0" showInStore="0">
+					<label>Start Time</label>
+					<depends>
+						<field id="qdosSync/autoSyncDeleteProduct/auto_delete_product">1</field>
+					</depends>
+				</field>
+				<field id="add_new_schedule" translate="label" type="select" sortOrder="6" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>add new schedule</label>
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+					<depends>
+						<field id="qdosSync/autoSyncDeleteProduct/auto_delete_product">1</field>
+					</depends>
+				</field>
+				<field id="time1" translate="label" type="time" sortOrder="7" showInDefault="1" showInWebsite="0" showInStore="0">
+					<label>Start Time</label>
+					<depends>
+						<field id="qdosSync/autoSyncDeleteProduct/auto_delete_product">1</field>
+						<field id="qdosSync/autoSyncDeleteProduct/add_new_schedule">1</field>
+					</depends>
+				</field>
+				<field id="add_new_delete_product_schedule" translate="label" type="select" sortOrder="8" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Add new schedule</label>
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                    	<field id="qdosSync/autoSyncDeleteProduct/auto_delete_product">1</field>
+                        <field id="qdosSync/autoSyncDeleteProduct/add_new_schedule">1</field>
+                    </depends>
+				</field>
+				<field id="time2" translate="label" type="time" sortOrder="9" showInDefault="12" showInWebsite="0" showInStore="0">
+					<label>Start Time</label>
+					<depends>
+						<field id="qdosSync/autoSyncDeleteProduct/add_new_delete_product_schedule">1</field>
+						<field id="qdosSync/autoSyncDeleteProduct/add_new_schedule">1</field>
+					</depends>
+				</field>
+			</group>
+
+			<group id="autoSyncCategory" translate="label" type="text" sortOrder="6" showInDefault="1" showInWebsite="1" showInStore="1">
+				<label>Auto Sync Category</label>
+				<field id="auto_sync_category" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Enable Auto Sync Category</label>
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+				</field>
+				<field id="frequency" translate="label" type="select" sortOrder="2" showInDefault="1">
+					<label>Frequency</label>
+					<source_model>Qdos\QdosSync\Model\Config\Source\QdosSyncFrequency</source_model>
+					<backend_model>Qdos\QdosSync\Model\Config\CategoryCronConfig</backend_model>
+					<depends>
+						<field id="qdosSync/autoSyncCategory/auto_sync_category">1</field>
+					</depends>
+				</field>
+				<field id="weekdays" translate="label" type="multiselect" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Weekdays Days</label>
+					<source_model>Magento\Config\Model\Config\Source\Locale\Weekdays</source_model>
+					<depends>
+						<field id="qdosSync/autoSyncCategory/frequency">W</field>
+						<field id="qdosSync/autoSyncCategory/auto_sync_category">1</field>
+					</depends>
+				</field>
+				<field id="daysofmonth" translate="label" type="multiselect" sortOrder="4" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Days on Month</label>
+					<source_model>Qdos\QdosSync\Model\Config\Source\QdosSyncDaysofMonth</source_model>
+					<depends>
+						<field id="qdosSync/autoSyncCategory/frequency">M</field>
+						<field id="qdosSync/autoSyncCategory/auto_sync_category">1</field>
+					</depends>
+				</field>
+				<!-- <field id="hours" translate="label" type="multiselect" sortOrder="5" showInDefault="1" showInWebsite="0" showInStore="0">
+					<label>Hours</label>
+					<source_model>Qdos\QdosSync\Model\Config\Source\QdosSyncHours</source_model>
+					<depends>
+						<field id="qdosSync/autoSyncCategory/auto_sync_category">1</field>
+						<field id="qdosSync/autoSyncCategory/frequency" separator=",">D,W,M</field>
+					</depends>
+				</field>
+				<field id="minutes" translate="label" type="multiselect" sortOrder="6" showInDefault="1" showInWebsite="0" showInStore="0">
+					<label>Minutes</label>
+					<source_model>Qdos\QdosSync\Model\Config\Source\QdosSyncMinutes</source_model>
+					<depends>
+						<field id="qdosSync/autoSyncCategory/auto_sync_category">1</field>
+						<field id="qdosSync/autoSyncCategory/frequency" separator=",">D,W,M</field>
+					</depends>
+				</field> -->
+				<field id="time" translate="label" type="time" sortOrder="7" showInDefault="1" showInWebsite="0" showInStore="0">
+					<label>Start Time</label>
+					<depends>
+						<field id="qdosSync/autoSyncCategory/auto_sync_category">1</field>
+						<field id="qdosSync/autoSyncCategory/frequency" separator=",">D,W,M,EH,EM</field>
+					</depends>
+				</field>
+				<field id="add_new_schedule" translate="label" type="select" sortOrder="8" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>add new schedule</label>
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+					<depends>
+						<field id="qdosSync/autoSyncCategory/auto_sync_category">1</field>
+					</depends>
+				</field>
+				
+				<field id="time1" translate="label" type="time" sortOrder="9" showInDefault="1" showInWebsite="0" showInStore="0">
+					<label>Start Time</label>
+					<depends>
+						<field id="qdosSync/autoSyncCategory/auto_sync_category">1</field>
+						<field id="qdosSync/autoSyncCategory/add_new_schedule">1</field>
+					</depends>
+				</field>
+				<field id="add_new_sync_category_schedule" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Add new schedule</label>
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                    	<field id="qdosSync/autoSyncCategory/auto_sync_category">1</field>
+                        <field id="qdosSync/autoSyncCategory/add_new_schedule">1</field>
+                    </depends>
+				</field>
+				<field id="time2" translate="label" type="time" sortOrder="11" showInDefault="1" showInWebsite="0" showInStore="0">
+					<label>Start Time</label>
+					<depends>						
+                    	<field id="qdosSync/autoSyncCategory/auto_sync_category">1</field>
+						<field id="qdosSync/autoSyncCategory/add_new_sync_category_schedule">1</field>
+					</depends>
+				</field>
+			</group>
+
+
+			<!--<group id="autoDeleteLogs" translate="label" type="text" sortOrder="7" showInDefault="1" showInWebsite="1" showInStore="1">-->
+				<!--<label>Auto Delete Logs</label>-->
+				<!--<field id="auto_delete_logs" translate="label" type="select" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1">-->
+					<!--<label>Enable Delete Logs</label>-->
+					<!--<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>-->
+				<!--</field>-->
+				<!--<field id="days_to_delete_logs" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">-->
+				    <!--<label>No of Days before to Delete Logs</label>-->
+				<!--</field>-->
+			<!--</group>-->
+
+			<group id="autoDeleteLogs" translate="label" type="text" sortOrder="7" showInDefault="1" showInWebsite="1" showInStore="1">
+				<label>Auto Delete Logs</label>
+				<field id="auto_delete_logs" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Enable Delete Logs</label>
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+				</field>
+				<field id="frequency" translate="label" type="select" sortOrder="2" showInDefault="1">
+					<label>Frequency</label>
+					<source_model>Qdos\QdosSync\Model\Config\Source\QdosSyncFrequency</source_model>
+					<backend_model>Qdos\QdosSync\Model\Config\DeleteLogsCronConfig</backend_model>
+					<depends>
+						<field id="qdosSync/autoDeleteLogs/auto_delete_logs">1</field>
+					</depends>
+				</field>
+				<field id="weekdays" translate="label" type="select" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Weekdays Days</label>
+					<source_model>Magento\Config\Model\Config\Source\Locale\Weekdays</source_model>
+					<depends>
+						<field id="qdosSync/autoDeleteLogs/frequency">W</field>
+						<field id="qdosSync/autoDeleteLogs/auto_delete_logs">1</field>
+					</depends>
+				</field>
+				<field id="daysofmonth" translate="label" type="select" sortOrder="4" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Days on Month</label>
+					<source_model>Qdos\QdosSync\Model\Config\Source\QdosSyncDaysofMonth</source_model>
+					<depends>
+						<field id="qdosSync/autoDeleteLogs/frequency">M</field>
+						<field id="qdosSync/autoDeleteLogs/auto_delete_logs">1</field>
+					</depends>
+				</field>
+				<field id="time" translate="label" type="time" sortOrder="5" showInDefault="1" showInWebsite="0" showInStore="0">
+					<label>Start Time</label>
+					<depends>
+						<field id="qdosSync/autoDeleteLogs/auto_delete_logs">1</field>
+					</depends>
+				</field>
+				<field id="add_new_schedule" translate="label" type="select" sortOrder="8" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>add new schedule</label>
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+					<depends>
+						<field id="qdosSync/autoDeleteLogs/auto_delete_logs">1</field>
+					</depends>
+				</field>
+				
+				<field id="time1" translate="label" type="time" sortOrder="9" showInDefault="1" showInWebsite="0" showInStore="0">
+					<label>Start Time</label>
+					<depends>
+						<field id="qdosSync/autoDeleteLogs/auto_delete_logs">1</field>
+						<field id="qdosSync/autoDeleteLogs/add_new_schedule">1</field>
+					</depends>
+				</field>
+				<field id="add_new_delete_log_schedule" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Add new schedule</label>
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                    	<field id="qdosSync/autoDeleteLogs/auto_delete_logs">1</field>
+                        <field id="qdosSync/autoDeleteLogs/add_new_schedule">1</field>
+                    </depends>
+				</field>
+				<field id="time2" translate="label" type="time" sortOrder="11" showInDefault="1" showInWebsite="0" showInStore="0">
+					<label>Start Time</label>
+					<depends>
+                    	<field id="qdosSync/autoDeleteLogs/auto_delete_logs">1</field>
+						<field id="qdosSync/autoDeleteLogs/add_new_delete_log_schedule">1</field>
+					</depends>
+				</field>
+			</group>
+
+		   <!--<group id="autoDeleteOrderLogs" translate="label" type="text" sortOrder="8" showInDefault="1" showInWebsite="1" showInStore="1">-->
+		    	<!--<label>Auto Delete Order Logs</label>-->
+		        <!--<field id="auto_delete_order_logs" translate="label" type="select" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1">-->
+				    <!--<label>Enable Delete Order Logs</label>-->
+				    <!--<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>-->
+				<!--</field>-->
+				<!--<field id="days_to_delete_order_logs" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">-->
+				    <!--<label>No of Days before to Delete Order Logs</label>-->
+				<!--</field>-->
+		   <!--</group>-->
+
+			<group id="autoDeleteOrderLogs" translate="label" type="text" sortOrder="8" showInDefault="1" showInWebsite="1" showInStore="1">
+				<label>Auto Delete Order Logs</label>
+				<field id="auto_delete_order_logs" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Enable Delete Order Logs</label>
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+				</field>
+				<field id="frequency" translate="label" type="select" sortOrder="2" showInDefault="1">
+					<label>Frequency</label>
+					<source_model>Qdos\QdosSync\Model\Config\Source\QdosSyncFrequency</source_model>
+					<backend_model>Qdos\QdosSync\Model\Config\DeleteOrderLogsCronConfig</backend_model>
+					<depends>
+						<field id="qdosSync/autoDeleteOrderLogs/auto_delete_order_logs">1</field>
+					</depends>
+				</field>
+				<field id="weekdays" translate="label" type="select" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Weekdays Days</label>
+					<source_model>Magento\Config\Model\Config\Source\Locale\Weekdays</source_model>
+					<depends>
+						<field id="qdosSync/autoDeleteOrderLogs/frequency">W</field>
+						<field id="qdosSync/autoDeleteOrderLogs/auto_delete_order_logs">1</field>
+					</depends>
+				</field>
+				<field id="daysofmonth" translate="label" type="select" sortOrder="4" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Days on Month</label>
+					<source_model>Qdos\QdosSync\Model\Config\Source\QdosSyncDaysofMonth</source_model>
+					<depends>
+						<field id="qdosSync/autoDeleteOrderLogs/frequency">M</field>
+						<field id="qdosSync/autoDeleteOrderLogs/auto_delete_order_logs">1</field>
+					</depends>
+				</field>
+				<field id="time" translate="label" type="time" sortOrder="5" showInDefault="1" showInWebsite="0" showInStore="0">
+					<label>Start Time</label>
+					<depends>
+						<field id="qdosSync/autoDeleteOrderLogs/auto_delete_order_logs">1</field>
+					</depends>
+				</field>
+				<field id="add_new_delete_order_log_schedule" translate="label" type="select" sortOrder="8" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Add new schedule</label>
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                        <field id="qdosSync/autoDeleteOrderLogs/auto_delete_order_logs">1</field>
+                    </depends>
+				</field>
+				<field id="time2" translate="label" type="time" sortOrder="9" showInDefault="1" showInWebsite="0" showInStore="0">
+					<label>Start Time</label>
+					<depends>
+						<field id="qdosSync/autoDeleteOrderLogs/auto_delete_order_logs">1</field>
+						<field id="qdosSync/autoDeleteOrderLogs/add_new_delete_order_log_schedule">1</field>
+					</depends>
+				</field>
+                <field id="add_another_new_delete_order_log_schedule" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Add new schedule</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                        <field id="qdosSync/autoDeleteOrderLogs/auto_delete_order_logs">1</field>
+                        <field id="qdosSync/autoDeleteOrderLogs/add_new_delete_order_log_schedule">1</field>
+                    </depends>
+                </field>
+                <field id="time3" translate="label" type="time" sortOrder="11" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Start Time</label>
+                    <depends>
+						<field id="qdosSync/autoDeleteOrderLogs/auto_delete_order_logs">1</field>
+                        <field id="qdosSync/autoDeleteOrderLogs/add_another_new_delete_order_log_schedule">1</field>
+                    </depends>
+                </field>
+			</group>
+
+		   <!--<group id="autoReindexing" translate="label" type="text" sortOrder="9" showInDefault="1" showInWebsite="1" showInStore="1">-->
+		    	<!--<label>Auto Reindexing</label>-->
+		        <!--<field id="auto_reindexing" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">-->
+				    <!--<label>Enable Auto Reindexing</label>-->
+				    <!--<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>-->
+				<!--</field>-->
+				<!--<field id="frequency" translate="label" type="select" sortOrder="2" showInDefault="1">-->
+				    <!--<label>Frequency</label>-->
+				    <!--<source_model>Magento\Cron\Model\Config\Source\Frequency</source_model>-->
+				<!--</field>-->
+		   <!--</group>-->
+
+			<group id="autoReindexing" translate="label" type="text" sortOrder="9" showInDefault="1" showInWebsite="1" showInStore="1">
+				<label>Auto Reindexing</label>
+				<field id="auto_reindexing" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Enable Auto Reindexing</label>
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+				</field>
+				<field id="frequency" translate="label" type="select" sortOrder="2" showInDefault="1">
+					<label>Frequency</label>
+					<source_model>Qdos\QdosSync\Model\Config\Source\QdosSyncFrequency</source_model>
+					<backend_model>Qdos\QdosSync\Model\Config\ReindexingCronConfig</backend_model>
+					<depends>
+						<field id="qdosSync/autoReindexing/auto_reindexing">1</field>
+					</depends>
+				</field>
+				<field id="weekdays" translate="label" type="select" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Weekdays Days</label>
+					<source_model>Magento\Config\Model\Config\Source\Locale\Weekdays</source_model>
+					<depends>
+						<field id="qdosSync/autoReindexing/frequency">W</field>
+						<field id="qdosSync/autoReindexing/auto_reindexing">1</field>
+					</depends>
+				</field>
+				<field id="daysofmonth" translate="label" type="select" sortOrder="4" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Days on Month</label>
+					<source_model>Qdos\QdosSync\Model\Config\Source\QdosSyncDaysofMonth</source_model>
+					<depends>
+						<field id="qdosSync/autoReindexing/frequency">M</field>
+						<field id="qdosSync/autoReindexing/auto_reindexing">1</field>
+					</depends>
+				</field>
+				<field id="time" translate="label" type="time" sortOrder="5" showInDefault="1" showInWebsite="0" showInStore="0">
+					<label>Start Time</label>
+					<depends>
+						<field id="qdosSync/autoReindexing/auto_reindexing">1</field>
+					</depends>
+				</field>
+				<field id="add_new_reindexing_schedule" translate="label" type="select" sortOrder="8" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Add new schedule</label>
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                        <field id="qdosSync/autoReindexing/auto_reindexing">1</field>
+                    </depends>
+				</field>
+				<field id="time2" translate="label" type="time" sortOrder="9" showInDefault="1" showInWebsite="0" showInStore="0">
+					<label>Start Time</label>
+					<depends>
+						<field id="qdosSync/autoReindexing/auto_reindexing">1</field>
+						<field id="qdosSync/autoReindexing/add_new_reindexing_schedule">1</field>
+					</depends>
+				</field>
+                <field id="add_another_new_reindexing_schedule" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Add new schedule</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                        <field id="qdosSync/autoReindexing/auto_reindexing">1</field>
+                        <field id="qdosSync/autoReindexing/add_new_reindexing_schedule">1</field>
+                    </depends>
+                </field>
+                <field id="time3" translate="label" type="time" sortOrder="11" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Start Time</label>
+                    <depends>
+						<field id="qdosSync/autoReindexing/auto_reindexing">1</field>
+                        <field id="qdosSync/autoReindexing/add_another_new_reindexing_schedule">1</field>
+                    </depends>
+                </field>
+			</group>
+
+		   <!--<group id="autoSyncNewsletter" translate="label" type="text" sortOrder="9" showInDefault="1" showInWebsite="1" showInStore="1">-->
+		    	<!--<label>Auto Sync Newsletter</label>-->
+		        <!--<field id="auto_sync_newsletter" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">-->
+				    <!--<label>Enable Auto Syncing Newsletter</label>				    -->
+				    <!--<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>-->
+				<!--</field>-->
+				<!--<field id="frequency" translate="label" type="select" sortOrder="2" showInDefault="1">-->
+				    <!--<label>Frequency</label>-->
+				    <!--<source_model>Magento\Cron\Model\Config\Source\Frequency</source_model>-->
+				<!--</field>-->
+		   <!--</group>-->
+
+			<group id="autoSyncNewsletter" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+				<label>Auto Sync Newsletter</label>
+				<field id="auto_sync_newsletter" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Enable Auto Syncing Newsletter</label>
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+				</field>
+				<field id="frequency" translate="label" type="select" sortOrder="2" showInDefault="1">
+					<label>Frequency</label>
+					<source_model>Qdos\QdosSync\Model\Config\Source\QdosSyncFrequency</source_model>
+					<backend_model>Qdos\QdosSync\Model\Config\NewsletterCronConfig</backend_model>
+					<depends>
+						<field id="qdosSync/autoSyncNewsletter/auto_sync_newsletter">1</field>
+					</depends>
+				</field>
+				<field id="weekdays" translate="label" type="select" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Weekdays Days</label>
+					<source_model>Magento\Config\Model\Config\Source\Locale\Weekdays</source_model>
+					<depends>
+						<field id="qdosSync/autoSyncNewsletter/frequency">W</field>
+						<field id="qdosSync/autoSyncNewsletter/auto_sync_newsletter">1</field>
+					</depends>
+				</field>
+				<field id="daysofmonth" translate="label" type="select" sortOrder="4" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Days on Month</label>
+					<source_model>Qdos\QdosSync\Model\Config\Source\QdosSyncDaysofMonth</source_model>
+					<depends>
+						<field id="qdosSync/autoSyncNewsletter/frequency">M</field>
+						<field id="qdosSync/autoSyncNewsletter/auto_sync_newsletter">1</field>
+					</depends>
+				</field>
+				<field id="time" translate="label" type="time" sortOrder="5" showInDefault="1" showInWebsite="0" showInStore="0">
+					<label>Start Time</label>
+					<depends>
+						<field id="qdosSync/autoSyncNewsletter/auto_sync_newsletter">1</field>
+					</depends>
+				</field>
+				<field id="add_new_sync_newsletter_schedule" translate="label" type="select" sortOrder="8" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Add new schedule</label>
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                        <field id="qdosSync/autoSyncNewsletter/auto_sync_newsletter">1</field>
+                    </depends>
+				</field>
+				<field id="time2" translate="label" type="time" sortOrder="9" showInDefault="1" showInWebsite="0" showInStore="0">
+					<label>Start Time</label>
+					<depends>
+						<field id="qdosSync/autoSyncNewsletter/auto_sync_newsletter">1</field>
+						<field id="qdosSync/autoSyncNewsletter/add_new_sync_newsletter_schedule">1</field>
+					</depends>
+				</field>
+                <field id="add_another_new_sync_newsletter_schedule" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Add new schedule</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                        <field id="qdosSync/autoSyncNewsletter/auto_sync_newsletter">1</field>
+                        <field id="qdosSync/autoSyncNewsletter/add_new_sync_newsletter_schedule">1</field>
+                    </depends>
+                </field>
+                <field id="time3" translate="label" type="time" sortOrder="11" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Start Time</label>
+                    <depends>
+						<field id="qdosSync/autoSyncNewsletter/auto_sync_newsletter">1</field>
+                        <field id="qdosSync/autoSyncNewsletter/add_another_new_sync_newsletter_schedule">1</field>
+                    </depends>
+                </field>
+			</group>
+
+		   <!--<group id="autoSyncOrderDetails" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">-->
+		    	<!--<label>Auto Sync Order Details</label>-->
+		        <!--<field id="auto_sync_order_details" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">-->
+				    <!--<label>Enable Auto Syncing Order Details</label>				    -->
+				    <!--<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>-->
+				<!--</field>-->
+		   <!--</group>-->
+
+			<group id="autoSyncOrderDetails" translate="label" type="text" sortOrder="11" showInDefault="1" showInWebsite="1" showInStore="1">
+				<label>Auto Sync Order Details</label>
+				<field id="auto_sync_order_details" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Enable Auto Syncing Order Details</label>
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+				</field>
+				<field id="frequency" translate="label" type="select" sortOrder="2" showInDefault="1">
+					<label>Frequency</label>
+					<source_model>Qdos\QdosSync\Model\Config\Source\QdosSyncFrequency</source_model>
+					<backend_model>Qdos\QdosSync\Model\Config\OrderDetailsCronConfig</backend_model>
+					<depends>
+						<field id="qdosSync/autoSyncOrderDetails/auto_sync_order_details">1</field>
+					</depends>
+				</field>
+				<field id="weekdays" translate="label" type="select" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Weekdays Days</label>
+					<source_model>Magento\Config\Model\Config\Source\Locale\Weekdays</source_model>
+					<depends>
+						<field id="qdosSync/autoSyncOrderDetails/frequency">W</field>
+						<field id="qdosSync/autoSyncOrderDetails/auto_sync_order_details">1</field>
+					</depends>
+				</field>
+				<field id="daysofmonth" translate="label" type="select" sortOrder="4" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Days on Month</label>
+					<source_model>Qdos\QdosSync\Model\Config\Source\QdosSyncDaysofMonth</source_model>
+					<depends>
+						<field id="qdosSync/autoSyncOrderDetails/frequency">M</field>
+						<field id="qdosSync/autoSyncOrderDetails/auto_sync_order_details">1</field>
+					</depends>
+				</field>
+				<field id="time" translate="label" type="time" sortOrder="5" showInDefault="1" showInWebsite="0" showInStore="0">
+					<label>Start Time</label>
+					<depends>
+						<field id="qdosSync/autoSyncOrderDetails/auto_sync_order_details">1</field>
+					</depends>
+				</field>
+				<field id="add_new_sync_order_schedule" translate="label" type="select" sortOrder="8" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Add new schedule</label>
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                        <field id="qdosSync/autoSyncOrderDetails/auto_sync_order_details">1</field>
+                    </depends>
+				</field>
+				<field id="time2" translate="label" type="time" sortOrder="9" showInDefault="1" showInWebsite="0" showInStore="0">
+					<label>Start Time</label>
+					<depends>
+						<field id="qdosSync/autoSyncOrderDetails/auto_sync_order_details">1</field>
+						<field id="qdosSync/autoSyncOrderDetails/add_new_sync_order_schedule">1</field>
+					</depends>
+				</field>
+                <field id="add_another_new_sync_order_schedule" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Add new schedule</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                        <field id="qdosSync/autoSyncOrderDetails/auto_sync_order_details">1</field>
+                        <field id="qdosSync/autoSyncOrderDetails/add_new_sync_order_schedule">1</field>
+                    </depends>
+                </field>
+                <field id="time3" translate="label" type="time" sortOrder="11" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Start Time</label>
+                    <depends>
+                    	<field id="qdosSync/autoSyncOrderDetails/auto_sync_order_details">1</field>
+                        <field id="qdosSync/autoSyncOrderDetails/add_another_new_sync_order_schedule">1</field>
+                    </depends>
+                </field>
+			</group>
+
+		</section>
+
+		<section id="qdosConfig" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+		    <label>Configuration Settings</label>
+		    <tab>qdos</tab>
+		    <resource>Qdos_QdosSync::system_config</resource>
+		    <group id="webServices" translate="label" type="text" sortOrder="21" showInDefault="1" showInWebsite="1" showInStore="1">
+		        <label>Web Services</label>
+		        <field id="url_path" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+				    <label>Url Path</label>
+				</field>
+				<field id="domain" translate="label" type="text" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1">
+				    <label>Domain</label>
+				</field>
+		    </group>
+		    <group id="store" translate="label" type="text" sortOrder="22" showInDefault="1" showInWebsite="1" showInStore="1">
+		        <label>Store</label>
+		        <field id="store_url_path" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+				    <label>Url Path</label>
+				</field>
+		    </group>
+		    <group id="soap_login_information" translate="label" type="text" sortOrder="23" showInDefault="1" showInWebsite="1" showInStore="1">
+		        <label>Soap Login Information</label>
+		        <field id="soap_username" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+				    <label>User Name</label>
+				</field>
+				<field id="soap_password" translate="label" type="password" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1">
+				    <label>Password</label>
+				</field>
+		    </group>
+		    <group id="permissions" translate="label" type="text" sortOrder="24" showInDefault="1" showInWebsite="1" showInStore="1">
+		        <label>Permissions</label>		        
+		        <field id="sku_based_product_sync" translate="label" type="select" sortOrder="1" showInDefault="1">
+				    <label>Enable SKU Based Product Sync</label>				    
+				    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+				</field>				
+				<field id="manual_sync_product" translate="label" type="select" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1">
+				    <label>Enable Manual Sync Product</label>				    
+				    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+				</field>				
+				<field id="manual_sync_price" translate="label" type="select" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="1">
+				    <label>Enable Manual Sync Price</label>				    
+				    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+				</field>				
+				<field id="manual_sync_stock" translate="label" type="select" sortOrder="4" showInDefault="1" showInWebsite="1" showInStore="1">
+				    <label>Enable Manual Sync Stock</label>				    
+				    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+				</field>				
+				<field id="manual_sync_attribute" translate="label" type="select" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1">
+				    <label>Enable Manual Sync Attribute</label>				    
+				    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+				</field>				
+				<field id="manual_delete_product" translate="label" type="select" sortOrder="6" showInDefault="1" showInWebsite="1" showInStore="1">
+				    <label>Enable Manual Delete Product</label>				    
+				    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+				</field>
+				<field id="manual_product_position" translate="label" type="select" sortOrder="7" showInDefault="1" showInWebsite="1" showInStore="1">
+				    <label>Enable Manual Product Position</label>				    
+				    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+				</field>					
+				<field id="fixed_price_for_config_child" translate="label" type="select" sortOrder="8" showInDefault="1" showInWebsite="1" showInStore="1">
+				    <label>Enable Fixed Price for Config child	</label>				    
+				    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+				</field>
+				<field id="tier_price_sync" translate="label" type="select" sortOrder="9" showInDefault="1" showInWebsite="1" showInStore="1">
+				    <label>Enable Tier Price Sync</label>				    
+				    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+				</field>					
+				<field id="product_image_sync" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+				    <label>Enable Product Image Sync</label>				    
+				    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+				</field>				
+				<field id="manual_category_sync" translate="label" type="select" sortOrder="11" showInDefault="1" showInWebsite="1" showInStore="1">
+				    <label>Enable Manual Category Sync</label>				    
+				    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+				</field>				
+				<field id="product_image_import_sync" translate="label" type="select" sortOrder="12" showInDefault="1" showInWebsite="1" showInStore="1">
+				    <label>Enable Product Image Import Sync</label>				    
+				    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+				</field>				
+				<field id="delete_qdos_sync_images" translate="label" type="select" sortOrder="13" showInDefault="1">
+				    <label>Only Delete Qdos Sync Images In Sync</label>				    
+				    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+				</field>				
+				<field id="reset_stock_delete_sync" translate="label" type="select" sortOrder="14" showInDefault="1">
+				    <label>Reset Stock in Delete Sync</label>				    
+				    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+				</field>
+				<field id="append_categories" translate="label" type="select" sortOrder="15" showInDefault="1">
+				    <label>Append Categories</label>				    
+				    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+				</field>
+		    </group>
+		    <group id="import_product_settings" translate="label" type="text" sortOrder="25" showInDefault="1" showInWebsite="1" showInStore="1">
+		       <label>Import Product Settings</label>
+		       <field id="not_sync_attribute_properties" translate="label" type="multiselect" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+				   <label>Not sync attribute properties</label>
+				   <source_model>Qdos\QdosSync\Model\Catalog\Attribute</source_model>
+			   </field>
+		    </group>
+		    <group id="cron_status" translate="label" type="text" sortOrder="26" showInDefault="1" showInWebsite="1" showInStore="1">
+		       <label>Cron Status</label>
+
+				<!-- Prajakta -->
+				<field id="current_cron_status" translate="label" type="label" sortOrder="1" showInDefault="1" showInWebsite="0" showInStore="0">
+					<label> Current Cron Status</label>
+				</field>
+
+				<field id="change_status" translate="label comment tooltip" type="button" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="0">
+					<frontend_model>Qdos\QdosSync\Block\System\Config\Button</frontend_model>
+				</field>
+				<!-- Prajakta end -->
+
+				<!-- changed all sortOrder according to added field -->
+
+
+			   <field id="check_intervel_in_hours" translate="label" type="label" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1">
+				   <label> Check Interval (in hours)</label>
+			   </field>			   
+			   <field id="current_cron_updated_time" translate="label" type="text" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="1">
+				   <label>Current cron Status Update Time</label>
+			   </field>
+			   <field id="cron_template_id" translate="label" type="text" sortOrder="4" showInDefault="1" showInWebsite="1" showInStore="1">
+				   <label>Cron Status Template Id</label>
+			   </field>			   
+			   <field id="cron_status_email_to" translate="label" type="text" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1">
+				   <label>Cron Status Email To	</label>
+			   </field>				   	
+			   <field id="sync_fail_template_id" translate="label" type="text" sortOrder="6" showInDefault="1" showInWebsite="1" showInStore="1">
+				   <label>Sync Fail Template Id</label>
+			   </field>			   
+			   <field id="sync_fail_email_to" translate="label" type="text" sortOrder="7" showInDefault="1" showInWebsite="1" showInStore="1">
+				   <label>Sync Fail Email To </label>
+			   </field>	
+		    </group>
+		</section>
+    </system>
+</config>

@@ -1,0 +1,54 @@
+<?php
+/**
+ * Webkul Grid Controller
+ *
+ * @category    Webkul
+ * @package     Webkul_Grid
+ * @author      Webkul Software Private Limited
+ *
+ */
+namespace Neo\Winery\Controller\Adminhtml\Syncgrape;
+
+class Index extends \Magento\Backend\App\Action
+{
+    /**
+     * @var \Magento\Framework\View\Result\PageFactory
+     */
+    protected $_resultPageFactory;
+
+    /**
+     * @param \Magento\Backend\App\Action\Context        $context
+     * @param \Magento\Framework\View\Result\PageFactory $resultPageFactory
+     */
+    public function __construct(
+        \Magento\Backend\App\Action\Context $context,
+        \Magento\Framework\View\Result\PageFactory $resultPageFactory
+    ) {
+        parent::__construct($context);
+        $this->_resultPageFactory = $resultPageFactory;
+    }
+
+    /**
+     * Grid List page.
+     *
+     * @return \Magento\Backend\Model\View\Result\Page
+     */
+    public function execute()
+    {
+        /** @var \Magento\Backend\Model\View\Result\Page $resultPage */
+        $resultPage = $this->_resultPageFactory->create();
+        $resultPage->setActiveMenu('Neo_Winery::grid');
+        $resultPage->getConfig()->getTitle()->prepend(__('Import Grape Attribute Data'));
+        return $resultPage;
+    }
+
+    /**
+     * Check Grid List Permission.
+     *
+     * @return bool
+     */
+    protected function _isAllowed()
+    {
+        return $this->_authorization->isAllowed('Neo_Winery::winery');
+    }
+}

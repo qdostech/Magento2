@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Neo_Winery route xml
+ *
+ * @category    Neo
+ * @package     Neo_Winery
+ * @author      Neo Software Private Limited
+ *
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:App/etc/routes.xsd">
+	<router id="admin">
+		<route id="winery" frontName="winery">
+			<module name="Neo_Winery" before="Magento_Backend" />
+		</route>
+	</router>
+</config>

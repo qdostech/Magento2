@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <preference for="CommerceExtensions\ProductImportExport\Model\Data\CsvImportHandler" type="Neo\ProductImportExport\Model\Data\CsvImportHandler" />
+    <preference for="CommerceExtensions\ProductImportExport\Model\Data\Import\SimpleProduct" type="Neo\ProductImportExport\Model\Data\Import\SimpleProduct" />
+    <preference for="CommerceExtensions\ProductImportExport\Model\Data\Import\ConfigurableProduct" type="Neo\ProductImportExport\Model\Data\Import\ConfigurableProduct" />
+    <preference for="CommerceExtensions\ProductImportExport\Model\Data\Import\GroupedProduct" type="Neo\ProductImportExport\Model\Data\Import\GroupedProduct" />
+    <preference for="CommerceExtensions\ProductImportExport\Model\Data\Import\VirtualProduct" type="Neo\ProductImportExport\Model\Data\Import\VirtualProduct" />
+    <preference for="CommerceExtensions\ProductImportExport\Model\Data\Import\DownloadableProduct" type="Neo\ProductImportExport\Model\Data\Import\DownloadableProduct" />
+</config>

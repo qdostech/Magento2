@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="admin-2columns-left" xsi:noNamespaceSchemaLocation="../../../../../../../lib/internal/Magento/Framework/View/Layout/etc/page_configuration.xsd">
+     <update handle="editor"/>
+    <body>
+	   <referenceContainer name="content">
+            <block class="Qdos\Syncevent\Block\Adminhtml\Syncevent\Edit" name="syncevent_syncevent_edit"/>
+        </referenceContainer>
+		 <referenceContainer name="left">
+            <block class="Qdos\Syncevent\Block\Adminhtml\Syncevent\Edit\Tabs" name="syncevent_syncevent_edit_tabs">
+				<block class="Qdos\Syncevent\Block\Adminhtml\Syncevent\Edit\Tab\EventManager" name="syncevent_syncevent_edit_tab_eventmanager"/>
+				 <action method="addTab">
+                    <argument name="name" xsi:type="string">eventmanager_section</argument>
+                    <argument name="block" xsi:type="string">syncevent_syncevent_edit_tab_eventmanager</argument>
+                </action>
+				<!--CedAddTab-->
+			</block>
+        </referenceContainer>
+    </body>
+</page>

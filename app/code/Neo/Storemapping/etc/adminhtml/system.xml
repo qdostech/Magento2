@@ -1,0 +1,142 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © 2015 Magento. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../Config/etc/system_file.xsd">
+    <system>
+        <tab id="qdos_sync_cron" translate="label" sortOrder="150">
+    		<label>Order Syncing Cron (Disable online sync)</label>
+		</tab>
+		<section id="payment_order_mapping" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+		    <label>Order Syncing Cron (Disable online sync)</label>
+		    <tab>qdos_sync_cron</tab>
+		    <resource>Neo_Storemapping::system_config</resource>
+		    <group id="sync_order" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+		    	<label>Auto Sync Orders</label>
+		        <field id="enable" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+				    <label>Enable Order Sync Via Cron Job</label>
+				    <comment>(If this is enabled then online order synch to Qdos will get disabled).</comment>
+				    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+				</field>
+				<field id="frequency" translate="label" type="select" sortOrder="2" showInDefault="1">
+				    <label>Frequency</label>
+				    <source_model>Magento\Cron\Model\Config\Source\Frequency</source_model>
+				    <comment>Default: run every 3 hours.</comment>
+				</field>
+		   </group>
+		   <group id="order_status" translate="label" type="text" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1">
+		    	<label>Auto Sync Order Status</label>
+		    	<field id="enable" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+				    <label>Enable Order Sync Via Cron Job</label>
+				    <comment>(If this is enabled then online order synch to Qdos will get disabled).</comment>
+				    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+				</field>
+		        <field id="auto_update_stock" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+				    <label>Enable Auto Update Stock</label>
+				    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+				</field>
+		   </group>
+		   <group id="export_settings" translate="label" type="text" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1">
+		    	<label>Export Settings</label>
+		    	<field id="record_per_sync" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+				    <label>Records Per Sync</label>
+				</field>
+				<field id="sync_order_days_prior" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+				    <label>No of Days before to Sync Orders</label>
+				    <comment>(Set 0 to sync all the orders).</comment>
+				</field>
+			</group>
+		   <group id="autoUpdatePrice" translate="label" type="text" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="1">
+		    	<label>Auto Update Price</label>
+		        <field id="auto_update_price" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+				    <label>Enable Auto Update Price</label>
+				    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+				</field>
+		   </group>
+		   <group id="autoSyncAttribute" translate="label" type="text" sortOrder="4" showInDefault="1" showInWebsite="1" showInStore="1">
+		    	<label>Auto Sync Attribute</label>
+		        <field id="auto_sync_attribute" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+				    <label>Enable Auto Sync Attribute</label>
+				    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+				</field>
+				<field id="frequency" translate="label" type="select" sortOrder="2" showInDefault="1">
+				    <label>Frequency</label>
+				    <source_model>Magento\Cron\Model\Config\Source\Frequency</source_model>
+				</field>
+		   </group>
+		   <group id="autoSyncDeleteProduct" translate="label" type="text" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1">
+		    	<label>Auto Sync Delete Product</label>
+		        <field id="auto_delete_product" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+				    <label>Enable Auto Sync Delete Product</label>
+				    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+				</field>
+		   </group>
+		   <group id="autoSyncCategory" translate="label" type="text" sortOrder="6" showInDefault="1" showInWebsite="1" showInStore="1">
+		    	<label>Auto Sync Category</label>
+		        <field id="auto_sync_category" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+				    <label>Enable Auto Sync Category</label>
+				    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+				</field>
+		   </group>
+		   <group id="autoDeleteLogs" translate="label" type="text" sortOrder="7" showInDefault="1" showInWebsite="1" showInStore="1">
+		    	<label>Auto Delete Logs</label>
+		        <field id="auto_delete_logs" translate="label" type="select" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1">
+				    <label>Enable Delete Logs</label>
+				    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+				</field>
+				<field id="days_to_delete_logs" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+				    <label>No of Days before to Delete Logs</label>
+				</field>
+		   </group>
+		   <group id="autoDeleteOrderLogs" translate="label" type="text" sortOrder="8" showInDefault="1" showInWebsite="1" showInStore="1">
+		    	<label>Auto Delete Order Logs</label>
+		        <field id="auto_delete_order_logs" translate="label" type="select" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1">
+				    <label>Enable Delete Order Logs</label>
+				    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+				</field>
+				<field id="days_to_delete_order_logs" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+				    <label>No of Days before to Delete Order Logs</label>
+				</field>
+		   </group>
+		   <group id="autoReindexing" translate="label" type="text" sortOrder="9" showInDefault="1" showInWebsite="1" showInStore="1">
+		    	<label>Auto Reindexing</label>
+		        <field id="auto_reindexing" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+				    <label>Enable Auto Reindexing</label>
+				    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+				</field>
+				<field id="frequency" translate="label" type="select" sortOrder="2" showInDefault="1">
+				    <label>Frequency</label>
+				    <source_model>Magento\Cron\Model\Config\Source\Frequency</source_model>
+				</field>
+		   </group>
+		   <group id="autoSyncNewsletter" translate="label" type="text" sortOrder="9" showInDefault="1" showInWebsite="1" showInStore="1">
+		    	<label>Auto Sync Newsletter</label>
+		        <field id="auto_sync_newsletter" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+				    <label>Enable Auto Syncing Newsletter</label>				    
+				    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+				</field>
+				<field id="frequency" translate="label" type="select" sortOrder="2" showInDefault="1">
+				    <label>Frequency</label>
+				    <source_model>Magento\Cron\Model\Config\Source\Frequency</source_model>
+				</field>
+		   </group>
+		   <group id="autoSyncOrderDetails" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+		    	<label>Auto Sync Order Details</label>
+		        <field id="auto_sync_order_details" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+				    <label>Enable Auto Syncing Order Details</label>				    
+				    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+				</field>
+		   </group>
+		   <group id="permissions" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+		    	<label>Permissions</label>
+		        <field id="order_status" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+				    <label>Enable Manual Sync Order Status</label>				    
+				    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+				</field>
+		   </group>
+		</section>
+    </system>
+</config>

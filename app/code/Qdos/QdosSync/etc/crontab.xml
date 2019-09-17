@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<!-- 
+/**
+ * @author Pradeep Sanku
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Cron:etc/crontab.xsd">
+	<group id="default">
+		<job name="cron_category_sync" instance="Qdos\QdosSync\Cron\SyncCategory" method="execute">
+			<config_path>crontab/default/jobs/cron_category_sync/schedule/cron_expr</config_path>
+		</job>
+		<job name="cron_product_sync" instance="Qdos\QdosSync\Cron\SyncProduct" method="execute">
+			<config_path>crontab/default/jobs/cron_product_sync/schedule/cron_expr</config_path>
+		</job>
+		<job name="cron_update_stock_sync" instance="Qdos\QdosSync\Cron\UpdateStock" method="execute">
+			<config_path>crontab/default/jobs/cron_update_stock/schedule/cron_expr</config_path>
+		</job>
+		<job name="cron_update_price" instance="Qdos\QdosSync\Cron\UpdatePrice" method="execute">
+			<config_path>crontab/default/jobs/cron_update_price/schedule/cron_expr</config_path>
+		</job>
+		<job name="cron_attribute_sync" instance="Qdos\QdosSync\Cron\SyncAttribute" method="execute">
+			<config_path>crontab/default/jobs/cron_attribute_sync/schedule/cron_expr</config_path>
+		</job>
+		<job name="cron_delete_product_sync" instance="Qdos\QdosSync\Cron\SyncDeleteProduct" method="execute">
+			<config_path>crontab/default/jobs/cron_delete_product_sync/schedule/cron_expr</config_path>
+		</job>
+		<job name="cron_delete_logs" instance="Qdos\QdosSync\Cron\DeleteLogs" method="execute">
+			<config_path>crontab/default/jobs/cron_delete_logs/schedule/cron_expr</config_path>
+		</job>
+		<job name="cron_delete_order_logs" instance="Qdos\QdosSync\Cron\DeleteOrderLogs" method="execute">
+			<config_path>crontab/default/jobs/cron_delete_oder_logs/schedule/cron_expr</config_path>
+		</job>
+		<job name="cron_reindexing" instance="Qdos\QdosSync\Cron\Reindexing" method="execute">
+			<config_path>crontab/default/jobs/cron_reindexing/schedule/cron_expr</config_path>
+		</job>
+		<job name="cron_newsletter_sync" instance="Qdos\QdosSync\Cron\SyncNewsletter" method="execute">
+			<config_path>crontab/default/jobs/cron_newsletter_sync/schedule/cron_expr</config_path>
+		</job>
+		<job name="cron_order_details_sync" instance="Qdos\QdosSync\Cron\SyncOrderDetails" method="execute">
+			<config_path>crontab/default/jobs/cron_order_details_sync/schedule/cron_expr</config_path>
+		</job>
+	</group>
+</config>

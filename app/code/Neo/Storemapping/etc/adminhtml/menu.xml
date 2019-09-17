@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <!-- <add id="Neo_Storemapping::storemapping" resource="Neo_Storemapping::storemapping" module="Neo_Storemapping" title="Storemapping" sortOrder="20" parent="Qdos_QdosSync::hello"/>
+        <add id="Neo_Storemapping::manage_items" title="Manage Items" module="Neo_Storemapping" sortOrder="50" action="storemapping/storemapping/index" resource="Neo_Storemapping::storemapping" parent="Neo_Storemapping::storemapping"/> -->
+    </menu>
+</config>

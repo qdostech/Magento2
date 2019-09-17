@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="admin-2columns-left" xsi:noNamespaceSchemaLocation="../../../../../../../lib/internal/Magento/Framework/View/Layout/etc/page_configuration.xsd">
+     <update handle="editor"/>
+    <body>
+	   <referenceContainer name="content">
+            <block class="Neo\Mappaymentorder\Block\Adminhtml\Mappaymentorder\Edit" name="mappaymentorder_mappaymentorder_edit"/>
+        </referenceContainer>
+		 <referenceContainer name="left">
+            <block class="Neo\Mappaymentorder\Block\Adminhtml\Mappaymentorder\Edit\Tabs" name="mappaymentorder_mappaymentorder_edit_tabs">
+				<block class="Neo\Mappaymentorder\Block\Adminhtml\Mappaymentorder\Edit\Tab\Mappaymentorder" name="mappaymentorder_mappaymentorder_edit_tab_mappaymentorder"/>
+				 <action method="addTab">
+                    <argument name="name" xsi:type="string">mappaymentorder_section</argument>
+                    <argument name="block" xsi:type="string">mappaymentorder_mappaymentorder_edit_tab_mappaymentorder</argument>
+                </action>
+				<!--CedAddTab-->
+			</block>
+        </referenceContainer>
+    </body>
+</page>
