@@ -22,7 +22,7 @@ class SyncCategory
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
         $this->_resourceConfig = $objectManager->get('\Magento\Config\Model\ResourceModel\Config');
         $this->_scopeConfig = $objectManager->get('\Magento\Framework\App\Config\ScopeConfigInterface');
-        $syncCategoryStatus = $this->_scopeConfig->getValue('qdosConfig/permissions/manual_category_sync',\Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        $syncCategoryStatus = $this->_scopeConfig->getValue('qdosSync/autoSyncCategory/auto_sync_category',\Magento\Store\Model\ScopeInterface::SCOPE_STORE);
 
         if ($syncCategoryStatus) {
             $cronStatus = $this->_scopeConfig->getValue('qdosConfig/cron_status/current_cron_status',\Magento\Store\Model\ScopeInterface::SCOPE_STORE);
@@ -42,7 +42,21 @@ class SyncCategory
                 date_default_timezone_set('Asia/Kolkata');
                 $this->_resourceConfig->saveConfig('qdosConfig/cron_status/current_cron_updated_time', date("Y-m-d H:i:s"), 'default', 0);
 
-                $syncStatus = $this->_dataHelper->syncCategory();
+                $syncPermissions = $this->_dataHelper->getSyncPermission(0);
+                if (in_array('Category', $syncPermissions)) {
+                  //Mage::log('category sync executing for store id 0: ', null, 'storesync.log');
+                  $syncStatus = $this->_dataHelper->syncCategory();
+                }
+                $storeManager = $objectManager->create("\Magento\Store\Model\StoreManagerInterface");
+                $allStores = $storeManager->getStores(true, false);
+                foreach ($allStores as $storeId => $val)
+                {
+                    $syncPermissions = $this->_dataHelper->getSyncPermission($storeId);
+                    if (in_array('Category', $syncPermissions)) {
+                      //Mage::log('category sync executing for store id '.$storeId, null, 'storesync.log');
+                      $syncStatus = $this->_dataHelper->syncCategory('', $storeId);
+                    }                  
+                }
 
                 if ($syncStatus == 'success') {
                     $logMsg = 'Qdos Category Sync Successful';

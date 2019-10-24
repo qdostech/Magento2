@@ -48,6 +48,7 @@ class SyncDeleteProduct extends \Magento\Backend\App\Action
 
     public function execute()
     {
+        $storeId = (int)$this->getRequest()->getParam('store', 0);
         $resultRedirect = $this->resultRedirectFactory->create();
         //$logMsg = array();
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
@@ -75,7 +76,7 @@ class SyncDeleteProduct extends \Magento\Backend\App\Action
                 date_default_timezone_set('Asia/Kolkata');
                 $this->_resourceConfig->saveConfig('qdosConfig/cron_status/current_cron_updated_time', date("Y-m-d H:i:s"), 'default', 0);
 
-                $syncStatus = $this->_helperProduct->deleteProducts();
+                $syncStatus = $this->_helperProduct->deleteProducts($storeId);
 
                 if ($syncStatus == 'success') {
                     $logMsg = 'Qdos Delete Product Sync Successful';
@@ -83,6 +84,7 @@ class SyncDeleteProduct extends \Magento\Backend\App\Action
                     $this->messageManager->addSuccess($logMsg);
                 } else {
                     $logMsg = $syncStatus;
+                    $this->messageManager->addError($logMsg);
                     $this->_logger->info($logMsg);
                 }
 

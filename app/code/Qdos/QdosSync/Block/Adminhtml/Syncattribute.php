@@ -25,15 +25,32 @@ class Syncattribute extends \Magento\Backend\Block\Widget\Grid\Container
      */
     protected function _prepareLayout()
     {
+        $storeId = (int)$this->getRequest()->getParam('store', 0);
 
+        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+
+        $syncPermissions = array();
+        $arrSyncPerm = $objectManager->create('\Qdos\QdosSync\Model\Storemapping')
+                       ->getCollection()
+                       ->addFieldToSelect('sync_type')
+                       ->addFieldToFilter('store_id', $storeId)
+                       ->load()
+                       ->getData();
+                       
+        if (!empty($arrSyncPerm[0]['sync_type'])){
+            $syncPermissions = explode(',', $arrSyncPerm[0]['sync_type']);
+        }
         
-        $addButtonProps = [
-            'id' => 'sync_attributes',
-            'label' => __('Sync Attributes (Generate CSV)'),
-            'onclick' => "setLocation('" . $this->_getSyncAttributesUrl() . "')"
-        ];
-        $this->buttonList->add('sync_attributes', $addButtonProps);
-        
+        if (in_array('Attribute', $syncPermissions)) {
+            $addButtonProps = [
+                'id' => 'sync_attributes',
+                'class' => 'primary add',
+                'label' => __('Sync Attributes (Generate CSV)'),
+                'onclick' => "setLocation('" . $this->_getSyncAttributesUrl($storeId) . "')"
+            ];
+            $this->buttonList->add('sync_attributes', $addButtonProps);
+        }
+        $this->buttonList->remove('add');        
         return parent::_prepareLayout();
     }
 
@@ -43,10 +60,10 @@ class Syncattribute extends \Magento\Backend\Block\Widget\Grid\Container
      * @param string $type
      * @return string
      */
-    protected function _getSyncAttributesUrl()
+    protected function _getSyncAttributesUrl($storeId = 0)
     {
         return $this->getUrl(
-            'qdossync/syncattribute/syncattribute'
+            'qdossync/syncattribute/syncattribute/store/'.$storeId
         );
     }
 }

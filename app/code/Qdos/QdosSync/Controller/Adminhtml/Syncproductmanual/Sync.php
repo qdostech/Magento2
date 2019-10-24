@@ -56,6 +56,7 @@ class Sync extends \Magento\Backend\App\Action
 
     public function execute()
     {
+        $storeId = (int)$this->getRequest()->getParam('store', 0);
         $resultRedirect = $this->resultRedirectFactory->create();
         $manualSyncProduct = $this->_scopeConfig->getValue('qdosConfig/permissions/manual_sync_product');
         if ($manualSyncProduct) {
@@ -71,7 +72,7 @@ class Sync extends \Magento\Backend\App\Action
                 $systemConfig = $this->_writerInterface;
                 $systemConfig->save('qdosConfig/cron_status/current_cron_status', "running", 'default', 0);
 
-                $syncStatus = $this->_qdosHelper->getProductExport($productIds);
+                $syncStatus = $this->_qdosHelper->getProductExport($productIds, $storeId);
 
                 if ($syncStatus == 'success') {
                     $this->messageManager->addSuccess(__('Product(s) Sync Successful'));

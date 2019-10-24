@@ -45,6 +45,7 @@ class NewButton extends \Magento\Backend\App\Action
 
     public function execute()
     {
+        $storeId = (int)$this->getRequest()->getParam('store', 0);
         $resultRedirect = $this->resultRedirectFactory->create();
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
         $this->_resourceConfig = $objectManager->get('\Magento\Config\Model\ResourceModel\Config');
@@ -72,7 +73,7 @@ class NewButton extends \Magento\Backend\App\Action
                 $this->_resourceConfig->saveConfig('qdosConfig/cron_status/current_cron_updated_time', date("Y-m-d H:i:s"), 'default', 0);
 
                 $syncStatus = $objectManager->create('Qdos\QdosSync\Helper\Data')
-                    ->getProductExport('', 0, $_SERVER['REMOTE_ADDR']);
+                    ->getProductExport('', $storeId, $_SERVER['REMOTE_ADDR']);
 
                 if ($syncStatus == 'success') {
                     $logMsg = 'Qdos Products Sync Successful';

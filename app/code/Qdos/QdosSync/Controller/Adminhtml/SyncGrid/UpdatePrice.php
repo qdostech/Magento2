@@ -45,6 +45,7 @@ class UpdatePrice extends \Magento\Backend\App\Action
 
     public function execute()
     {
+        $storeId = (int)$this->getRequest()->getParam('store', 0);
         $resultRedirect = $this->resultRedirectFactory->create();
         //$logMsg = array();
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
@@ -72,7 +73,7 @@ class UpdatePrice extends \Magento\Backend\App\Action
                 date_default_timezone_set('Asia/Kolkata');
                 $this->_resourceConfig->saveConfig('qdosConfig/cron_status/current_cron_updated_time', date("Y-m-d H:i:s"), 'default', 0);
 
-                $syncStatus = $objectManager->create('Qdos\QdosSync\Helper\Data')->syncPrice();
+                $syncStatus = $objectManager->create('Qdos\QdosSync\Helper\Data')->syncPrice($storeId);
 
                 if ($syncStatus == 'success') {
                     $logMsg = 'Qdos Price Sync Successful';
@@ -80,6 +81,7 @@ class UpdatePrice extends \Magento\Backend\App\Action
                     $this->messageManager->addSuccess($logMsg);
                 } else {
                     $logMsg = $syncStatus;
+                    $this->messageManager->addError($logMsg);
                     $this->_logger->info($logMsg);
                 }
 

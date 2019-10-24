@@ -104,6 +104,32 @@ class ISC_SUPPLIERSTOCK
 		return $soapClient;
 	}
 
+
+	public function getConnect($storeId = 0)
+	{
+		$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+		$this->wsdl = $objectManager->get('Magento\Framework\App\Config\ScopeConfigInterface')->getValue('qdosConfig/webServices/url_path',  \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $storeId);
+        $this->domain = $objectManager->get('Magento\Framework\App\Config\ScopeConfigInterface')->getValue('qdosConfig/webServices/domain', \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $storeId);
+        $this->_username = $objectManager->get('Magento\Framework\App\Config\ScopeConfigInterface')->getValue('qdosConfig/soap_login_information/soap_username', \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $storeId);
+        $this->_password = $objectManager->get('Magento\Framework\App\Config\ScopeConfigInterface')->getValue('qdosConfig/soap_login_information/soap_password', \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $storeId);
+		try { 
+			$soapClient = new \Zend\Soap\Client($this->wsdl);
+			$soapClient->setSoapVersion(SOAP_1_2);
+			$soapClient->setHttpLogin($this->_username);
+			$soapClient->setHttpPassword($this->_password);
+			$auth = '<CredentialSoapHeader xmlns="'.$this->domain.'"><Login>' . $this->_username . '</Login><Password>' . $this->_password . '</Password></CredentialSoapHeader>';
+			$var = new SoapVar($auth, XSD_ANYXML);
+			$opts = ['http' => ['header' => "Authorization: Bearer ". $auth]];
+			$context = stream_context_create($opts);
+			$header = new SoapHeader($this->domain, 'authHeaderRequest', $var);
+			$soapClient->addSoapInputHeader($header);
+		} catch (SoapFault $e) {
+			$error['error']= 'SOAP fault: '.$e->getMessage();
+			return $error ;
+		}
+		return $soapClient;
+	}
+
     /* Print the log 
     */
     public function setLog($message,$var,$fileName){

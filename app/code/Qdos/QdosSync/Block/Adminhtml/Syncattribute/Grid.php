@@ -106,17 +106,20 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
     protected function _prepareCollection()
     {
 		try{
-			
             $inArr = array();
-              foreach ($this->getOptions() as $k=>$option){
-                  $inArr[] = $k;
-              }
+            foreach ($this->getOptions() as $k=>$option){
+                $inArr[] = $k;
+            }
+            $store = $this->_getStore();
 			$collection = $this->_collectionFactory
                           ->addFieldToFilter('from_batch',array('eq'=>0))
                           ->addFieldToFilter('activity_type',array('in'=>$inArr));
               
-              $this->setCollection($collection);
-              return parent::_prepareCollection();
+            if (!$this->_storeManager->isSingleStoreMode() && $store->getId()){
+                $collection->addFieldToFilter('store_id', $store->getId());
+            }
+            $this->setCollection($collection);
+            return parent::_prepareCollection();
 		}
 		catch(Exception $e)
 		{
@@ -124,26 +127,6 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 		}
     }
 
-    /**
-     * @param \Magento\Backend\Block\Widget\Grid\Column $column
-     * @return $this
-     */
-    protected function _addColumnFilterToCollection($column)
-    {
-        if ($this->getCollection()) {
-            if ($column->getId() == 'websites') {
-                $this->getCollection()->joinField(
-                    'websites',
-                    'catalog_product_website',
-                    'website_id',
-                    'product_id=entity_id',
-                    null,
-                    'left'
-                );
-            }
-        }
-        return parent::_addColumnFilterToCollection($column);
-    }
 
     /**
      * @return $this
@@ -196,6 +179,22 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
                 'type' => 'datetime'
             ]
         );
+
+        if (!$this->_storeManager->isSingleStoreMode()) {
+            $this->addColumn(
+                'store_id',
+                [
+                    'header' => __('Websites'),
+                    'sortable' => false,
+                    'index' => 'store_id',
+                    'type' => 'options',
+                    'options' => $this->_websiteFactory->create()->getCollection()->toOptionHash(),
+                    'header_css_class' => 'col-websites',
+                    'column_css_class' => 'col-websites'
+                ]
+            );
+        }
+
         $this->addColumn('status', array(
             'header' => __('Status'),
             'align' => 'center',

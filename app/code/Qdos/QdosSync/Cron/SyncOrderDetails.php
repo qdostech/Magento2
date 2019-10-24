@@ -54,6 +54,7 @@ class SyncOrderDetails extends Action
 
         try {
             $orderArr = array();
+            $result = array();
             $orderIds = $this->ordersyncstatusFactory->create()->getCollection()
                 ->addFieldToSelect('order_id')
                 ->addFieldToFilter('sync_status', 'no')

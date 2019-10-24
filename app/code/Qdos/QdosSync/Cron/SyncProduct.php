@@ -33,7 +33,7 @@ class SyncProduct
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
         $this->_resourceConfig = $objectManager->get('\Magento\Config\Model\ResourceModel\Config');
         $this->_scopeConfig = $objectManager->get('\Magento\Framework\App\Config\ScopeConfigInterface');
-        $syncProductStatus = $this->_scopeConfig->getValue('qdosConfig/permissions/manual_sync_product', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        $syncProductStatus = $this->_scopeConfig->getValue('qdosSync/autoSyncProduct/auto_sync_product', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
         $logger->info('syncProductStatus');
         if ($syncProductStatus) {
             $cronStatus = $this->_scopeConfig->getValue('qdosConfig/cron_status/current_cron_status', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
@@ -54,7 +54,22 @@ class SyncProduct
                 $this->_resourceConfig->saveConfig('qdosConfig/cron_status/current_cron_updated_time', date("Y-m-d H:i:s"), 'default', 0);
 
                 $logger->info('before getExport');
-                $syncStatus = $this->_dataHelper->getProductExport();
+
+                $syncPermissions = $this->_dataHelper->getSyncPermission(0);
+                if (in_array('Product', $syncPermissions)) {
+                  //Mage::log('category sync executing for store id 0: ', null, 'storesync.log');
+                    $syncStatus = $this->_dataHelper->getProductExport();
+                }
+                $storeManager = $objectManager->create("\Magento\Store\Model\StoreManagerInterface");
+                $allStores = $storeManager->getStores(true, false);
+                foreach ($allStores as $storeId => $val)
+                {
+                    $syncPermissions = $this->_dataHelper->getSyncPermission($storeId);
+                    if (in_array('Product', $syncPermissions)) {
+                      //Mage::log('category sync executing for store id '.$storeId, null, 'storesync.log');
+                        $syncStatus = $this->_dataHelper->getProductExport('', $storeId);
+                    }                  
+                }
 
                 $logger->info('after getExport' . $syncStatus);
 

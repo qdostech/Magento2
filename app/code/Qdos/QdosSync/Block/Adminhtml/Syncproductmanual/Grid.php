@@ -111,7 +111,6 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
             $collection = $this->_productCollectionFactory->create()
                 ->addAttributeToSelect('sku')
                 ->addAttributeToSelect('name')
-                ->addAttributeToSelect('qdos_pid')
                 ->addAttributeToSelect('type_id')
                 ->addAttributeToSelect('last_sync')
                 ->addAttributeToSelect('sync_status')
@@ -139,7 +138,12 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
                 );
             }
 
+            /*if (!$this->_storeManager->isSingleStoreMode() && $store->getId()){
+                $collection->addFieldToFilter('store_id', $store->getId());
+            }*/
+
             $this->setCollection($collection);
+            $this->getCollection()->addWebsiteNamesToResult();
             //echo "<pre>";print_r($collection->getData());exit;
 
             parent::_prepareCollection();
@@ -212,16 +216,19 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
             'width' => '50px'
         ));
 
-        if ($this->_storeManager->isSingleStoreMode()) {
-            $this->addColumn('websites',
-                array(
+        if (!$this->_storeManager->isSingleStoreMode()) {
+            $this->addColumn(
+                'websites',
+                [
                     'header' => __('Websites'),
-                    'width' => '100px',
                     'sortable' => false,
                     'index' => 'websites',
                     'type' => 'options',
-                    'options' => $this->_websiteFactory->getCollection()->toOptionHash(),
-                ));
+                    'options' => $this->_websiteFactory->create()->getCollection()->toOptionHash(),
+                    'header_css_class' => 'col-websites',
+                    'column_css_class' => 'col-websites'
+                ]
+            );
         }
 
         $this->addColumn('last_sync', array(
@@ -264,9 +271,22 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
         ));
 
         $store = $this->_getStore();
-
+        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
         $syncPermissions = $this->_scopeConfig->getValue('qdosConfig/permissions/manual_sync_product');
-        if ($syncPermissions) {
+
+        $syncPermissions2 = array();
+        $arrSyncPerm = $objectManager->create('\Qdos\QdosSync\Model\Storemapping')
+                       ->getCollection()
+                       ->addFieldToSelect('sync_type')
+                       ->addFieldToFilter('store_id', $store->getId())
+                       ->load()
+                       ->getData();
+                       
+        if (!empty($arrSyncPerm[0]['sync_type'])){
+            $syncPermissions2 = explode(',', $arrSyncPerm[0]['sync_type']);
+        }
+
+        if ($syncPermissions && in_array('Manual Sync Product', $syncPermissions2)) {
             $this->addColumn('action',
                 array(
                     'header' => __('Action'),

@@ -110,7 +110,7 @@ class Product extends \Qdos\QdosSync\Helper\Data
     }
 
     //GetQdosDeleteProducts
-    public function deleteProducts()
+    public function deleteProducts($storeId = 0)
     {
         $status = \Neo\Winery\Model\Activity::LOG_SUCCESS;
         try {
@@ -129,6 +129,7 @@ class Product extends \Qdos\QdosSync\Helper\Data
             $logModel = $this->_log;
             $logModel->setActivityType('delete_product')
                 ->setStartTime($start_time)
+                ->setStoreId($storeId)
                 ->setStatus(\Neo\Winery\Model\Activity::LOG_PENDING)
                 ->setIpAddress($ipAddress)
                 ->save();
@@ -136,7 +137,7 @@ class Product extends \Qdos\QdosSync\Helper\Data
             $logFileName = "deleteProducts-" . date('Ymd') . ".log";
             $client->setLog("Delete product ", null, $logFileName);
             $allCategories = array();
-            $resultClient = $client->connect();
+            $resultClient = $client->getConnect($storeId);
             $store_url = $objectManager->get('Magento\Framework\App\Config\ScopeConfigInterface')->getValue('qdosConfig/store/store_url_path', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
             $resultClient = $resultClient->GetQdosDeleteProducts(array('STORE_URL' => $store_url));
 

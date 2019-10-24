@@ -43,7 +43,21 @@ class UpdatePrice
                 date_default_timezone_set('Asia/Kolkata');
                 $this->_resourceConfig->saveConfig('qdosConfig/cron_status/current_cron_updated_time', date("Y-m-d H:i:s"), 'default', 0);
 
-                $syncStatus = $objectManager->create('Qdos\QdosSync\Helper\Data')->syncPrice();
+                $syncPermissions = $objectManager->create('Qdos\QdosSync\Helper\Data')->getSyncPermission(0);
+                if (in_array('Price', $syncPermissions)) {
+                    //Mage::log('category sync executing for store id 0: ', null, 'storesync.log');
+                    $syncStatus = $objectManager->create('Qdos\QdosSync\Helper\Data')->syncPrice();
+                }
+                $storeManager = $objectManager->create("\Magento\Store\Model\StoreManagerInterface");
+                $allStores = $storeManager->getStores(true, false);
+                foreach ($allStores as $storeId => $val)
+                {
+                    $syncPermissions = $objectManager->create('Qdos\QdosSync\Helper\Data')->getSyncPermission($storeId);
+                    if (in_array('Price', $syncPermissions)) {
+                        //Mage::log('category sync executing for store id '.$storeId, null, 'storesync.log');
+                        $syncStatus = $objectManager->create('Qdos\QdosSync\Helper\Data')->syncPrice($storeId);
+                    }                  
+                }
 
                 if ($syncStatus == 'success') {
                     $logMsg = 'Qdos Price Sync Successful';

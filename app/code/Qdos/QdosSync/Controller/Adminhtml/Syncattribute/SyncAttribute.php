@@ -49,6 +49,7 @@ class SyncAttribute extends \Magento\Backend\App\Action
 
     public function execute()
     {
+        $storeId = (int)$this->getRequest()->getParam('store', 0);
         $resultRedirect = $this->resultRedirectFactory->create();
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
         $this->_resourceConfig = $objectManager->get('\Magento\Config\Model\ResourceModel\Config');
@@ -75,7 +76,7 @@ class SyncAttribute extends \Magento\Backend\App\Action
                 date_default_timezone_set('Asia/Kolkata');
                 $this->_resourceConfig->saveConfig('qdosConfig/cron_status/current_cron_updated_time', date("Y-m-d H:i:s"), 'default', 0);
 
-                $result = $objectManager->create('Qdos\QdosSync\Helper\Data')->syncAttribute($_SERVER['REMOTE_ADDR']);
+                $result = $objectManager->create('Qdos\QdosSync\Helper\Data')->syncAttribute($_SERVER['REMOTE_ADDR'], $storeId);
 
                 if ($result) {
                     $logMsg = 'Attributes in store were synchronized success.';

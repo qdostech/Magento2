@@ -200,7 +200,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         return false;
     }
 
-    public function syncAttribute($ipAddress = '')
+    public function syncAttribute($ipAddress = '', $storeId = 0)
     {
         // $this->_logger->info(__METHOD__);
         $base = $this->directory_list->getPath('lib_internal');
@@ -211,7 +211,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $logFileName = "import-" . date('Ymd') . ".log";
         $client->setLog("Sync Attribute ", null, $logFileName);
         $allCategories = array();
-        $resultClient = $client->connect();
+        $resultClient = $client->getConnect($storeId);
         $store_url = $objectManager->get('Magento\Framework\App\Config\ScopeConfigInterface')->getValue('qdosConfig/store/store_url_path', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
 
         $unset = $objectManager->get('Magento\Framework\App\Config\ScopeConfigInterface')->getValue('qdosConfig/import_product_settings/not_sync_attribute_properties', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
@@ -233,6 +233,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $this->_log->setStartTime($start_time)
             ->setEndTime(date('Y-m-d H:i:s'))
             ->setStatus(\Neo\Winery\Model\Activity::LOG_PENDING)
+            ->setStoreId($storeId)
             ->setIpAddress($ipAddress)
             ->setActivityType('attribute')
             ->save();
@@ -482,7 +483,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @return    void
      **/
     //function to sync the simple products
-    private function ProductsSync($filePath, $syncPermissions, $count = 1, $product_id = null, $ipAddress = '')
+    private function ProductsSync($filePath, $syncPermissions, $count = 1, $product_id = null, $ipAddress = '', $storeId = 0)
     {
         ini_set('default_socket_timeout', 900); // or whatever new value you want
         $logFileName = "syncProduct-" . date('Ymd') . ".log";
@@ -509,6 +510,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             ->setEndTime(date('Y-m-d H:i:s'))
             ->setStatus(\Qdos\QdosSync\Model\Activity::LOG_PENDING)
             ->setIpAddress($ipAddress)
+            ->setStoreId($storeId)
             ->setActivityType('product')
             ->save();
 
@@ -649,7 +651,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         return $result;
     }
 
-    public function syncCategory($ipAddress = '')
+    public function syncCategory($ipAddress = '', $storeId = 0)
     {
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
         $base = $this->directory_list->getPath('lib_internal');
@@ -661,7 +663,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         try {
             $client->setLog("Sync Category Started ", null, $logFileName);
             $allCategories = array();
-            $resultClient = $client->connect();
+            $resultClient = $client->getConnect($storeId);
             $storeMapping = $objectManager->create('Qdos\QdosSync\Model\ResourceModel\Storemapping\Collection')->load()->getData();
             foreach ($storeMapping as $value) {
                 if ($value['store_id'] != 0) {
@@ -678,6 +680,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 ->setEndTime(date('Y-m-d H:i:s'))
                 ->setStatus(\Qdos\QdosSync\Model\Activity::LOG_PENDING)
                 ->setIpAddress($ipAddress)
+                ->setStoreId($storeId)
                 ->setActivityType('category')
                 ->save();
 
@@ -1009,7 +1012,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         require_once($lib_file);
         $client = Test();
         try {
-            $resultClient = $client->connect();
+            $resultClient = $client->getConnect($storeId);
             $product_id = 0; // 0 to get all products
             $product_type = ''; // 'All' to get all types of products
             $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
@@ -1619,8 +1622,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                  */
                 //$cache_response_msg = Mage::helper('sync')->CacheRefresh();
                 //$logMsgs = array_merge($logMsgs, $cache_response_msg);
-                $returnMsgs = $this->ProductsSync($productcsv, $syncPermissions, count($objCollection), $productIds, $ipAddress);
-                $returnMsgs = $this->ProductsSync($productcsvother, $syncPermissions, count($objCollection), $productIds, $ipAddress);
+                $returnMsgs = $this->ProductsSync($productcsv, $syncPermissions, count($objCollection), $productIds, $ipAddress, $storeId);
+                $returnMsgs = $this->ProductsSync($productcsvother, $syncPermissions, count($objCollection), $productIds, $ipAddress, $storeId);
                 $logMsgs[] = $returnMsgs;
 
                 $message = 'success';
@@ -1651,7 +1654,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         require_once($lib_file);
         $client = Test();
 
-        $resultClient = $client->connect();
+        $resultClient = $client->getConnect($storeId);
 
         $logFileName = "qdos-sync-stock-" . date('Ymd') . ".log";
         $logModel = $this->_log;
@@ -1666,6 +1669,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             ->setStartTime($start_time)
             ->setStatus(\Neo\Winery\Model\Activity::LOG_PENDING)
             ->setIpAddress($ipAddress)
+            ->setStoreId($storeId)
             ->save();
         $logMsgs[] = "Stock Update Initiated.";
 
@@ -1880,7 +1884,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         require_once($lib_file);
         $client = Test();
 
-        $resultClient = $client->connect();
+        $resultClient = $client->getConnect($storeId);
 
         $logFileName = "qdos-sync-price-" . date('Ymd') . ".log";
         $logModel = $this->_log;
@@ -1895,6 +1899,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             ->setStartTime($start_time)
             ->setStatus(\Neo\Winery\Model\Activity::LOG_PENDING)
             ->setIpAddress($ipAddress)
+            ->setStoreId($storeId)
             ->save();
 
         $logMsgs[] = "Price Update Initiated for store Id : " . $storeId;
@@ -2076,7 +2081,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                     $client->setLog("Exception While updating." . "<br />" . $e->getMessage(), null, $logFileName);
                 }
             } else {
-                $status = $logModel::LOG_SUCCESS;
+                $status = \Neo\Winery\Model\Activity::LOG_SUCCESS;
                 $message = $logMsgs[] = "No Records Found In Database.";
                 $client->setLog($message, null, $logFileName);
             }
@@ -2146,4 +2151,19 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $client->setLog($e->getMessage(), null, "Price_update.log", true);
         }
     }
+
+
+    public function getSyncPermission($storeId)
+    {
+        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+        $arrSyncPerm = $objectManager->create('\Qdos\QdosSync\Model\Storemapping')
+                       ->getCollection()
+                       ->addFieldToSelect('sync_type')
+                       ->addFieldToFilter('store_id', $storeId)
+                       ->load()
+                       ->getData();
+
+        $syncPermissions = explode(',', $arrSyncPerm[0]['sync_type']);
+        return $syncPermissions;
+    } 
 }

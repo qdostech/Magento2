@@ -25,7 +25,7 @@ $writer = new \Zend\Log\Writer\Stream(BP . '/var/log/testingCronSwapnil.log');
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
         $this->_resourceConfig = $objectManager->get('\Magento\Config\Model\ResourceModel\Config');
         $this->_scopeConfig = $objectManager->get('\Magento\Framework\App\Config\ScopeConfigInterface');
-        $syncAttributeStatus = $this->_scopeConfig->getValue('qdosConfig/permissions/manual_sync_attribute',\Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        $syncAttributeStatus = $this->_scopeConfig->getValue('qdosSync/autoSyncAttribute/auto_sync_attribute',\Magento\Store\Model\ScopeInterface::SCOPE_STORE);
 
         if ($syncAttributeStatus) {
             $cronStatus = $this->_scopeConfig->getValue('qdosConfig/cron_status/current_cron_status',\Magento\Store\Model\ScopeInterface::SCOPE_STORE);
@@ -45,7 +45,23 @@ $logger->info('in else swapnil : '.$cronStatus);
                 date_default_timezone_set('Asia/Kolkata');
                 $this->_resourceConfig->saveConfig('qdosConfig/cron_status/current_cron_updated_time', date("Y-m-d H:i:s"), 'default', 0);
 $logger->info('before syncStatus swapnil : ');
-                $syncStatus = $this->_dataHelper->syncAttribute();
+
+                $syncPermissions = $this->_dataHelper->getSyncPermission(0);
+                if (in_array('Attribute', $syncPermissions)) {
+                  //Mage::log('category sync executing for store id 0: ', null, 'storesync.log');
+                  $syncStatus = $this->_dataHelper->syncAttribute();
+                }
+                $storeManager = $objectManager->create("\Magento\Store\Model\StoreManagerInterface");
+                $allStores = $storeManager->getStores(true, false);
+                foreach ($allStores as $storeId => $val)
+                {
+                    $syncPermissions = $this->_dataHelper->getSyncPermission($storeId);
+                    if (in_array('Attribute', $syncPermissions)) {
+                        //Mage::log('category sync executing for store id '.$storeId, null, 'storesync.log');
+                        $syncStatus = $this->_dataHelper->syncAttribute('', $storeId);
+                    }                  
+                }
+                
 
                 if ($syncStatus == 'success') {
                     $logMsg = 'Qdos Attribute Sync Successful';

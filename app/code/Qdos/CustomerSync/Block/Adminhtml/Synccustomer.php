@@ -30,12 +30,13 @@ class Synccustomer extends \Magento\Backend\Block\Widget\Grid\Container
         ];
         $addButtonPropsNew = [
             'id' => 'sync_customergroup',
+            'class' => 'primary add',
             'label' => __('Sync Customers Group'),
             'onclick' => "setLocation('" . $this->_getSyncCustomerGroupUrl() . "')"
         ];
         $this->buttonList->add('sync_cutomer', $addButtonProps);
         $this->buttonList->add('sync_cutomergroup', $addButtonPropsNew);
-        
+        $this->buttonList->remove('add');
         return parent::_prepareLayout();
     }
 
