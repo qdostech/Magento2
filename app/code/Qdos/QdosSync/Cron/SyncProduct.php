@@ -87,7 +87,7 @@ class SyncProduct
                 system('chmod -R 777 var/');
             }
         } else {
-            $logMsg = 'Manual Sync is Disabled.';
+            $logMsg = 'Auto Sync is Disabled.';
             $this->_logger->info($logMsg);
         }
         //return $this;

@@ -456,6 +456,9 @@
 			<!--</group>-->
 
 			<group id="autoDeleteLogs" translate="label" type="text" sortOrder="7" showInDefault="1" showInWebsite="1" showInStore="1">
+				<field id="days_to_delete_logs" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+				    <label>No of Days before to Delete Logs</label>
+				</field>
 				<label>Auto Delete Logs</label>
 				<field id="auto_delete_logs" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
 					<label>Enable Delete Logs</label>
@@ -535,6 +538,9 @@
 		   <!--</group>-->
 
 			<group id="autoDeleteOrderLogs" translate="label" type="text" sortOrder="8" showInDefault="1" showInWebsite="1" showInStore="1">
+				<field id="days_to_delete_order_logs" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+				    <label>No of Days before to Delete Order Logs</label>
+				</field>
 				<label>Auto Delete Order Logs</label>
 				<field id="auto_delete_order_logs" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
 					<label>Enable Delete Order Logs</label>
