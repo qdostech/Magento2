@@ -2152,18 +2152,245 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         }
     }
 
+    public function exportNewsletter($subscriberData = null, $store_id = 0)
+    {
+        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+        $logModel = $this->_log;
+        $logMsg = array();
+        $message = 'success';
+        $writer = new \Zend\Log\Writer\Stream(BP . '/var/log/newsletter-sync.log');
+        $logger = new \Zend\Log\Logger();
+        $logger->addWriter($writer);
+        $logger->info("exportNewsletter start");
+
+        $start_time = date('Y-m-d H:i:s');
+        if (isset($_SERVER['REMOTE_ADDR']) && !empty($_SERVER['REMOTE_ADDR'])) {
+            $ipAddress = $_SERVER['REMOTE_ADDR'];
+        } else {
+            $ipAddress = '';
+        }
+        $logModel->setActivityType('newsletter')
+            ->setStartTime($start_time)
+            ->setStatus(\Neo\Winery\Model\Activity::LOG_PENDING)
+            ->setIpAddress($ipAddress)
+            ->setStoreId($store_id)
+            ->save();
+
+        try {
+            if (!empty($subscriberData) || $subscriberData != null) {
+                $subscribeStatusFlag = true;
+                $logger->info('subscriberId-Data' . $subscriberData['subscriber_id'], null, 'newsletter-sync.log', true);
+                $subscribers = $objectManager->create('Magento\Newsletter\Model\ResourceModel\Subscriber\Collection')
+                        ->addFieldToFilter('subscriber_id', $subscriberData['subscriber_id']);
+            } else {
+                $subscribeStatusFlag = false;
+                //$logger->info('subscriberElse', null, 'newsletter-sync.log', true);
+                $subscribers = $objectManager->create('Magento\Newsletter\Model\ResourceModel\Subscriber\Collection');
+            }
+            $countSync = 0;
+            foreach ($subscribers->getData() as $subscriber) {
+                // check for sync subscribers record.
+                if ($subscriber->getSyncflag() == Null || $subscribeStatusFlag) {
+                    $customerExist = $objectManager->create("\Magento\Customer\Model\Customer")
+                        ->getCollection()
+                        ->addAttributeToSelect('*')
+                        ->addAttributeToFilter('email', $subscriber->getEmail())
+                        ->getFirstItem();
+
+                    if (!empty($customerExist->getData())) {
+                        $customerRegister = $this->exportCustomer($customerExist);
+                        if ($customerRegister == false) {
+                            $status = \Neo\Winery\Model\Activity::LOG_SUCCESS;
+                        } else {
+                            //$status = $logModel::LOG_ERROR;
+                            $message = $customerRegister;
+                        }
+
+                    } else {
+                        $logger->info('subscriber:' . $subscriber->getCustomerId(), null, 'newsletter-sync.log', true);
+                        if ($subscriber->getCustomerId() == 0) {
+                            $guestCustomer = $this->exportCustomerNonRegisteredFromSubscriber($subscriber);
+                            if ($guestCustomer == false) {
+                                $status = \Neo\Winery\Model\Activity::LOG_SUCCESS;
+                            } else {
+                                //$status = $logModel::LOG_ERROR;
+                                $message = $guestCustomer;
+                            }
+                        }
+                    }
+                    $subscriber->setSyncflag(1);
+                    $subscriber->save();
+                    ++$countSync;
+                }
+                $logger->info('Total Subscribers Sync: ' . $countSync, null, 'newsletter-sync.log', true);
+            }
+
+        } catch (Exception $ex) {
+            //$status = $logModel::LOG_ERROR;
+            $logger->info('exportNewsletter failed.' . $ex->getMessage(), null, 'newsletter-sync.log', true);
+            $message = $logMsg[] = 'exportNewsletter failed.' . $ex->getMessage();
+        }
+
+        $logModel->setDescription(implode('<br />', $logMsg))
+            ->setEndTime(date('Y-m-d H:i:s'))
+            ->setStatus($status)
+            ->save();
+        return $message;
+
+    }
+
+    public function exportCustomer($customer, $orderId = -1, $incrementId = 0, &$logMsg = array())
+    {
+        try {
+            $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+            $storeId = $objectManager->get('Magento\Store\Model\StoreManagerInterface')->getStore()->getId();
+            $base = $this->directory_list->getPath('lib_internal');
+            $lib_file = $base . '/Test.php';
+            require_once($lib_file);
+            $client = Test();
+
+            $resultClient = $client->getConnect($storeId);
+            $store_url = $objectManager->get('Magento\Framework\App\Config\ScopeConfigInterface')->getValue('qdosConfig/store/store_url_path', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+
+            $client->setLog("StoreId:" . $storeId . '|store_url:' . $store_url, null, 'newsletter-sync.log', true);
+
+            $data = $this->setDataCustomer($customer, $orderId, $incrementId);
+            // $data['ADDITIONAL_PARAMETERS'] = 'shoesize:'.$customer->getShoesize().'|birthday:'.$customer->getBirthday().'|mobilephone:'.$customer->getMobilephone().'|intrested:'.$customer->getIntrested().'|hearaboutus:'.$customer->getHearaboutus().'|firstname:'.$customer->getFirstname().'|lastname:'.$customer->getLastname();
+
+            $client->setLog("CUSTOMER SENDING", null, 'newsletter-sync.log', true);
+            $client->setLog($data, null, 'newsletter-sync.log', true);
+
+            $result = $resultClient->CreateCustomerCSV(array('store_url' => $store_url, 'orderID' => $orderId, 'customer' => $data));
+            $result = $this->convertObjToArray($result);
+            if ($result['outerrormsg'] == '') {
+                $error = false;
+                $client->setLog('Send Customer Success: ' . $customer->getId(), null, 'newsletter-sync.log', true);
+                $logMsg[] = 'Send Customer Success: ' . $customer->getId();
+            } else {
+                //$error = true;
+                $client->setLog('Customer: ' . $result['outerrormsg'], null, 'newsletter-sync.log', true);
+                $error = $logMsg[] = 'Error send Customer: ' . $result['outerrormsg'];
+            }
+            return $error;
+        } catch (Exception $e) {
+            $client->setLog('Send Customer in Order Failed: ' . $e->getMessage(), null, 'newsletter-sync.log', true);
+            $error = $logMsg[] = 'Send Customer in Order Failed: ' . $e->getMessage();
+            return false;
+        }
+        return $error;
+    }
+
+    public function exportCustomerNonRegisteredFromSubscriber($subscriber)
+    {
+        try {
+            //$data = Mage::helper('sync/customer')->getAllCustomerAttribute();
+            $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+            $data = $objectManager->get('Magento\Customer\Model\Customer')->getAttributes();
+            $storeId = $subscriber->getStoreId();
+
+            $base = $this->directory_list->getPath('lib_internal');
+            $lib_file = $base . '/Test.php';
+            require_once($lib_file);
+            $client = Test();
+
+            $resultClient = $client->getConnect($storeId);
+
+            $store = $objectManager->get("\Magento\Store\Model\StoreManagerInterface")->getStore($storeId);
+            $websiteId = $store->getWebsiteId();
+            $store_url = $objectManager->get('Magento\Framework\App\Config\ScopeConfigInterface')->getValue('qdosConfig/store/store_url_path', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+            $store_name = $objectManager->get("\Magento\Store\Model\StoreManagerInterface")->getStore()->getName();
+            $orderId = -1;
+
+            $client->setLog('QDOS subscriber data', null, 'newsletter-sync.log');
+            $client->setLog($subscriber->getData(), null, 'newsletter-sync.log');
+
+            $data['WEBSITE'] = $websiteId;
+            $data['EMAIL'] = $subscriber->getSubscriberEmail();
+            $data['GROUP_ID'] = '0';
+            $data['DISABLE_AUTO_GROUP_CHANGE'] = 0;
+            $data['FIRSTNAME'] = $subscriber->getFirstname() ? $subscriber->getFirstname() : '';
+            $data['LASTNAME'] = $subscriber->getLastname() ? $subscriber->getLastname() : '';
+            $data['PASSWORD_HASH'] = md5('qdos');
+            $data['CREATED_IN'] = $store_name;
+            $data['IS_SUBSCRIBED'] = $subscriber->getSubscriberStatus() ? '1' : 0;
+            $data['GROUP'] = '';
+            $data['CUSTOMER_GROUP_ID'] = 0;
+            $data['CUSTOMER_ID'] = 1;
+            $data['ORDER_ID'] = $orderId;
+            $data['STYLIST_ID'] = 0;
+            $data['ADDITIONAL_PARAMETERS'] = '';
+            $data['ADDITIONAL_PARAMETERS'] = 'shoesize:' . $subscriber->getShoesize() . '|birthday:' . $subscriber->getBirthday() . '|mobilephone:' . $subscriber->getMobilephone() . '|interested:' . $subscriber->getIntrested() . '|hearaboutus:' . $subscriber->getHearaboutus() . '|firstname:' . $subscriber->getFirstname() . '|lastname:' . $subscriber->getLastname();
+
+            //billing Address
+            $prefix = array('BILLING', 'SHIPPING');
+            $data['BILL_ADDR_FLAG'] = 0;
+            $data['SHIP_ADDR_FLAG'] = 0;
+            //Added by Shailendra Gupta on 15 sept 2014 for handling new parameters in the webservice
+
+            //End by Shailendra Gupta            
+            foreach ($prefix as $pre) {
+                $data[$pre . '_PREFIX'] = '';
+                $data[$pre . '_SUFFIX'] = '';
+                $data[$pre . '_FIRSTNAME'] = '';
+                $data[$pre . '_MIDDLENAME'] = '';
+                $data[$pre . '_LASTNAME'] = '';
+                $data[$pre . '_STREET_FULL'] = '';
+                $data[$pre . '_STREET1'] = '';
+                $data[$pre . '_STREET2'] = '';
+                $data[$pre . '_STREET3'] = '';
+                $data[$pre . '_STREET4'] = '';
+                $data[$pre . '_STREET5'] = '';
+                $data[$pre . '_STREET6'] = '';
+                $data[$pre . '_STREET7'] = '';
+                $data[$pre . '_STREET8'] = '';
+                $data[$pre . '_CITY'] = '';
+                $data[$pre . '_REGION'] = '';
+                $data[$pre . '_COUNTRY'] = '';
+                $data[$pre . '_POSTCODE'] = '';
+                if ($pre == 'BILLING') {
+                    $data[$pre . '_TELEPHONE'] = $subscriber->getMobilephone() ? $subscriber->getMobilephone() : '';
+                } else {
+                    $data[$pre . '_TELEPHONE'] = '';
+                }
+                $data[$pre . '_COMPANY'] = '';
+                $data[$pre . '_FAX'] = '';
+            }
+            $result = $resultClient->CreateCustomerCSV(array('store_url' => $store_url, 'orderID' => $orderId, 'customer' => $data));
+            if ($result->outErrorMsg && strlen($result->outErrorMsg) > 0) {
+                $client->setLog('Customer: ' . $result->outErrorMsg, null, 'newsletter-sync.log', true);
+                $error = 'Customer: ' . $result->outErrorMsg;
+            } else {
+                try {
+                    if ($result->CreateCustomerResult) {
+                        $client->setLog('Send Customer form Subscriber success', null, 'newsletter-sync.log', true);
+                        $error = false;
+                    }
+                } catch (Exception $e) {
+                    $error = 'Send Customer in Subscriber Error: ' . $e->getMessage();
+                    $client->setLog('Send Customer in Subscriber Error: ' . $e->getMessage(), null, 'newsletter-sync.log', true);
+                    //return $error;
+                }
+            }
+
+        } catch (Exception $e) {
+            $error = 'Send Customer in Subscriber Failed: ' . $e->getMessage();
+            $client->setLog('Send Customer in Subscriber Failed: ' . $e->getMessage(), null, 'newsletter-sync.log', true);
+            //return $error;
+        }
+        return $error;
+    }
 
     public function getSyncPermission($storeId)
     {
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
         $arrSyncPerm = $objectManager->create('\Qdos\QdosSync\Model\Storemapping')
-                       ->getCollection()
-                       ->addFieldToSelect('sync_type')
-                       ->addFieldToFilter('store_id', $storeId)
-                       ->load()
-                       ->getData();
+            ->getCollection()
+            ->addFieldToSelect('sync_type')
+            ->addFieldToFilter('store_id', $storeId)
+            ->load()
+            ->getData();
 
         $syncPermissions = explode(',', $arrSyncPerm[0]['sync_type']);
         return $syncPermissions;
-    } 
+    }
 }
