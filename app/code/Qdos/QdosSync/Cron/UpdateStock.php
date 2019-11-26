@@ -1,19 +1,21 @@
 <?php
 /**
- * @author Pradeep Sanku
+ * @author Ravi Mule
  */
 
 namespace Qdos\QdosSync\Cron;
 
 use \Psr\Log\LoggerInterface;
+use \Qdos\QdosSync\Helper\Logs;
 
 class UpdateStock
 {
     protected $_logger;
 
-    public function __construct(LoggerInterface $logger)
+    public function __construct(LoggerInterface $logger, Logs $logHelper)
     {
         $this->_logger = $logger;
+        $this->_logHelper = $logHelper;
     }
 
     public function execute()
@@ -32,7 +34,9 @@ class UpdateStock
 
             if (strtolower($cronStatus) == 'running') {
                 $logMsg = 'Another Sync already in progress. Please wait...';
+                //$this->_logHelper->sendProcessFailureMail('Stock Sync');
                 $this->_logger->info($logMsg);
+                return false;
             } else {
 
                 $this->_resourceConfig->saveConfig('qdosConfig/cron_status/current_cron_status', "running", 'default', 0);
@@ -49,22 +53,24 @@ class UpdateStock
                     $syncStatus = $objectManager->create('Qdos\QdosSync\Helper\Data')->syncQty();
                 }
                 $storeManager = $objectManager->create("\Magento\Store\Model\StoreManagerInterface");
-                $allStores = $storeManager->getStores(true, false);
-                foreach ($allStores as $storeId => $val)
-                {
-                    $syncPermissions = $objectManager->create('Qdos\QdosSync\Helper\Data')->getSyncPermission($storeId);
-                    if (in_array('Stock', $syncPermissions)) {
-                        //Mage::log('category sync executing for store id '.$storeId, null, 'storesync.log');
-                        $syncStatus = $objectManager->create('Qdos\QdosSync\Helper\Data')->syncQty($storeId);
-                    }                  
+                $allStores = $storeManager->getStores();
+                if (count($allStores) > 1) {
+                    foreach ($allStores as $storeId => $val)
+                    {
+                        $syncPermissions = $objectManager->create('Qdos\QdosSync\Helper\Data')->getSyncPermission($storeId);
+                        if (in_array('Stock', $syncPermissions)) {
+                            //Mage::log('category sync executing for store id '.$storeId, null, 'storesync.log');
+                            $syncStatus = $objectManager->create('Qdos\QdosSync\Helper\Data')->syncQty($storeId);
+                        }
+                    }
                 }
-
                 if ($syncStatus == 'success') {
                     $logMsg = 'Qdos Stock Sync Successful';
                     $this->_logger->info($logMsg);
                 } else {
                     $logMsg = $syncStatus;
                     $this->_logger->info($logMsg);
+                    //$this->_logHelper->sendMailForSyncFailed('Stock');
                 }
 
                 $this->_resourceConfig->saveConfig('qdosConfig/cron_status/current_cron_status', "not running", 'default', 0);

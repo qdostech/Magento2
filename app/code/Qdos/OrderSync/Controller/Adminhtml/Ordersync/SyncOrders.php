@@ -41,6 +41,7 @@ class SyncOrders extends Action
         $logModel = $this->syncModel;
         $status = $logModel::LOG_SUCCESS;
         $logMsg = array();
+        $result = array();
         $isOrder = false;
         $logMsg[] = '<strong>NEO QDOS SYNC</strong>';       
 
@@ -64,7 +65,7 @@ class SyncOrders extends Action
                     $orderIds =  $this->ordersyncstatusModel->getCollection()
                                 ->addFieldToSelect('order_id')
                                 ->addFieldToFilter('sync_status', 'no')
-                                ->addFieldToFilter('payment_method', $paymentMethod)
+                                //->addFieldToFilter('payment_method', $paymentMethod)
                                 ->addFieldToFilter('created_time', array('from'=>$fromDate, 'to'=>$todaysDate));
                                 //->load()
                                 //->getData();                     
@@ -73,7 +74,7 @@ class SyncOrders extends Action
                     $orderIds =  $this->ordersyncstatusModel->getCollection()
                                 ->addFieldToSelect('order_id')
                                 ->addFieldToFilter('sync_status', 'no')
-                                ->addFieldToFilter('payment_method', $paymentMethod)
+                                //->addFieldToFilter('payment_method', $paymentMethod)
                                 //->addFieldToFilter('order_status', $orderStatus)
                                 ->load()
                                 ->getData(); 

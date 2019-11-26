@@ -46,7 +46,6 @@ class Sync extends Action
             $orderArr = array();
             $mapPaymentOrderData = $this->mappaymentorderModel->getCollection()->load()->getData();
             $arrUpdateMappingStatus = array();          
-
             $order =$this->order->load($this->getRequest()->getParam('order_id'));
             if ($order->getId()){
                 if ($this->checkOrderSyncingStatus($order, $mapPaymentOrderData)){
@@ -60,7 +59,6 @@ class Sync extends Action
                 $logMsg[] = 'Order no longer exists.';
             }
 
-            //Mage::log('Order Array '.print_r($orderArr, true), null, 'qdos-sync-order-' . date('Ymd') . '.log');
             //return $arrUpdateMappingStatus;
             if (count($arrUpdateMappingStatus) > 0){
                 $retResult  = $helper->exportMultiOrders($orderArr);
@@ -80,19 +78,18 @@ class Sync extends Action
                     $updateIds = implode(',',$arrUpdateMappingStatus);
                     $query_update     = "UPDATE ".$tableName." SET sync_status = 'yes', cc_cid = '', update_time = now() WHERE order_id in ($updateIds)";
                     $connection->query($query_update);   
-                    // $this->_getSession()->addSuccess($message);
                     $message = count($orderArr)." Order(s) Synched successfully.";
+                    $this->messageManager->addSuccess($message);
                     $logMsg[] = $message;
                 }else{
-                    // $message = $this->__("Synched error.");
-                    // $this->_getSession()->addError($message);
+                    $message = $this->__("Synched error.");
+                    $this->messageManager->addError($message);
                     $logMsg[] = 'Synched error.';
-                   
                 }
-                //Mage::dispatchEvent('qdossync_manual_sync_order_success', array('orders' => $orderArr));
             }else{
-                // $this->_getSession()->addError($message);
-                $logMsg[] = 'No Orders to Sync.';
+                $message = 'No Orders to Sync.';
+                $this->messageManager->addNotice($message);
+                $logMsg[] = $message;
             } 
         } catch (Exception $e) {
             $status = $logModel::LOG_FAIL;

@@ -15,7 +15,7 @@ class Export extends \Magento\Framework\App\Helper\AbstractHelper
         \Magento\Framework\Session\SessionManagerInterface $coreSession,
         \Magento\Framework\App\ResourceConnection $resourceConnection,
         \Magento\Newsletter\Model\Subscriber $subscriber,
-        \Magento\catalog\Model\Product $product,
+        \Magento\Catalog\Model\Product $product,
         \Magento\Sales\Model\Order\Item $orderItem
         
 	) {
