@@ -20,7 +20,10 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 'log_id',
                 \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
                 null,
-                ['identity' => true, 'unsigned' => true, 'nullable' => false, 'primary' => true],
+                ['identity' => true,
+                 'unsigned' => true, 
+                 'nullable' => false,
+                  'primary' => true],
                 'Log Id'
             )->addColumn(
                 'activity_type',
@@ -48,7 +51,8 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 'ip address'
             )->addColumn(
                 'description',
-                \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,[],
+                \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                '64k',                
                 [],
                 'description'
             )->addColumn(
@@ -58,17 +62,20 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 'store_id'
             )->addColumn(
                 'product_ids',
-                \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,[],
+                \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,'64k',
                 [],
                 'product_ids'
             )->addColumn(
                 'msg',
-                \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,[],
+                \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,'64k',
                 [],
                 'msg'
             )->setComment(
                 'qdos_activity_log'
             );
+
+
+
             $setup->getConnection()->createTable($table);
         }
 

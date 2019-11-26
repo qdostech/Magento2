@@ -46,11 +46,12 @@ class Status extends \Magento\Framework\App\Helper\AbstractHelper
 
             $base = $this->directory_list->getPath('lib_internal');
             $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+            $message = $objectManager->get("\Magento\Framework\Message\ManagerInterface");
             $lib_file = $base . '/Test.php';
             require_once($lib_file);
             $client = Test();
 
-            $clientnew = $client->connect();
+            $clientnew = $client->getConnect($storeId);
 
             $logFileName = "order_status_" . date('Ymd') . '.log';
             $logModel = $objectManager->get('\Qdos\Sync\Model\Sync');
@@ -128,7 +129,8 @@ class Status extends \Magento\Framework\App\Helper\AbstractHelper
 
                 $order = $this->order->loadByIncrementId($incrementId);
                 if (!$order->getId()) {
-                    $logMsgs[] = $this->addWarning("Order #{$incrementId} no longer exists");
+                    $log = $message->addWarning("Order #{$incrementId} no longer exists");
+                    $logMsgs[] = "Order #{$incrementId} no longer exists";
                     continue;
                 }
 
@@ -170,7 +172,7 @@ class Status extends \Magento\Framework\App\Helper\AbstractHelper
                     $logMsgs[] = "Changed #{$incrementId}: {$oldStatus}->{$keyStatus}";
                     $i++;
                 } catch (Exception $e) {
-                    $logMsgs[] = $this->addError("Change #{$incrementId}: {$oldStatus}->{$keyStatus} error: {$e->getMessage()}");
+                    $logMsgs[] = $message->addError("Change #{$incrementId}: {$oldStatus}->{$keyStatus} error: {$e->getMessage()}");
                 }
 
                 $order_existing = array();
@@ -213,7 +215,7 @@ class Status extends \Magento\Framework\App\Helper\AbstractHelper
             $logMsgs[] = 'Error in processing';
             $logMsgs[] = $this->decodeErrorMsg($e->getMessage());
             $message = $e->getMessage();
-            $this->adminsession->addError(__($message));
+            $message->addError(__($message));
 
         }
 

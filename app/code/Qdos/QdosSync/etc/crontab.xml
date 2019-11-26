@@ -12,7 +12,7 @@
 		<job name="cron_product_sync" instance="Qdos\QdosSync\Cron\SyncProduct" method="execute">
 			<config_path>crontab/default/jobs/cron_product_sync/schedule/cron_expr</config_path>
 		</job>
-		<job name="cron_update_stock_sync" instance="Qdos\QdosSync\Cron\UpdateStock" method="execute">
+		<job name="cron_update_stock" instance="Qdos\QdosSync\Cron\UpdateStock" method="execute">
 			<config_path>crontab/default/jobs/cron_update_stock/schedule/cron_expr</config_path>
 		</job>
 		<job name="cron_update_price" instance="Qdos\QdosSync\Cron\UpdatePrice" method="execute">

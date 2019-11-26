@@ -1007,7 +1007,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         */
 
         $base = $this->directory_list->getPath('lib_internal');
-        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
         $lib_file = $base . '/Test.php';
         require_once($lib_file);
         $client = Test();
@@ -1015,7 +1014,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $resultClient = $client->getConnect($storeId);
             $product_id = 0; // 0 to get all products
             $product_type = ''; // 'All' to get all types of products
-            $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
             $store_url = $objectManager->get('Magento\Framework\App\Config\ScopeConfigInterface')->getValue('qdosConfig/store/store_url_path');
             $logFileName = "importproduct-" . date('Ymd') . ".log";
 
@@ -1090,30 +1088,13 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
                 /** @var    \Magento\Catalog\Model\ResourceModel\Product\Collection $productCollection */
                 $arrProducts = $objectManager->create('Magento\Catalog\Model\ResourceModel\Product\Collection')->addAttributeToSelect('url_key');
-
+                $exist = 0;
                 foreach ($arrProducts as $product) {
-                    if (in_array($product->getUrlKey(), $arrUrlKey)) {
-                        $urlKey = $product->getUrlKey();
-                        if ($urlKey == '') {
-                            $lowerName = rtrim(strtolower($product->getName()));
-                            $urlKey = str_replace(' ', '-', $lowerName);
-                            $client->setLog('1. If' . $product->getName(), null, $logFileName);
-                        }
-                        if (in_array($urlKey, $arrUrlKey)) {
-                            $randomNo = mt_rand(100000, 999999);
-                            $newUrlKey = $urlKey . '-' . $randomNo;
-                            $client->setLog('2. If' . $product->getName(), null, $logFileName);
-                            $UpdatedUrlKey = $newUrlKey;
-                        } else {
-                            $UpdatedUrlKey = $urlKey;
-                            $client->setLog('3. Else' . $product->getName(), null, $logFileName);
-                        }
-                        $arrUrlKey[$product->getSku()] = $UpdatedUrlKey;
-                    } else {
-                        $client->setLog('4. Else' . $product->getName(), null, $logFileName);
-                        $arrUrlKey[$product->getSku()] = $product->getUrlKey();
-                    }
+                    $arrUrlKey[$product->getSku()] = $product->getUrlKey(); 
+                    //$arrUrlKey[] = $product->getUrlKey(); //get name
                 }
+
+                //echo "<pre>";print_r($arrUrlKey);exit;
 
                 if (count($objCollection) == 1) {
                     $collection[] = $objCollection;
@@ -1169,57 +1150,40 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 $shortDescriptionIsRequired = $attribute_details->getIsRequired();
                 //==================================================================================================================
 
+                $flag = 1;
                 foreach ($collection as $item) {
                     $item = $this->convertItemToArray($item);
-                    if (isset($item['url_key'])) {
-                        if (!empty($arrUrlKey[$item['sku']])) {
-                            if ($arrUrlKey[$item['sku']] != $item['url_key']) {
-                                if (in_array($item['url_key'], $arrUrlKey)) {
-                                    $urlKey = $item['url_key'];
-                                    if ($urlKey == '') {
-                                        $lowerName = rtrim(strtolower($item['name']));
-                                        $urlKey = str_replace(' ', '-', $lowerName);
-                                    }
-                                    if (in_array($urlKey, $arrUrlKey)) {
-                                        $randomNo = mt_rand(100000, 999999);
-                                        $newUrlKey = $urlKey . '-' . $randomNo;
-                                        unset($item['url_key']);
-                                        $item['url_key'] = $newUrlKey;
-                                    } else {
-                                        unset($item['url_key']);
-                                        $item['url_key'] = $urlKey;
-                                    }
-                                }
-                                $client->setLog('If ' . $item['sku'] . ' - ' . $item['url_key'], null, $logFileName);
-                            } else {
+                    
+                    if (!empty($item['url_key'])) {          
+                        if ($arrUrlKey[$item['sku']] != $item['url_key']) {
+                            if(in_array($item['url_key'], $arrUrlKey)){
                                 $urlKey = $item['url_key'];
-                                $client->setLog('In Else : ' . $urlKey, null, $logFileName);
-                                if ($urlKey == '') {
+                                if ($urlKey == '') {                                   
                                     $lowerName = rtrim(strtolower($item['name']));
-                                    $urlKey = str_replace(' ', '-', $lowerName);
+                                    $urlKey = str_replace(' ','-', $lowerName);
                                 }
-                                if (in_array($urlKey, $arrUrlKey)) {
+                                if(in_array($urlKey, $arrUrlKey)){
                                     $randomNo = mt_rand(100000, 999999);
                                     $newUrlKey = $urlKey . '-' . $randomNo;
-                                    unset($item['url_key']);
                                     $item['url_key'] = $newUrlKey;
-                                } else {
-                                    unset($item['url_key']);
-                                    $item['url_key'] = $urlKey;
+                                }else{
+                                    $item['url_key'] = $urlKey;                                    
                                 }
-                                $client->setLog('Else ' . $item['sku'] . ' - ' . $item['url_key'], null, $logFileName);
                             }
+
                         }
-                    } else {
+                        
+                    }else{
                         $item['url_key'] = '';
                     }
-
                     $arrUrlKey[$item['sku']] = $item['url_key'];
+
                     if (!isset($item['special_price']) || $item['special_price'] == '') {
                         $item['special_price'] = '';
                     }
+
                     if (isset($item['special_price']) && (float)$item['special_price'] == 0) {
-                        $item['special_price'] = '';
+                    $item['special_price'] = '';
                     }
 
                     //=============================================================================================================
@@ -1596,7 +1560,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
                     //pradeep commented
                     if (strtolower($item['type']) == 'simple') {
+                        //fixes for shifting url key field on correct position
+                        /*if ($flag > 1 && $exist == 1) {
+                            $this->moveElement($finalarray[0], 84, 14);
+                        }*/
                         $csvretval = fputcsv($file, array_values($finalarray[0]));
+                        //$flag++;
 
                         if ($csvretval != 0) {
                             array_push($csvarray, $csvretval);
@@ -1616,6 +1585,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                         }
                     }
                 }
+                //echo "csv generated";exit;
 
                 /**
                  * Refreshes the cache berfore the imports starts
@@ -1637,6 +1607,11 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         return $message;
     }// import product csv
 
+    public function moveElement(&$array, $a, $b) {
+        $p1 = array_splice($array, $a, 1);
+        $p2 = array_splice($array, 0, $b);
+        $array = array_merge($p2,$p1,$array);
+    }
 
     /**
      * Auther: Ravi Mule

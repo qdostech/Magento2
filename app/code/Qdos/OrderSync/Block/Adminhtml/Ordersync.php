@@ -38,6 +38,7 @@ class Ordersync extends \Magento\Backend\Block\Widget\Grid\Container
         $syncorders = [
             'id' => 'syncorders',
             'label' => __('Sync Orders'),
+            'class' => 'primary add',
             'onclick'   => "var cheked_values = [];
                                 var inputs = document.getElementsByClassName('massaction-checkbox');
                                     for (var i = 0; i < inputs.length; i += 1) {
@@ -55,7 +56,8 @@ class Ordersync extends \Magento\Backend\Block\Widget\Grid\Container
                                 "
         ];
         $this->buttonList->add('syncorders', $syncorders);
-        
+        $this->buttonList->remove('add');
+
         return parent::_prepareLayout();
     }
 }

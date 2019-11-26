@@ -21,14 +21,14 @@ class Syncorder extends \Magento\Backend\Block\Widget\Grid\Container
 
     protected function _prepareLayout()
     {
-
-        
         $addButtonProps = [
             'id' => 'import_order_status',
             'label' => __('Import Order Status'),
+            'class' => 'primary add',
             'onclick' => "setLocation('" . $this->_getSyncOrderUrl() . "')"
         ];
         $this->buttonList->add('import_order_status', $addButtonProps);
+        $this->buttonList->remove('add');
         return parent::_prepareLayout();
     }
 
