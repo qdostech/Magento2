@@ -32,7 +32,6 @@ class UpdateStockCronConfig extends \Magento\Framework\App\Config\Value
 
     public function afterSave()
     {
-        //print_r('dsfdsfasg');die();
         $frequency = $this->getData('groups/autoUpdateStock/fields/frequency/value');
         $productstockSync1=$this->getData('groups/autoUpdateStock/fields/auto_update_stock/value');
         $time = $this->getData('groups/autoUpdateStock/fields/time/value');
@@ -90,7 +89,7 @@ class UpdateStockCronConfig extends \Magento\Framework\App\Config\Value
             $hour1 = ($frequency == $frequencyEveryHour) ? '*/'.intval($time1['0']) : intval($time1['0']);
         }
 
-        if (!in_array($hour, $cronExprHour)){
+        if (!in_array($hour1, $cronExprHour1)){
             $cronExprHour1[] = $hour1;
         }
 
@@ -117,7 +116,7 @@ class UpdateStockCronConfig extends \Magento\Framework\App\Config\Value
             $hour2 = ($frequency == $frequencyEveryHour) ? '*/'.intval($time2['0']) : intval($time2['0']);
         }
 
-        if (!in_array($hour2, $cronExprHour)){
+        if (!in_array($hour2, $cronExprHour2)){
             $cronExprHour2[] = $hour2;
         }
 
@@ -198,7 +197,7 @@ class UpdateStockCronConfig extends \Magento\Framework\App\Config\Value
                     self::CRON_MODEL_PATH
                 )->save();
             }catch(\Exception $e){
-                throw new \Exception(__("We can\'t save the cron expression Product."));
+                throw new \Exception(__("We can\'t save the cron expression for Update Stock."));
             }
         }
 

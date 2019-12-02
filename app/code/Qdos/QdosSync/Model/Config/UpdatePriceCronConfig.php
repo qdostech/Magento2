@@ -30,8 +30,14 @@ class UpdatePriceCronConfig extends \Magento\Framework\App\Config\Value
     }
 
     public function afterSave(){
+        
         $frequency = $this->getData('groups/autoUpdatePrice/fields/frequency/value');
+        $productpriceSync1=$this->getData('groups/autoUpdatePrice/fields/auto_update_price/value');
         $time = $this->getData('groups/autoUpdatePrice/fields/time/value');
+        $productpriceSync2=$this->getData('groups/autoUpdatePrice/fields/add_new_update_price_schedule/value');
+        $time1 = $this->getData('groups/autoUpdatePrice/fields/time1/value');
+        $productpriceSync3=$this->getData('groups/autoUpdatePrice/fields/add_another_new_update_price_schedule/value');
+        $time2 = $this->getData('groups/autoUpdatePrice/fields/time2/value');
         $daysofmonth = $this->getData('groups/autoUpdatePrice/fields/daysofmonth/value');
         $weekday = $this->getData('groups/autoUpdatePrice/fields/weekdays/value');
 
@@ -41,6 +47,10 @@ class UpdatePriceCronConfig extends \Magento\Framework\App\Config\Value
         $frequencyWeekly	  = \Qdos\QdosSync\Model\Config\Source\QdosSyncFrequency::CRON_WEEKLY;
         $frequencyMonthly	  = \Qdos\QdosSync\Model\Config\Source\QdosSyncFrequency::CRON_MONTHLY;
 
+        /*Log code*/
+        $writer = new \Zend\Log\Writer\Stream(BP . '/var/log/updatestockSwapnil.log');
+        $logger = new \Zend\Log\Logger();
+        $logger->addWriter($writer);
         $cronExprMinute = $cronExprHour = $cronExprDay = $cronExprWeek = array();
         if (!in_array(intval($time['1']),$cronExprMinute)){
             $cronExprMinute[] = ($frequency == $frequencyEveryMinute) ? '*/'.intval($time['1']) : intval($time['1']);
@@ -67,7 +77,66 @@ class UpdatePriceCronConfig extends \Magento\Framework\App\Config\Value
         }
 
         $cronExprString = join(' ', array(join(',',$cronExprMinute),join(',',$cronExprHour),join(',',$cronExprDay),'*',join(',',$cronExprWeek)));
+
+        $cronExprMinute1 = $cronExprHour1 = $cronExprDay1 = $cronExprWeek1 = array();
+        if (!in_array(intval($time1['1']),$cronExprMinute1)){
+            $cronExprMinute1[] = ($frequency == $frequencyEveryMinute) ? '*/'.intval($time1['1']) : intval($time1['1']);
+        }
+
+        if ($frequency == $frequencyEveryMinute){
+            $hour1 = '*';
+        }else{
+            $hour1 = ($frequency == $frequencyEveryHour) ? '*/'.intval($time1['0']) : intval($time1['0']);
+        }
+
+        if (!in_array($hour1, $cronExprHour1)){
+            $cronExprHour1[] = $hour1;
+        }
+
+        $day1 = ($frequency == $frequencyMonthly) ? $daysofmonth : '*';
+        if (!in_array($day1,$cronExprDay1)){
+            $cronExprDay1[] = $day1;
+        }
+
+        $week_day1 = ($frequency == $frequencyWeekly) ? $weekday : '*';
+        if (!in_array($week_day1,$cronExprWeek1)){
+            $cronExprWeek1[] = $week_day1;
+        }
+
+        $cronExprString1 = join(' ', array(join(',',$cronExprMinute1),join(',',$cronExprHour1),join(',',$cronExprDay1),'*',join(',',$cronExprWeek1)));
+
+        $cronExprMinute2 = $cronExprHour2 = $cronExprDay2 = $cronExprWeek2 = array();
+        if (!in_array(intval($time2['1']),$cronExprMinute2)){
+            $cronExprMinute2[] = ($frequency == $frequencyEveryMinute) ? '*/'.intval($time2['1']) : intval($time2['1']);
+        }
+
+        if ($frequency == $frequencyEveryMinute){
+            $hour2 = '*';
+        }else{
+            $hour2 = ($frequency == $frequencyEveryHour) ? '*/'.intval($time2['0']) : intval($time2['0']);
+        }
+
+        if (!in_array($hour2, $cronExprHour2)){
+            $cronExprHour2[] = $hour2;
+        }
+
+        $day2 = ($frequency == $frequencyMonthly) ? $daysofmonth : '*';
+        if (!in_array($day2,$cronExprDay2)){
+            $cronExprDay2[] = $day2;
+        }
+
+        $week_day2 = ($frequency == $frequencyWeekly) ? $weekday : '*';
+        if (!in_array($week_day2,$cronExprWeek2)){
+            $cronExprWeek2[] = $week_day2;
+        }
+
+        $cronExprString2 = join(' ', array(join(',',$cronExprMinute2),join(',',$cronExprHour2),join(',',$cronExprDay2),'*',join(',',$cronExprWeek2)));
+        
+        $logger->addWriter($writer);
+
+        $logger->info('in SyncPrice : '.$cronExprString." & ".$cronExprString1." & ".$cronExprString2);
         // echo $cronExprString; exit;
+
         try{
             $this->_configValueFactory->create()->load(
                 self::CRON_STRING_PATH,
@@ -87,6 +156,51 @@ class UpdatePriceCronConfig extends \Magento\Framework\App\Config\Value
             )->save();
         }catch(\Exception $e){
             throw new \Exception(__("We can\'t save the cron expression for Update Price."));
+        }
+
+        if($productpriceSync2){
+            try {
+                $this->_configValueFactory->create()->load(
+                    self::CRON_STRING_PATH,
+                    'path'
+                )->setValue(
+                    $cronExprString1
+                )->setPath(
+                    self::CRON_STRING_PATH
+                )->save();
+                $this->_configValueFactory->create()->load(
+                    self::CRON_MODEL_PATH,
+                    'path'
+                )->setValue(
+                    $this->_runModelPath
+                )->setPath(
+                    self::CRON_MODEL_PATH
+                )->save();
+            } catch (\Exception $e) {
+                throw new \Exception(__("We can\'t save the cron expression for Update Price."));
+            }
+        }
+        if($productpriceSync3){
+            try{
+                $this->_configValueFactory->create()->load(
+                    self::CRON_STRING_PATH,
+                    'path'
+                )->setValue(
+                    $cronExprString2
+                )->setPath(
+                    self::CRON_STRING_PATH
+                )->save();
+                $this->_configValueFactory->create()->load(
+                    self::CRON_MODEL_PATH,
+                    'path'
+                )->setValue(
+                    $this->_runModelPath
+                )->setPath(
+                    self::CRON_MODEL_PATH
+                )->save();
+            }catch(\Exception $e){
+                throw new \Exception(__("We can\'t save the cron expression for Update Price."));
+            }
         }
 
         return parent::afterSave();

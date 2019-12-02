@@ -25,6 +25,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     protected $_lostDataArr = array();
     protected $eavSetup;
     protected $_result = true;
+    protected $log;
 
     /**
      * @param \Magento\Framework\App\Helper\Context $context
@@ -488,7 +489,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         ini_set('default_socket_timeout', 900); // or whatever new value you want
         $logFileName = "syncProduct-" . date('Ymd') . ".log";
 
-        // $this->_logger->info(__METHOD__);
         $base = $this->directory_list->getPath('lib_internal');
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
         $lib_file = $base . '/Test.php';
@@ -513,29 +513,22 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             ->setStoreId($storeId)
             ->setActivityType('product')
             ->save();
-
-        $logFileName = "syncProduct-" . date('Ymd') . ".log";
-
-        $client->setLog("Simple Product Import Started. ", null, $logFileName);
-        $logMsg[] = "<strong>Simple Product Import Started.</strong>";
+        
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
         $success = 0;
         $fail = 0;
+        $logMsg = array();
         try {
             $importHandler = $objectManager->create('CommerceExtensions\ProductImportExport\Model\Data\CsvImportHandler');
-            $client->setLog("readCsvFile Started. ", null, $logFileName);
-            $logMsg[] = "readCsvFile Started.";
+            //$client->setLog("readCsvFile Started. ", null, $logFileName);
+            //$logMsg[] = "readCsvFile Started.";
             if ($count > 0) {
                 $logMsg = $importHandler->readCsvFile($filePath, $syncPermissions, $client, $logMsg);
             }
-            $client->setLog("readCsvFile end. ", null, $logFileName);
-            $logMsg[] = "readCsvFile end.";
-            $client->setLog("The Products have been imported Successfully.", null, $logFileName);
-            $logMsg[] = "The Products have been imported Successfully.";
-            $client->setLog("reindexdata start.", null, $logFileName);
-            $logMsg[] = "reindexdata start.";
-            $this->reindexdata();
-            $client->setLog("reindexdata end.", null, $logFileName);
+            //$client->setLog("readCsvFile end. ", null, $logFileName);
+            //$logMsg[] = "readCsvFile end.";
+            //$client->setLog("The Products have been imported Successfully.", null, $logFileName);
+            //$logMsg[] = "The Products have been imported Successfully.";
             $success = 1;
         } catch (Exception $e) {
             $client->setLog("error msg-" . $e->getMessage(), null, $logFileName);
@@ -554,7 +547,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $result = \Qdos\QdosSync\Model\Activity::LOG_SUCCESS;
         }
 
-        $client->setLog("Result: " . $result . ' & ' . $success, null, $logFileName);
+        //$client->setLog("Result: " . $result . ' & ' . $success, null, $logFileName);
         $this->_log->setEndTime(date('Y-m-d H:i:s'))
             ->setStatus($result)
             ->setDescription(implode('<br />', $logMsg))
@@ -578,7 +571,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             }
             $product->save();
         }
-        return;
+        return $logMsg;
     }
 
     public function reindexdata()
@@ -1005,7 +998,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         @author: Pooja Soni
         Date: 5th_may_17
         */
-
+        $logMsgs = $logMsg = $productLogIds = $hiddenProductArr = array();
         $base = $this->directory_list->getPath('lib_internal');
         $lib_file = $base . '/Test.php';
         require_once($lib_file);
@@ -1085,7 +1078,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 $csvotherarray = array();
                 $arrUrlKey = array();
 
-                $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
                 /** @var    \Magento\Catalog\Model\ResourceModel\Product\Collection $productCollection */
                 $arrProducts = $objectManager->create('Magento\Catalog\Model\ResourceModel\Product\Collection')->addAttributeToSelect('url_key');
                 $exist = 0;
@@ -1587,14 +1579,28 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 }
                 //echo "csv generated";exit;
 
-                /**
-                 * Refreshes the cache berfore the imports starts
-                 */
-                //$cache_response_msg = Mage::helper('sync')->CacheRefresh();
-                //$logMsgs = array_merge($logMsgs, $cache_response_msg);
-                $returnMsgs = $this->ProductsSync($productcsv, $syncPermissions, count($objCollection), $productIds, $ipAddress, $storeId);
-                $returnMsgs = $this->ProductsSync($productcsvother, $syncPermissions, count($objCollection), $productIds, $ipAddress, $storeId);
-                $logMsgs[] = $returnMsgs;
+                $logFile = "syncProduct-" . date('Ymd') . ".log";
+
+                $client->setLog("readCsvFile Started. ", null, $logFile);
+                $logMsgs[] = "readCsvFile Started.";
+
+                $client->setLog("Simple Product Import Started. ", null, $logFile);
+                $logMsgs[] = "<strong>Simple Product Import Started.</strong>";
+                
+                $returnMsgs1 = $this->ProductsSync($productcsv, $syncPermissions, count($objCollection), $productIds, $ipAddress, $storeId);
+                $logMsgs[] = implode('<br />', $returnMsgs1);
+
+                $client->setLog("Other Product Import Started. ", null, $logFile);
+                $logMsgs[] = "<strong>Other Product Import Started.</strong>";
+
+                $returnMsgs2 = $this->ProductsSync($productcsvother, $syncPermissions, count($objCollection), $productIds, $ipAddress, $storeId);
+                $logMsgs[] = implode('<br />', $returnMsgs2);
+
+                $client->setLog("readCsvFile end. ", null, $logFile);
+                $logMsgs[] = "readCsvFile end.";
+
+                $client->setLog("The Products have been imported Successfully.", null, $logFile);
+                $logMsgs[] = "The Products have been imported Successfully.";
 
                 $message = 'success';
             } // main else
@@ -1603,6 +1609,55 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $logMsgs[] = $this->decodeErrorMsg($e->getMessage());
             $message = $e->getMessage();
             $client->setLog("CSV Generation failed due to following reasons - " . print_r($e->getMessage(), true), null, $logFileName);
+        }
+
+        $client->setLog("reindexdata start.", null, $logFile);
+        $logMsgs[] = "reindexdata start.";
+        $this->reindexdata();
+        $client->setLog("reindexdata end.", null, $logFile);
+        $logMsgs[] = "reindexdata end.";
+
+        /*-------WRITE LOG------*/
+        $status = $success = 1;
+        $result = \Neo\Winery\Model\Activity::LOG_SUCCESS;
+        if (in_array('Error Occured', $logMsgs)) {
+            $result = \Neo\Winery\Model\Activity::LOG_PARTIAL;
+            $success = 0;
+        }elseif (in_array('Error in processing', $logMsgs)) {
+            $result = \Neo\Winery\Model\Activity::LOG_FAIL;
+            $success = 0;
+        }
+        $logModel = $this->_log;
+        $soapError = '';
+        //echo "<pre>";echo implode('<br />', $logMsgs);exit;
+        $logModel->setDescription(implode('<br />', $logMsgs))
+             ->setEndTime(date('Y-m-d H:i:s'))
+             ->setStatus($result)
+             ->save();
+
+        if ($productIds == '') {
+            
+            $clientnew = $client->connect();
+
+            $clientnew->UpdateProductLastSynchDate(array('store_url'=>$store_url,
+                                                                 'success'=>$success,
+                                                                 'lastSynchDate'=>time(),
+                                                                 'type'=>'product')); 
+            $objectManager->get('\Qdos\QdosSync\Helper\Product\Position')->syncPosition($productIds = 0, $categoryId = 0, $storeId); 
+        }else{
+            $arrProductIds = explode('|', $productIds);
+            $lastLogId = $logModel->getId();
+
+            foreach ($arrProductIds as $key => $productId) {
+                $product = $objectManager->get("\Magento\Catalog\Model\Product")
+                           ->setStoreId($storeId)
+                           ->load($productId);
+                $product->setSyncStatus($result);              
+                $product->setLastLogId($lastLogId);              
+                $product->setLastSync(date('Y-m-d H:i:s'));  
+                $product->save();            
+            }
+            $objectManager->get('\Qdos\QdosSync\Helper\Product\Position')->syncPosition($arrProductIds, $categoryId = 0, $storeId);
         }
         return $message;
     }// import product csv

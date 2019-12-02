@@ -46,7 +46,7 @@ class SyncOrderStatus extends Action
                 $this->_resourceConfig->saveConfig('qdosConfig/cron_status/current_cron_status', "not running", 'default', 0);
             }
         }else{
-            $this->session->addError(__('Manual Sync is Disabled.'));
+            $this->messageManager->addError(__('Manual Sync is Disabled.'));
         }
         $this->_redirect('*/*/index'); 
     }

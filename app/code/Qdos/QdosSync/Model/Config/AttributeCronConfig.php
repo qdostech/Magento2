@@ -90,7 +90,7 @@ class AttributeCronConfig extends \Magento\Framework\App\Config\Value
             $hour1 = ($frequency == $frequencyEveryHour) ? '*/'.intval($time1['0']) : intval($time1['0']);
         }
 
-        if (!in_array($hour, $cronExprHour)){
+        if (!in_array($hour1, $cronExprHour1)){
             $cronExprHour1[] = $hour1;
         }
 
@@ -117,7 +117,7 @@ class AttributeCronConfig extends \Magento\Framework\App\Config\Value
             $hour2 = ($frequency == $frequencyEveryHour) ? '*/'.intval($time2['0']) : intval($time2['0']);
         }
 
-        if (!in_array($hour2, $cronExprHour)){
+        if (!in_array($hour2, $cronExprHour2)){
             $cronExprHour2[] = $hour2;
         }
 
@@ -137,7 +137,7 @@ class AttributeCronConfig extends \Magento\Framework\App\Config\Value
         $logger = new \Zend\Log\Logger();
         $logger->addWriter($writer);
 
-        $logger->info('in SyncStock : '.$cronExprString." & ".$cronExprString1." & ".$cronExprString2);
+        $logger->info('in SyncAtt : '.$cronExprString." & ".$cronExprString1." & ".$cronExprString2);
 
         //echo $cronExprString;die();
         try{

@@ -65,7 +65,7 @@
                         <field id="qdosSync/autoSyncProduct/auto_sync_product">1</field>
                     </depends>
 				</field>
-				<field id="time2" translate="label" type="time" sortOrder="9" showInDefault="1" showInWebsite="0" showInStore="0">
+				<field id="time1" translate="label" type="time" sortOrder="9" showInDefault="1" showInWebsite="0" showInStore="0">
 					<label>Start Time</label>
 					<depends>
 						<field id="qdosSync/autoSyncProduct/auto_sync_product">1</field>
@@ -80,7 +80,7 @@
                         <field id="qdosSync/autoSyncProduct/add_new_sync_product_schedule">1</field>
                     </depends>
                 </field>
-                <field id="time3" translate="label" type="time" sortOrder="11" showInDefault="1" showInWebsite="0" showInStore="0">
+                <field id="time2" translate="label" type="time" sortOrder="11" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Start Time</label>
                     <depends>
 						<field id="qdosSync/autoSyncProduct/auto_sync_product">1</field>
@@ -133,7 +133,7 @@
                         <field id="qdosSync/autoUpdateStock/auto_update_stock">1</field>
                     </depends>
 				</field>
-				<field id="time2" translate="label" type="time" sortOrder="9" showInDefault="1" showInWebsite="0" showInStore="0">
+				<field id="time1" translate="label" type="time" sortOrder="9" showInDefault="1" showInWebsite="0" showInStore="0">
 					<label>Start Time</label>
 					<depends>
 						<field id="qdosSync/autoUpdateStock/auto_update_stock">1</field>
@@ -148,14 +148,13 @@
                         <field id="qdosSync/autoUpdateStock/add_new_update_stock_schedule">1</field>
                     </depends>
                 </field>
-                <field id="time3" translate="label" type="time" sortOrder="11" showInDefault="1" showInWebsite="0" showInStore="0">
+                <field id="time2" translate="label" type="time" sortOrder="11" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Start Time</label>
                     <depends>
                         <field id="qdosSync/autoUpdateStock/add_another_new_update_stock_schedule">1</field>
                     </depends>
                 </field>
 			</group>
-
 
 			<group id="autoUpdatePrice" translate="label" type="text" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="1">
 				<label>Auto Update Price</label>
@@ -200,7 +199,7 @@
                         <field id="qdosSync/autoUpdatePrice/auto_update_price">1</field>
                     </depends>
 				</field>
-				<field id="time2" translate="label" type="time" sortOrder="9" showInDefault="1" showInWebsite="0" showInStore="0">
+				<field id="time1" translate="label" type="time" sortOrder="9" showInDefault="1" showInWebsite="0" showInStore="0">
 					<label>Start Time</label>
 					<depends>
 						<field id="qdosSync/autoUpdatePrice/auto_update_price">1</field>
@@ -215,7 +214,7 @@
                         <field id="qdosSync/autoUpdatePrice/add_new_update_price_schedule">1</field>
                     </depends>
                 </field>
-                <field id="time3" translate="label" type="time" sortOrder="11" showInDefault="1" showInWebsite="0" showInStore="0">
+                <field id="time2" translate="label" type="time" sortOrder="11" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Start Time</label>
                     <depends>
                         <field id="qdosSync/autoUpdatePrice/add_another_new_update_price_schedule">1</field>
@@ -254,11 +253,11 @@
 					</depends>
 				</field>
 				<field id="time" translate="label" type="time" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1">
-						<label>Start Time</label>
-						<depends>
-							<field id="qdosSync/autoSyncAttribute/auto_sync_attribute">1</field>
-							<field id="qdosSync/autoSyncAttribute/frequency" separator=",">D,W,M,EH,EM</field>
-						</depends>
+					<label>Start Time</label>
+					<depends>
+						<field id="qdosSync/autoSyncAttribute/auto_sync_attribute">1</field>
+						<field id="qdosSync/autoSyncAttribute/frequency" separator=",">D,W,M,EH,EM</field>
+					</depends>
 				</field>
 				<field id="add_new_schedule" translate="label" type="select" sortOrder="6" showInDefault="1" showInWebsite="1" showInStore="1">
 					<label>add new schedule</label>
@@ -583,7 +582,7 @@
                         <field id="qdosSync/autoDeleteOrderLogs/auto_delete_order_logs">1</field>
                     </depends>
 				</field>
-				<field id="time2" translate="label" type="time" sortOrder="9" showInDefault="1" showInWebsite="0" showInStore="0">
+				<field id="time1" translate="label" type="time" sortOrder="9" showInDefault="1" showInWebsite="0" showInStore="0">
 					<label>Start Time</label>
 					<depends>
 						<field id="qdosSync/autoDeleteOrderLogs/auto_delete_order_logs">1</field>
@@ -598,7 +597,7 @@
                         <field id="qdosSync/autoDeleteOrderLogs/add_new_delete_order_log_schedule">1</field>
                     </depends>
                 </field>
-                <field id="time3" translate="label" type="time" sortOrder="11" showInDefault="1" showInWebsite="0" showInStore="0">
+                <field id="time2" translate="label" type="time" sortOrder="11" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Start Time</label>
                     <depends>
 						<field id="qdosSync/autoDeleteOrderLogs/auto_delete_order_logs">1</field>
@@ -662,7 +661,7 @@
                         <field id="qdosSync/autoReindexing/auto_reindexing">1</field>
                     </depends>
 				</field>
-				<field id="time2" translate="label" type="time" sortOrder="9" showInDefault="1" showInWebsite="0" showInStore="0">
+				<field id="time1" translate="label" type="time" sortOrder="9" showInDefault="1" showInWebsite="0" showInStore="0">
 					<label>Start Time</label>
 					<depends>
 						<field id="qdosSync/autoReindexing/auto_reindexing">1</field>
@@ -677,7 +676,7 @@
                         <field id="qdosSync/autoReindexing/add_new_reindexing_schedule">1</field>
                     </depends>
                 </field>
-                <field id="time3" translate="label" type="time" sortOrder="11" showInDefault="1" showInWebsite="0" showInStore="0">
+                <field id="time2" translate="label" type="time" sortOrder="11" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Start Time</label>
                     <depends>
 						<field id="qdosSync/autoReindexing/auto_reindexing">1</field>
@@ -741,7 +740,7 @@
                         <field id="qdosSync/autoSyncNewsletter/auto_sync_newsletter">1</field>
                     </depends>
 				</field>
-				<field id="time2" translate="label" type="time" sortOrder="9" showInDefault="1" showInWebsite="0" showInStore="0">
+				<field id="time1" translate="label" type="time" sortOrder="9" showInDefault="1" showInWebsite="0" showInStore="0">
 					<label>Start Time</label>
 					<depends>
 						<field id="qdosSync/autoSyncNewsletter/auto_sync_newsletter">1</field>
@@ -756,7 +755,7 @@
                         <field id="qdosSync/autoSyncNewsletter/add_new_sync_newsletter_schedule">1</field>
                     </depends>
                 </field>
-                <field id="time3" translate="label" type="time" sortOrder="11" showInDefault="1" showInWebsite="0" showInStore="0">
+                <field id="time2" translate="label" type="time" sortOrder="11" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Start Time</label>
                     <depends>
 						<field id="qdosSync/autoSyncNewsletter/auto_sync_newsletter">1</field>
@@ -816,7 +815,7 @@
                         <field id="qdosSync/autoSyncOrderDetails/auto_sync_order_details">1</field>
                     </depends>
 				</field>
-				<field id="time2" translate="label" type="time" sortOrder="9" showInDefault="1" showInWebsite="0" showInStore="0">
+				<field id="time1" translate="label" type="time" sortOrder="9" showInDefault="1" showInWebsite="0" showInStore="0">
 					<label>Start Time</label>
 					<depends>
 						<field id="qdosSync/autoSyncOrderDetails/auto_sync_order_details">1</field>
@@ -831,7 +830,7 @@
                         <field id="qdosSync/autoSyncOrderDetails/add_new_sync_order_schedule">1</field>
                     </depends>
                 </field>
-                <field id="time3" translate="label" type="time" sortOrder="11" showInDefault="1" showInWebsite="0" showInStore="0">
+                <field id="time2" translate="label" type="time" sortOrder="11" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Start Time</label>
                     <depends>
                     	<field id="qdosSync/autoSyncOrderDetails/auto_sync_order_details">1</field>
