@@ -9,13 +9,13 @@ class MassDelete extends \Magento\Backend\App\Action
     public function execute()
     {
 		
-		 $ids = $this->getRequest()->getParam('id');
+		$ids = $this->getRequest()->getParam('id');
 		if (!is_array($ids) || empty($ids)) {
-            $this->messageManager->addError(__('Please select product(s).'));
+            $this->messageManager->addError(__('Please select record(s).'));
         } else {
             try {
                 foreach ($ids as $id) {
-                    $row = $this->_objectManager->get('Qdos\QdosSync\Model\Sync')->load($id);
+                    $row = $this->_objectManager->get('Qdos\QdosSync\Model\Log')->load($id);
 					$row->delete();
 				}
                 $this->messageManager->addSuccess(
