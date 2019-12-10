@@ -140,25 +140,28 @@ class AttributeCronConfig extends \Magento\Framework\App\Config\Value
         $logger->info('in SyncAtt : '.$cronExprString." & ".$cronExprString1." & ".$cronExprString2);
 
         //echo $cronExprString;die();
-        try{
-            $this->_configValueFactory->create()->load(
-                self::CRON_STRING_PATH,
-                'path'
-            )->setValue(
-                $cronExprString
-            )->setPath(
-                self::CRON_STRING_PATH
-            )->save();
-            $this->_configValueFactory->create()->load(
-                self::CRON_MODEL_PATH,
-                'path'
-            )->setValue(
-                $this->_runModelPath
-            )->setPath(
-                self::CRON_MODEL_PATH
-            )->save();
-        }catch(\Exception $e){
-            throw new \Exception(__("We can\'t save the cron expression for Attribute."));
+
+        if($attributeSync1){
+            try{
+                $this->_configValueFactory->create()->load(
+                    self::CRON_STRING_PATH,
+                    'path'
+                )->setValue(
+                    $cronExprString
+                )->setPath(
+                    self::CRON_STRING_PATH
+                )->save();
+                $this->_configValueFactory->create()->load(
+                    self::CRON_MODEL_PATH,
+                    'path'
+                )->setValue(
+                    $this->_runModelPath
+                )->setPath(
+                    self::CRON_MODEL_PATH
+                )->save();
+            }catch(\Exception $e){
+                throw new \Exception(__("We can\'t save the cron expression for Attribute."));
+            }
         }
         if($attributeSync2){
             try{

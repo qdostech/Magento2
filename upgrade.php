@@ -6,14 +6,15 @@ print("<PRE>");
 passthru("/bin/bash rename.sh");
 //echo shell_exec('sh /chroot/home/magentot/magento2.qdos-technology.com/html/rename.sh');
 print("<PRE>");
-
+//$output = shell_exec('crontab -l');
+//print_r($output);
 
 //$m_command = 'bin/magento module:status';
 //$m_command = 'bin/magento module:disable Neo_Commands';
 
 $m_command = 'bin/magento s:up';
 $m_command = 'bin/magento setup:di:compile';
-//$m_command = 'bin/magento setup:static-content:deploy en_US en_AU -f';
+$m_command = 'bin/magento setup:static-content:deploy en_US en_AU -f';
 // $m_command = 'bin/magento deploy:mode:show';
 // $m_command = 'bin/magento deploy:mode:set production';
 // $m_command = 'bin/magento cache:status';
@@ -23,8 +24,9 @@ $m_command = 'bin/magento c:f';
 //$m_command = 'bin/magento i:rei';
 //$m_command = 'bin/magento catalog:images:resize';
 //$m_command = 'bin/magento cron:run';
+//$m_command = 'bin/magento cron:install';
 //$m_command = './app/code/Qdos/QdosSync/Cron/rename.sh';
-$command = '/usr/local/lsws/lsphp70/bin/php '.$path.'/'.$m_command;
+$command = '/usr/local/lsws/lsphp71/bin/php '.$path.'/'.$m_command;
 echo $command;
 echo '<pre>';
 $result = shell_exec($command);

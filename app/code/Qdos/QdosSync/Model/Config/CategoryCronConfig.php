@@ -118,7 +118,7 @@ class CategoryCronConfig extends \Magento\Framework\App\Config\Value
         if ($frequency == $frequencyEveryMinute){
             $hour1 = '*';
         }else{
-            $hour1 = ($frequency == $frequencyEveryHour) ? '*/'.intval($time['0']) : intval($time['0']);
+            $hour1 = ($frequency == $frequencyEveryHour) ? '*/'.intval($time1['0']) : intval($time1['0']);
         }
 
         if (!in_array($hour1, $cronExprHour1)){
@@ -169,26 +169,29 @@ class CategoryCronConfig extends \Magento\Framework\App\Config\Value
         $logger->addWriter($writer);
 
         $logger->info('in SyncCat : '.$cronExprString." & ".$cronExprString1." & ".$cronExprString2);
-
-        try{
-            $this->_configValueFactory->create()->load(
-                self::CRON_STRING_PATH,
-                'path'
-            )->setValue(
-                $cronExprString
-            )->setPath(
-                self::CRON_STRING_PATH
-            )->save();
-            $this->_configValueFactory->create()->load(
-                self::CRON_MODEL_PATH,
-                'path'
-            )->setValue(
-                $this->_runModelPath
-            )->setPath(
-                self::CRON_MODEL_PATH
-            )->save();
-        }catch(\Exception $e){
-            throw new \Exception(__("We can\'t save the cron expression Category."));
+        //echo 'in SyncCat : '.$cronExprString." & ".$cronExprString1." & ".$cronExprString2;exit;
+        
+        if($categorySync1){
+            try{
+                $this->_configValueFactory->create()->load(
+                    self::CRON_STRING_PATH,
+                    'path'
+                )->setValue(
+                    $cronExprString
+                )->setPath(
+                    self::CRON_STRING_PATH
+                )->save();
+                $this->_configValueFactory->create()->load(
+                    self::CRON_MODEL_PATH,
+                    'path'
+                )->setValue(
+                    $this->_runModelPath
+                )->setPath(
+                    self::CRON_MODEL_PATH
+                )->save();
+            }catch(\Exception $e){
+                throw new \Exception(__("We can\'t save the cron expression Category."));
+            }
         }
         if($categorySync2){
              try{

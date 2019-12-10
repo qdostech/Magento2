@@ -1147,7 +1147,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                     $item = $this->convertItemToArray($item);
                     
                     if (!empty($item['url_key'])) {          
-                        if ($arrUrlKey[$item['sku']] != $item['url_key']) {
+                        if (isset($arrUrlKey[$item['sku']]) && $arrUrlKey[$item['sku']] != $item['url_key']) {
                             if(in_array($item['url_key'], $arrUrlKey)){
                                 $urlKey = $item['url_key'];
                                 if ($urlKey == '') {                                   
@@ -2412,7 +2412,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     public function getSyncPermission($storeId)
     {
+        $writer = new \Zend\Log\Writer\Stream(BP . '/var/log/storemapping.log');
+        $logger = new \Zend\Log\Logger();
+        $logger->addWriter($writer);
+
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+        $syncPermissions = array();
         $arrSyncPerm = $objectManager->create('\Qdos\QdosSync\Model\Storemapping')
             ->getCollection()
             ->addFieldToSelect('sync_type')
@@ -2420,7 +2425,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             ->load()
             ->getData();
 
-        $syncPermissions = explode(',', $arrSyncPerm[0]['sync_type']);
+        $logger->info('store id : ' . $storeId);
+        $logger->info('storemapping array : ' . print_r($arrSyncPerm, true));
+
+        if ($arrSyncPerm){
+            $syncPermissions = explode(',', $arrSyncPerm[0]['sync_type']);
+        }
         return $syncPermissions;
     }
 }
