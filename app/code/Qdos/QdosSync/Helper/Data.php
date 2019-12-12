@@ -684,7 +684,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 ->setActivity('category')
                 ->save();
 
-            $logMsg[] = "Sync categories  starts";
+            $logMsg[] = "Sync categories starts";
             $allCat = $resultClient->GetCategoriesCSV(array('store_url' => $store_url));
 
             $collectionData = $allCat->GetCategoriesCSVResult->CategoryCSV;
@@ -702,7 +702,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 }
             }
             $this->reindexdata();
-            // $this->_deleteAllCategories($storeId,$this->_pushArr,$client);
+            $this->_deleteAllCategories($storeId,$this->_pushArr,$client);
             $client->setLog($error, null, "syncCategory-" . date('Ymd') . ".log");
             $client->setLog("Sync categories end", null, "syncCategory-" . date('Ymd') . ".log");
             $logMsg[] = "Sync categories end";
@@ -735,7 +735,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     public function sync($collectionData = array(), $client, $logMsg)
     {
-
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
         $storeId = $objectManager->get('\Magento\Store\Model\StoreManagerInterface')->getStore()->getStoreId();
         $this->_i++;
@@ -868,24 +867,32 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
         try {
             $collection = $objectManager->get('Magento\Catalog\Model\Category')->setStoreId($storeId)->getCollection();
-            // $allRoot = $this->getAllRootCategoryId();
+            $allRoot = $this->getAllRootCategoryId();
             $rootId = $objectManager->get('\Magento\Store\Model\StoreManagerInterface')->getStore()->getRootCategoryId();
+            $objectManager->get('Magento\Framework\Registry')->register('isSecureArea', true);
             foreach ($collection as $category) {
                 if (!in_array($category->getId(), $importData) &&
-                    // !in_array($category->getId(),$allRoot) &&
+                    !in_array($category->getId(),$allRoot) &&
                     !in_array($category->getId(), array($rootId, \Magento\Catalog\Model\Category::TREE_ROOT_ID))
                 ) {
                     $category->delete();
-                    $client->setLog('_deleteAllCategories', null, $logFileName);
-                    // $log = Mage::getModel('qdossync/category_log')->loadByCategoryId($category->getId());
-                    // if (!empty($log) && $log->getId()){
-                    //     $log->delete();
-                    // }
+                    $client->setLog('Deleted Cateogry::'. $category->getId(), null, $logFileName);
                 }
             }
         } catch (Exception $e) {
             $client->setLog($e->getMessage(), null, $logFileName);
         }
+    }
+
+    protected function getAllRootCategoryId(){
+        $rootIds = array();
+        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+        $allStoreId = $objectManager->get('\Qdos\Sync\Helper\Config')->getAllStore();
+        foreach ($allStoreId as $storeId){
+            $rootIds[] = $objectManager->get('\Magento\Store\Model\StoreManagerInterface')->getStore($storeId)->getRootCategoryId();
+        }
+        $rootIds[] = \Magento\Catalog\Model\Category::TREE_ROOT_ID;
+        return $rootIds;
     }
 
     public function addSubcategories($parentId, $catId, $catName, $allCatArray, $currentCat)
