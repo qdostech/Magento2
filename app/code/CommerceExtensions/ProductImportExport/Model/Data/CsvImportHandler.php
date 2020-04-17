@@ -198,6 +198,8 @@ class CsvImportHandler
 		$ProductSupperAttribute = $this->ProductSupperAttribute($product, $params);
 		$ProductCustomOption = $this->ProductCustomOption($product);
 		$logMsg = $this->CreateProductWithrequiredField($prodtype,$params,$ProductData,$ProductAttributeData,$ProductImageGallery,$ProductStockdata,$ProductSupperAttribute,$ProductCustomOption,$logMsg);
+
+        
 		return $logMsg;
 	}
 
@@ -276,13 +278,14 @@ class CsvImportHandler
 			/* change for image full path end */
 
 			$client->setLog("product sku--".$product['sku'],null,"syncProduct-".date('Ymd').".log");
-			$logMsg[] = "product sku-".$product['sku']."& protuct type-".$product['type'];
+			//$logMsg[] = "product sku-".$product['sku']."& protuct type-".$product['type'];
 			// if($in > 42){
 			// 	break;
 			// }
 			$logMsg = $this->requiredDataForSaveProduct($product, $params, $logMsg);
 			$client->setLog("product sku-- end here",null,"syncProduct-".date('Ymd').".log");
 		}
+		$logMsg[] = "Total---".$in." records imported";
 		return $logMsg;
 	}
 	
@@ -530,19 +533,51 @@ class CsvImportHandler
 	}
 	
 	public function ProductImageGallery($product, $params){
-		if($params['delSyncImages'] == 0) { 
+
+       
+		if($params['delSyncImages'] == 0 || $params['delSyncImages'] ==1 ) 
+			{ 
+
+        try
+        {
 		 	$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
 			$productRepository = $objectManager->create('Magento\Catalog\Api\ProductRepositoryInterface');
+			 #$imageProcessor = $objectManager->create('\Magento\Catalog\Model\Product\Gallery\Processor');
 			#$galleryProcessor = $objectManager->create('Magento\Catalog\Model\Product\Gallery\GalleryManagement');
 			$productModel = $productRepository->get($product['sku']);
 			#$product1 = $objectManager->create('Magento\Catalog\Model\Product')->loadByAttribute('sku', $product['sku']);
 			#$productModel = $productRepository->getById($product1->getId(), false, 0);
 			#$productModel = $objectManager->create('Magento\Catalog\Model\Product')->setStoreId(0)->load($product1->getId());
-			$existingMediaGalleryEntries = $productModel->getMediaGalleryEntries();
+			$existingMediaGalleryEntries = $productModel->getMediaGalleryEntries();		 
+
+
 			foreach ($existingMediaGalleryEntries as $key => $entry) {
-				unset($existingMediaGalleryEntries[$key]);
+
+				if($params['delSyncImages'] == 0 )
+				{
+					unset($existingMediaGalleryEntries[$key]);
+				}
+				else if($params['delSyncImages'] ==1)
+				{
+				$image_full_path=($existingMediaGalleryEntries[$key]->getFile());
+				$image_name = explode('/',$image_full_path);
+				 $file = end($image_name);
+				$strArray2 =explode('_',$file);
+				 $str_withno = end($strArray2);
+				$strArrayExt =explode('.',$str_withno);
+				///removing number from end of filename and check file exist or not in media /import directory 
+				$file_without_no= str_replace("_".$str_withno, ".".end($strArrayExt), $file);			
+				$fullpath = $this->_filesystem->getDirectoryWrite(DirectoryList::MEDIA)->getAbsolutePath('import').'/'. $file;
+				$fullpath_without_no = $this->_filesystem->getDirectoryWrite(DirectoryList::MEDIA)->getAbsolutePath('import').'/'. $file_without_no;							
+					if(file_exists($fullpath) || file_exists($fullpath_without_no))
+					{
+
+						unset($existingMediaGalleryEntries[$key]);
+					}			
+				//unset($existingMediaGalleryEntries[$key]);
 				#$galleryProcessor->remove($productModel->getSku(), $entry['id']);
-			}
+				}
+			
 			$productModel->setMediaGalleryEntries($existingMediaGalleryEntries);
 			#$productModel->save();
 			$productRepository->save($productModel);
@@ -556,6 +591,7 @@ class CsvImportHandler
 			
 			//DELETES EXTRA BLANK STORE IMAGES
 			$attributeImage = $connection->fetchAll("SELECT DISTINCT P.entity_id, P.sku, V1.store_id, V1.value_id,
+    
     CASE
         WHEN V1.Value IS NULL
             THEN NULL
@@ -664,9 +700,21 @@ class CsvImportHandler
 					$connection->query("DELETE FROM ".$_catalog_product_entity_varchar." WHERE value_id = '".$attributeName['value_id']."'");
 				}
 			}
+            }
+        }catch(\Magento\Framework\Exception\NoSuchEntityException $ex)
+        {
+
+             $writer = new \Zend\Log\Writer\Stream(BP . '/var/log/delsyncerror.log');
+        $logger = new \Zend\Log\Logger();
+        $logger->addWriter($writer);
+
+        $logger->info('sku issue image del sync  : '.$product['sku']);
+        }
 		}
 
 		if($params['productImgImportSync'] == 1) { 	
+
+
 			$_itemCounter=0;
 			$arr = array("image", "small_image", "thumbnail", "gallery", "swatch_image");
 			foreach ($arr as $mediaAttributeCode) {
@@ -683,6 +731,8 @@ class CsvImportHandler
 										$file = '/'. $path_parts['basename'];
 										#$fullpath = $this->_filesystem->getDirectoryWrite(DirectoryList::MEDIA)->getAbsolutePath('catalog').'/product'. $file;
 										$fullpath = $this->_filesystem->getDirectoryWrite(DirectoryList::MEDIA)->getAbsolutePath('import'). $file;
+
+										
 										try {
 											#$filewithspacesreplaced = str_replace(" ","%20", $orgfile); //fix for urls with spaces in the Url
 											$ch = curl_init ($orgfile);
@@ -718,7 +768,27 @@ class CsvImportHandler
 							$file = '/'. $path_parts['basename'];
 							#$fullpath = $this->_filesystem->getDirectoryWrite(DirectoryList::MEDIA)->getAbsolutePath('catalog').'/product'. $file;
 							$fullpath = $this->_filesystem->getDirectoryWrite(DirectoryList::MEDIA)->getAbsolutePath('import'). $file;
-							try {
+							
+							if(!file_exists($fullpath))
+							{
+
+								$file="";
+							}
+
+                             $writer = new \Zend\Log\Writer\Stream(BP . '/var/log/images_details.log');
+                            $logger = new \Zend\Log\Logger();
+                            $logger->addWriter($writer);
+
+                           // $logger->info('images sync : '.$file.'<br>');
+							//with Capital extension 
+							$fullpath_CAP = $this->_filesystem->getDirectoryWrite(DirectoryList::MEDIA)->getAbsolutePath('import').'/'.$path_parts['filename'].'.'.strtoupper($path_parts['extension']);
+							if(file_exists($fullpath_CAP))
+							{
+								$file='/'.$path_parts['filename'].'.'.strtoupper($path_parts['extension']);
+							}
+                           
+
+							/*try {
 								#$filewithspacesreplaced = str_replace(" ","%20", $orgfile); //fix for urls with spaces in the Url
 								$ch = curl_init ($orgfile);
 								curl_setopt($ch, CURLOPT_HEADER, 0);
@@ -736,8 +806,12 @@ class CsvImportHandler
 								$fp = fopen($fullpath,'x');
 								fwrite($fp, $rawdata);
 								fclose($fp);
+								file_put_contents($fullpath, file_get_contents($orgfile));
+
+
+
 							}
-							catch (Exception $e) { echo "ERROR: " . $e; }
+							catch (Exception $e) { echo "ERROR: " . $e; }*/
 							
 							if($file!="") {
 								$ProductImageGallery[$mediaAttributeCode] = $file;
