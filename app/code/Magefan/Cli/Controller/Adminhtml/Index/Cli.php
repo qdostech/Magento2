@@ -61,6 +61,8 @@ class Cli extends \Magento\Backend\App\Action
      */
     public function execute()
     {
+       
+
         try {
             $this->validateUser();
 
@@ -77,8 +79,11 @@ class Cli extends \Magento\Backend\App\Action
                 throw new \Exception(__('cd command is not supported.'), 1);
             }
 
-            $logFile = $this->dir->getPath('var') . '/mfcli.txt';
-            exec($c = 'cd ' . $this->dir->getRoot() . ' && ' . $command . ' > ' . $logFile, $a, $b);
+            $logFile = $this->dir->getPath('var/log/') . '/mfcli.txt';
+
+           // echo $c = ('cd ' . $this->dir->getRoot() . ' && ' . $command . ' > ' . $logFile, $a, $b);
+           // exit;
+            shell_exec($c = 'cd ' . $this->dir->getRoot() . ' && ' . $command . ' > ' . $logFile, $a, $b);
             $message = file_get_contents($logFile);
             if (!$message) {
                 $message = __('Command not found or error occurred.' . PHP_EOL);
