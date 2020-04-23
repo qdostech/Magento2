@@ -188,6 +188,21 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
                 'type' => 'date'
             ]
         );
+
+         if (!$this->_storeManager->isSingleStoreMode()) {
+            $this->addColumn(
+                'store_id',
+                [
+                    'header' => __('Websites'),
+                    'sortable' => false,
+                    'index' => 'store_id',
+                    'type' => 'options',
+                    'options' => $this->_websiteFactory->create()->getCollection()->toOptionHash(),
+                    'header_css_class' => 'col-websites',
+                    'column_css_class' => 'col-websites'
+                ]
+            );
+        }
         $this->addColumn('status', array(
             'header' => __('Status'),
             'align' => 'center',
@@ -221,7 +236,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
      */
     protected function _prepareMassaction()
     {
-        $this->setMassactionIdField('id');
+        $this->setMassactionIdField('log_id');
         $this->getMassactionBlock()->setFormFieldName('id');
 
         $this->getMassactionBlock()->addItem(

@@ -15,7 +15,7 @@
 	<event name="controller_action_postdispatch_customer_account_createpost">
 		<observer name="Create_Customer_Shipping_Address" instance="Qdos\CustomerSync\Observer\CreateCustomerShippingAddress" />
 	</event> -->
-<!-- 	<event name="sales_quote_save_before">
+	<event name="sales_quote_save_before">
 		<observer name="Sales_Quote_Save_Before" instance="Qdos\CustomerSync\Observer\SalesQuoteSaveBefore" />
-	</event> -->
+	</event>
 </config>

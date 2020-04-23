@@ -14,10 +14,11 @@ ini_set("soap.wsdl_cache_enabled","0");
 use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\View\Result\PageFactory;
+use Psr\Log\LoggerInterface;
 
-class NewGroup extends \Magento\Backend\App\Action
+class NewGroup extends Action
 {
-    /**
+  /**
      * @var \Magento\Framework\View\Result\PageFactory
      */
     protected $resultPageFactory;
@@ -33,17 +34,87 @@ class NewGroup extends \Magento\Backend\App\Action
      */
     public function __construct(
         Context $context,
-        PageFactory $resultPageFactory )
+        PageFactory $resultPageFactory,
+        LoggerInterface $logger
+    )
     {
-        parent::__construct($context);
+        
         $this->resultPageFactory = $resultPageFactory;
+        $this->_logger = $logger;
+        parent::__construct($context);
     }
 
-    public function execute()
+
+    ##Rahul Chavan
+
+      public function execute()
     {
+        $storeId = (int)$this->getRequest()->getParam('store', 0);
         $resultRedirect = $this->resultRedirectFactory->create();
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-        $cData = $objectManager->get('Qdos\CustomerSync\Helper\Data')->importCustomerGroup();
+        $this->_resourceConfig = $objectManager->get('\Magento\Config\Model\ResourceModel\Config');
+        $this->_scopeConfig = $objectManager->get('\Magento\Framework\App\Config\ScopeConfigInterface');
+        $syncCustomerGroupStatus = $this->_scopeConfig->getValue('qdosConfig/permissions/customer_group_manual_sync', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+
+        if ($syncCustomerGroupStatus) {
+            $cronStatus = $this->_scopeConfig->getValue('qdosConfig/cron_status/current_cron_status', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+
+            shell_exec('php bin/magento cache:clean');
+            system('chmod -R 777 var/');
+
+            if (strtolower($cronStatus) == 'running') {
+                $logMsg = 'Another Sync already in progress. Please wait...';
+                $this->_logger->info($logMsg);
+                $this->messageManager->addError(__($logMsg));
+            } else {
+
+                $this->_resourceConfig->saveConfig('qdosConfig/cron_status/current_cron_status', "running", 'default', 0);
+
+                shell_exec('php bin/magento cache:clean');
+                system('chmod -R 777 var/');
+
+               // date_default_timezone_set('Asia/Kolkata');
+                $this->_resourceConfig->saveConfig('qdosConfig/cron_status/current_cron_updated_time', date("Y-m-d H:i:s"), 'default', 0);
+
+                $result = $objectManager->get('Qdos\CustomerSync\Helper\Data')->importCustomerGroup($storeId);
+
+                if ($result) {
+                    $logMsg = 'Customer groups in store were synchronized success.';
+                    $this->_logger->info($logMsg);
+                    $this->messageManager->addSuccess(__($logMsg));
+                } else {
+                    $logMsg = 'Can not synchronize some Customer groups in this store.';
+                    $this->_logger->info($logMsg);
+                    $this->messageManager->addError(__($logMsg));
+                }
+
+                $this->_resourceConfig->saveConfig('qdosConfig/cron_status/current_cron_status', "not running", 'default', 0);
+
+                shell_exec('php bin/magento cache:clean');
+                system('chmod -R 777 var/');
+
+            }
+        } else {
+            $logMsg = 'Manual Sync is Disabled.';
+            $this->_logger->info($logMsg);
+            $this->messageManager->addError(__($logMsg));
+        }
         return $resultRedirect->setPath('*/*/');
     }
+
+
+
+
+    //Not having cron running status qyue and permission setting
+
+ /*   public function execute()
+    {
+
+         $storeId = (int)$this->getRequest()->getParam('store', 0); 
+        $resultRedirect = $this->resultRedirectFactory->create();
+        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+        $cData = $objectManager->get('Qdos\CustomerSync\Helper\Data')->importCustomerGroup($storeId);
+        return $resultRedirect->setPath('*/
+        //*/');
+    //}
 }
