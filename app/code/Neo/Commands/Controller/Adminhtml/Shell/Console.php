@@ -11,6 +11,11 @@
 
 namespace Neo\Commands\Controller\Adminhtml\Shell;
 
+set_time_limit(0);
+ini_set('max_execution_time', 30000);
+ini_set('memory_limit', '-1');
+ini_set('default_socket_timeout', 2000);
+
 class Console extends \Magento\Backend\App\Action
 {
     /**
@@ -88,9 +93,13 @@ class Console extends \Magento\Backend\App\Action
 
 
             } else if($postData['shell_type'] == 2){
+
+                //php -d memory_limit=-1
                 // $command ="php ".$postData['path']."/".$postData['command'];
-                $command ="/usr/local/lsws/lsphp70/bin/php ".$postData['command'];
-                $data['message'] = "<pre>".shell_exec($command)."</pre>";
+                $command ="/usr/local/lsws/lsphp71/bin/php ".$postData['command'];
+                $execute_cmd=shell_exec($command)?shell_exec($command):shell_exec("php ".$postData['command']);
+
+                $data['message'] = "<pre>".$execute_cmd."</pre>";
             }
 
 
