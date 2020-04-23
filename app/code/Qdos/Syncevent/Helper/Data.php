@@ -57,7 +57,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 		$base = $this->directory_list->getPath('lib_internal');
     $lib_file = $base.'/Test.php'; 
     require_once($lib_file);
-    $client = Test();
+   $clientLog= $client = Test();
     $resultClient = $client->connect();
 
     $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
@@ -69,7 +69,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     $error = false;
     $start_time = date('Y-m-d H:i:s');
     $logMsg = array();
-    //$clientLog->setLog("Sync Events Started. ",null,$logFileName); 
+    $clientLog->setLog("Sync Events Started. ",null,$logFileName); 
     /*$writer = new \Zend\Log\Writer\Stream(BP . '/var/log/EventLogSwapnil.log');
         $logger = new \Zend\Log\Logger();
         $logger->addWriter($writer);*/
@@ -87,7 +87,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         if (is_object($result) && isset($result->Event)) {
           $eventList = $this->convertObjToArray($result->Event);
           // $clientLog->setLog($eventList,null,$logFileName); 
-          // $clientLog->setLog('Received: ' . count($eventList) . ' event(s).',null,$logFileName);
+          $logMsg[]="Total Records ". count($eventList) ."";
+           $clientLog->setLog('Received: ' . count($eventList) . ' event(s).',null,$logFileName);
           foreach ($eventList as $event) {
             if (isset($event['event_id']) and is_numeric($event['event_id'])) {
               $_events = $objectManager->create('\Qdos\Syncevent\Model\Syncevent');
@@ -184,12 +185,13 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             }
           } //foreach
           $this->reindexdata();
-          //$clientLog->setLog('Sync success: ' . $i . ' event(s)',null,$logFileName); 
+          $clientLog->setLog('Sync success: ' . $i . ' event(s)',null,$logFileName); 
+           $logMsg[]='Sync success: ' . $i . ' event(s)';
         }
       }
     }catch(Exception $e){
       $error = true;
-      //$clientLog->setLog('Import events failed.' . $ex->getMessage(),null,$logFileName); 
+      $clientLog->setLog('Import events failed.' . $ex->getMessage(),null,$logFileName); 
     }
 
     if (isset($_SERVER['REMOTE_ADDR']) && !empty($_SERVER['REMOTE_ADDR'])) {
@@ -206,6 +208,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
               ->setDescription(implode('<br />', $logMsg))
               ->setIpAddress($ipAddress)
               ->save();
+              return (!$error);
+
   }
 	
   public function convertObjToArray($object){

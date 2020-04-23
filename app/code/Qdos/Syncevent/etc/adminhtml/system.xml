@@ -77,6 +77,48 @@
 						<field id="qdosSync/autoSyncEvents/add_another_new_sync_events_schedule">1</field>
 					</depends>
 				</field>
+
+				<field id="add_another_new_one_sync_events_schedule" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Add new schedule</label>
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+					<depends>
+						<field id="qdosSync/autoSyncEvents/auto_sync_events">1</field> 
+						<field id="qdosSync/autoSyncEvents/add_new_sync_events_schedule">1</field>
+						<field id="qdosSync/autoSyncEvents/add_another_new_sync_events_schedule">1</field>
+					</depends>
+				</field>
+				<field id="time4" translate="label" type="time" sortOrder="11" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Start Time</label>
+					<depends>
+                        <field id="qdosSync/autoSyncEvents/auto_sync_events">1</field> 
+						<field id="qdosSync/autoSyncEvents/add_new_sync_events_schedule">1</field>
+						<field id="qdosSync/autoSyncEvents/add_another_new_sync_events_schedule">1</field>
+						<field id="qdosSync/autoSyncEvents/add_another_new_one_sync_events_schedule">1</field>
+					</depends>
+				</field>
+
+				<field id="add_another_new_two_sync_events_schedule" translate="label" type="select" sortOrder="12" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Add new schedule</label>
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+					<depends>
+						<field id="qdosSync/autoSyncEvents/auto_sync_events">1</field> 
+						<field id="qdosSync/autoSyncEvents/add_new_sync_events_schedule">1</field>
+						<field id="qdosSync/autoSyncEvents/add_another_new_sync_events_schedule">1</field>
+						<field id="qdosSync/autoSyncEvents/add_another_new_one_sync_events_schedule">1</field>
+					</depends>
+				</field>
+				<field id="time5" translate="label" type="time" sortOrder="13" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Start Time</label>
+					<depends>
+                        <field id="qdosSync/autoSyncEvents/auto_sync_events">1</field> 
+						<field id="qdosSync/autoSyncEvents/add_new_sync_events_schedule">1</field>
+						<field id="qdosSync/autoSyncEvents/add_another_new_sync_events_schedule">1</field>
+						<field id="qdosSync/autoSyncEvents/add_another_new_one_sync_events_schedule">1</field>
+						<field id="qdosSync/autoSyncEvents/add_another_new_two_sync_events_schedule">1</field>
+					</depends>
+				</field>
+
+
 			</group>
 		</section>
     </system>

@@ -62,12 +62,44 @@ class SyncEvent extends \Magento\Backend\App\Action
     {
       $resultRedirect = $this->resultRedirectFactory->create();
       $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-      $result = $objectManager->create('Qdos\Syncevent\Helper\Data')->importEvents();
-     /* $objectManager->create('Magento\Framework\App\Request\Http')->setHeader('Content-Type','text/xml; charset=UTF-8')
-                      ->setHeader('Content-Length',strlen("test test"))
-                      ->setBody('test test');*/
+        $this->_resourceConfig = $objectManager->get('\Magento\Config\Model\ResourceModel\Config');
+        $this->_scopeConfig = $objectManager->get('\Magento\Framework\App\Config\ScopeConfigInterface');
+        $cronStatus = $this->_scopeConfig->getValue('qdosConfig/cron_status/current_cron_status', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
 
-      //exit('demo');
+            shell_exec('php bin/magento cache:clean');
+            system('chmod -R 777 var/');
+
+            if (strtolower($cronStatus) == 'running') {
+                $logMsg = 'Another Sync already in progress. Please wait...';
+              //  $this->_log->info($logMsg);
+                $this->messageManager->addError(__($logMsg));
+            } else {
+
+                $this->_resourceConfig->saveConfig('qdosConfig/cron_status/current_cron_status', "running", 'default', 0);
+
+                shell_exec('php bin/magento cache:clean');
+                system('chmod -R 777 var/');
+
+               // date_default_timezone_set('Asia/Kolkata');
+                $this->_resourceConfig->saveConfig('qdosConfig/cron_status/current_cron_updated_time', date("Y-m-d H:i:s"), 'default', 0);
+
+               $result = $objectManager->create('Qdos\Syncevent\Helper\Data')->importEvents();
+                if ($result) {
+                    $logMsg = 'Sync Event were synchronized success.';
+                    //$this->_log->info($logMsg);
+                    $this->messageManager->addSuccess(__($logMsg));
+                } else {
+                    $logMsg = 'Can not synchronize some events.';
+                    //$this->_log->info($logMsg);
+                    $this->messageManager->addError(__($logMsg));
+                }
+
+                $this->_resourceConfig->saveConfig('qdosConfig/cron_status/current_cron_status', "not running", 'default', 0);
+
+                shell_exec('php bin/magento cache:clean');
+                system('chmod -R 777 var/');
+
+            }
 
       $resultRedirect->setPath('*/*/');     
       return $resultRedirect;

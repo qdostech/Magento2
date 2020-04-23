@@ -3,8 +3,7 @@
 
     <body>
         <referenceContainer name="content">
-            <block class="Qdos\Syncevent\Block\Adminhtml\Syncevent" name="syncevent_syncevent_container"/>
-             <block class="Magento\Framework\View\Element\Template" name="logfile" template="Qdos_QdosSync::log.phtml" after="syncevent_syncevent_container" />
+            <block class="Qdos\Syncevent\Block\Adminhtml\Allevents" name="syncevent_allsyncevent_container"/>
         </referenceContainer>
     </body>
 </page>

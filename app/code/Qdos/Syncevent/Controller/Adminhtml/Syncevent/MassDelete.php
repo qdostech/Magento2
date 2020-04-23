@@ -25,6 +25,6 @@ class MassDelete extends \Magento\Backend\App\Action
                 $this->messageManager->addError($e->getMessage());
             }
         }
-		 $this->_redirect('*/*/');
+		 $this->_redirect('syncevent/allsyncevent/index');
     }
 }
