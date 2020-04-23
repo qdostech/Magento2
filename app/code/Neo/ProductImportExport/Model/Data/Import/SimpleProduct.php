@@ -21,12 +21,16 @@ class SimpleProduct extends \CommerceExtensions\ProductImportExport\Model\Data\I
      * @param $ProductStockdata
      * @param $ProductSupperAttribute
      * @param $ProductCustomOption
-     * @param $logMsg
+     * @param $logMsg 
      * @return array
      * @throws \Exception
      */
+
+    const TABLE_TIER_PRICE = 'catalog_product_entity_tier_price';
+
     public function SimpleProductData($params, $ProcuctData, $ProductAttributeData, $ProductImageGallery, $ProductStockdata, $ProductSupperAttribute, $ProductCustomOption, $logMsg)
     {
+        
         //UPDATE PRODUCT ONLY [START]
         //$allowUpdateOnly = false;
         if ($productIdupdate = $this->Product->loadByAttribute('sku', $ProcuctData['sku'])) {
@@ -194,7 +198,17 @@ class SimpleProduct extends \CommerceExtensions\ProductImportExport\Model\Data\I
                     // 	echo 'sankupradeep'; exit;
                     // 	$SetProductData->addImageToMediaGallery($imagePath.$_imageForImport, array('image', 'small_image', 'thumbnail'), false, false);
                     // }
+                    try
+                    {                   
                     $SetProductData->addImageToMediaGallery($imagePath . $_imageForImport, array('image', 'small_image', 'thumbnail'), false, false);
+                	}catch(\Magento\Framework\Exception\LocalizedException $ex)
+                	{
+                		 $writer = new \Zend\Log\Writer\Stream(BP . '/var/log/images_details.log');
+                            $logger = new \Zend\Log\Logger();
+                            $logger->addWriter($writer);
+                            $logger->info('images sync ::: '.$ProcuctData['sku']."--".$imagePath.$_imageForImport.'.....<br>--'.$ex->getMessage());
+
+                	}
                 }
             }
         }
@@ -204,14 +218,149 @@ class SimpleProduct extends \CommerceExtensions\ProductImportExport\Model\Data\I
         $SetProductData->setHasOptions(true);
         $SetProductData->setProductOptions($ProductCustomOption);
         $SetProductData->setCanSaveCustomOptions(true);
+        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+        $tierPriceFactory = $objectManager->get('\Magento\Catalog\Api\Data\ProductTierPriceInterfaceFactory');
 
-        if (isset($ProductSupperAttribute['tier_prices'])) {
-            if ($ProductSupperAttribute['tier_prices'] != "") {
-                $SetProductData->setTierPrice($ProductSupperAttribute['tier_prices']);
+        /* Set group price  
+         * Rahul Chavan
+         * 4 feb 2020
+         */
+
+      
+        if (isset($ProductSupperAttribute['group_price_price'])) {
+
+            if ($ProductSupperAttribute['group_price_price'] != "") {
+
+                 $productId = $objectManager->get('Magento\Catalog\Model\Product')->getIdBySku( $ProcuctData['sku']);
+                  // $tierPriceStorage = $objectManager->get("Magento\Catalog\Model\Product\Price\TierPriceStorage");
+                     if($productId)
+                        {
+                         $resource = $objectManager->get('Magento\Framework\App\ResourceConnection');
+                         $connection = $resource->getConnection();
+                         $myTable = $resource->getTableName(self::TABLE_TIER_PRICE);
+
+                         // $connection->delete(
+                         //     $myTable,
+                          //     ['entity_id = ?' => $productId,
+                          //     'qty = ?'=>1 ] 
+                          // );                                  
+                         $sqls = " DELETE FROM ".$myTable." WHERE entity_id= ".$productId." AND qty=1 ";
+
+                         $connection->query($sqls);
+
+
+                            //delete using tier storage object.
+                         // $datass=$tierPriceStorage->get(array($ProcuctData['sku']));
+
+                         // $deleted=$tierPriceStorage->delete($datass);
+                        
+
+                         }
+
+                     $group_string = explode("|", $ProductSupperAttribute['group_price_price']);
+
+                     foreach ($group_string as $TpriceDataString)
+                      {
+                        $TpriceData = explode("=", $TpriceDataString);
+                        // $groupPrices[] = array( 'website_id'  => 0,
+                        //                         'cust_group'  => $TpriceData[0],
+                        //                         'price_qty'   => 1,
+                        //                         'price'       =>$TpriceData[1]
+                        //                          );
+
+                        $groupPrices []= $tierPriceFactory->create()->setCustomerGroupId($TpriceData[0])->setQty(1)->setValue($TpriceData[1]) ;
+                       }
+                       try
+                       {
+
+
+                            $SetProductData->setTierPrices($groupPrices);
+
+
+                        }catch (Exception $e) {
+
+                            $logMsgs[] = 'Error in processing';
+                            $logMsgs[] = $this->decodeErrorMsg($e->getMessage());
+                            $message = $e->getMessage();
+                            
+                        }
+
             }
         }
 
-        $SetProductData->save();
+        /* Set Tier price  
+         * Rahul Chavan
+         * 4 feb 2020
+         */
+
+           if (isset($ProductAttributeData['tier_prices'])) {
+            if ($ProductAttributeData['tier_prices'] != "") {
+
+
+
+               // $SetProductData->setTierPrice($ProductSupperAttribute['tier_prices']);
+                   $productId = $objectManager->get('Magento\Catalog\Model\Product')->getIdBySku( $ProcuctData['sku']);
+
+                       if($productId)
+                        {
+                           $resource = $objectManager->get('Magento\Framework\App\ResourceConnection');
+                           $connection = $resource->getConnection();
+                           $myTable = $resource->getTableName(self::TABLE_TIER_PRICE);
+                            // $connection->delete(
+                            //     $myTable,
+                            //     ['entity_id = ?' => $productId,
+                            //     'qty = ?'=>1 ] 
+                            // );                                  
+                           $sqls = " DELETE FROM ".$myTable." WHERE entity_id= ".$productId." AND qty!=1 ";
+
+                            $connection->query($sqls);
+                          }
+
+                 $tier_string = explode("|", $ProductAttributeData['tier_prices']);
+            
+                 foreach ($tier_string as $TpriceDataString)
+                  {
+                    $TpriceData = explode("=", $TpriceDataString);
+                    // $groupPrices[] = array( 'website_id'  => 0,
+                    //                         'cust_group'  => $TpriceData[0],
+                    //                         'price_qty'   => 1,
+                    //                         'price'       =>$TpriceData[1]
+                    //                          );
+
+                    $tierPrices[]=   $tierPriceFactory->create()->setCustomerGroupId($TpriceData[0])->setQty($TpriceData[1])->setValue($TpriceData[2]) ;
+                   }
+                  
+
+                $SetProductData->setTierPrices($tierPrices);
+
+               // $SetProductData->setTierPrice($tierPrices);
+            }
+        }
+         if (isset($ProductSupperAttribute['group_price_price']) && isset($ProductAttributeData['tier_prices'])) 
+         { 
+                if($ProductSupperAttribute['group_price_price'] != "" && $ProductAttributeData['tier_prices'] != "")
+                {
+
+
+                         $SetProductData->setTierPrices(array_merge($groupPrices,$tierPrices));
+
+                }
+            }
+
+        try
+        {
+
+       		 $SetProductData->save();
+        }catch(\Magento\UrlRewrite\Model\Exception\UrlAlreadyExistsException $ex)
+        {
+        	 $writer = new \Zend\Log\Writer\Stream(BP . '/var/log/urlexist.log');
+                            $logger = new \Zend\Log\Logger();
+                            $logger->addWriter($writer);
+                            $logger->info('error url key exist for sku ::: '.$ProcuctData['sku'].'.....<br>--'.$ex->getMessage());
+        }
+
+
+
         $logMsg[] = 'Product uploaded successfully sku - ' . $SetProductData->getSku();
         if (isset($ProductSupperAttribute['related'])) {
             if ($ProductSupperAttribute['related'] != "") {

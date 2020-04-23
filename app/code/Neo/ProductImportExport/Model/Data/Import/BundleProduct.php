@@ -141,7 +141,18 @@ class BundleProduct extends \CommerceExtensions\ProductImportExport\Model\Data\I
                     $possibleGalleryData = explode(',', $ImageFile);
                     foreach ($possibleGalleryData as $_imageForImport) {
                         if (file_exists($imagePath . $_imageForImport)) {
-                            $SetProductData->addImageToMediaGallery($imagePath . $_imageForImport, $imageColumns, false, false);
+                            try
+                            {
+                                  $SetProductData->addImageToMediaGallery($imagePath . $_imageForImport, $imageColumns, false, false);
+                            }
+                            catch(\Magento\Framework\Exception\LocalizedException $ex)
+                              {      
+                                $writer = new \Zend\Log\Writer\Stream(BP . '/var/log/images_details.log');
+                                $logger = new \Zend\Log\Logger();
+                                $logger->addWriter($writer);
+                                $logger->info('images sync ::: '.$ProcuctData['sku']."--".$imagePath.$_imageForImport.'.....<br>--'.$ex->getMessage());
+
+                               }
                         }
                         //$SetProductData->addImageToMediaGallery($imagePath . $_imageForImport, $imageColumns, false, false);
                     }
@@ -234,7 +245,18 @@ class BundleProduct extends \CommerceExtensions\ProductImportExport\Model\Data\I
                 $SetProductData->setExtensionAttributes($extension);
             }
             /*end*/
-            $SetProductData->save();
+            try
+                {
+                     $SetProductData->save();
+
+                }catch(\Magento\UrlRewrite\Model\Exception\UrlAlreadyExistsException $ex)
+                {
+                     $writer = new \Zend\Log\Writer\Stream(BP . '/var/log/urlexist.log');
+                     $logger = new \Zend\Log\Logger();
+                      $logger->addWriter($writer);
+                      $logger->info('error url key exist for sku ::: '.$ProcuctData['sku'].'.....<br>--'.$ex->getMessage());
+                }
+
             $logMsg[] = 'Product uploaded successfully sku - ' . $SetProductData->getSku();
 
             if (isset($ProductSupperAttribute['related'])) {
