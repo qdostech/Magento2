@@ -10,10 +10,12 @@ ini_set('default_socket_timeout', 2000);
 class Status extends \Magento\Framework\App\Helper\AbstractHelper
 {
 
+    protected $invoiceService;
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,
         \Magento\Framework\App\Filesystem\DirectoryList $directory_list,
         \Qdos\Sync\Helper\Sync $helperSync,
+        \Magento\Sales\Model\Service\InvoiceService $invoiceService,
         // \Magento\Backend\Model\Session $adminsession,
         // \Magento\Framework\Session\SessionManagerInterface $coreSession,
         // \Magento\Framework\App\ResourceConnection $resourceConnection,
@@ -36,6 +38,7 @@ class Status extends \Magento\Framework\App\Helper\AbstractHelper
         $this->_transactionFactory = $transactionFactory;
         $this->_orderConfig = $orderConfig;
         $this->_scopeConfig = $scopeConfig;
+        $this->_invoiceService=$invoiceService;
 
     }
 

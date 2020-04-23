@@ -61,7 +61,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
     {
 		try{
             $connection = $this->_resource->getConnection(\Magento\Framework\App\ResourceConnection::DEFAULT_CONNECTION);
-            $orderSyncStatusTable = $connection->getTableName('order_sync_status');
+            $orderSyncStatusTable = $this->_resource->getTableName('order_sync_status');
             $collection = $this->orderCollectionFactory->create(); 
             $collection->join(array('payment'=>'sales_order_payment'),'main_table.entity_id=parent_id','method');
             $collection->getSelect()->joinLeft(array('ordersyncstatus'=>$orderSyncStatusTable),'main_table.entity_id=ordersyncstatus.order_id',array('sync_status'=>'sync_status'));
