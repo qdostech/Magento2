@@ -60,7 +60,9 @@ class Sync extends \Magento\Backend\App\Action
         $resultRedirect = $this->resultRedirectFactory->create();
         $manualSyncProduct = $this->_scopeConfig->getValue('qdosConfig/permissions/manual_sync_product');
         if ($manualSyncProduct) {
-            $productIds = $this->getRequest()->getParam('sync');
+            //$productIds = $this->getRequest()->getParam('sync');
+             $productIds = !empty($this->getRequest()->getParam('sync'))?$this->getRequest()->getParam('sync'):$this->getRequest()->getParam('id');
+
             if (is_array($productIds)) {
                 $productIds = implode('|', $productIds);
             }

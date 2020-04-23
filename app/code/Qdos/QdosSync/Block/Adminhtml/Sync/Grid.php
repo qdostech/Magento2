@@ -107,7 +107,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
         try {
             $store = $this->_getStore();
             $collection = $this->_collectionFactory->load()
-                ->addFieldToFilter('activity_type', array('in' => array('product', 'import_attribute', 'category', 'price', 'inventory', 'delete_product', 'order_status', 'order', 'position', 'image', 'auto_reindex')));
+                ->addFieldToFilter('activity_type', array('in' => array('product', 'import_attribute', 'category', 'price', 'inventory', 'delete_product', 'order_status', 'order', 'position', 'image', 'auto_reindex', 'product_image_delete' )));
 
             if (!$this->_storeManager->isSingleStoreMode() && $store->getId()){
                 $collection->addFieldToFilter('store_id', $store->getId());
@@ -148,7 +148,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
                 'type' => 'options',
                 'class' => 'activity',
                 'renderer' => 'Qdos\QdosSync\Block\Adminhtml\Sync\Renderer\Span',
-                'options' => $this->_qdosSync->getOptions()
+                'options' => $this->activitySync->getOptions()
             ]
         );
         $this->addColumn(

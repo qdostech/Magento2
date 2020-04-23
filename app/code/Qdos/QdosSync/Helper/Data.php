@@ -15,11 +15,16 @@ use Magento\Eav\Model\Entity\Attribute\GroupFactory;
 use Magento\Eav\Model\Entity\Attribute\Set;
 use Magento\Eav\Model\Entity\Attribute\SetFactory;
 use Magento\Eav\Model\Entity\TypeFactory;
+use Magento\Catalog\Api\Data\ProductTierPriceInterfaceFactory;
+use Magento\Catalog\Api\ScopedProductTierPriceManagementInterface;
+
 
 // use \Psr\Log\LoggerInterface;
 
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
+
+    const TABLE_TIER_PRICE = 'catalog_product_entity_tier_price';
     protected $_pushArr = array();
     protected $_i = 0;
     protected $_lostDataArr = array();
@@ -30,6 +35,19 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * @param \Magento\Framework\App\Helper\Context $context
      */
+
+
+     /**
+     * @var ScopedProductTierPriceManagementInterface
+     */
+    protected $tierPrice;
+
+    protected $groupFactory;
+
+    /**
+     * @var ProductTierPriceInterfaceFactory
+     */
+    protected $productTierPriceFactory;
 
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,
@@ -46,7 +64,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         \Magento\Eav\Api\Data\AttributeOptionInterfaceFactory $optionFactory,
         \Qdos\QdosSync\Model\Log $log,
         \Neo\Winery\Model\Syncgrapes $synccategorieslog,
-        \Qdos\QdosSync\Model\Syncattribute $syncattributelog
+        \Qdos\QdosSync\Model\Syncattribute $syncattributelog,
+        \Magento\Catalog\Model\CategoryFactory $categoryFactory,
+        ScopedProductTierPriceManagementInterface $tierPrice,
+        ProductTierPriceInterfaceFactory $productTierPriceFactory,
+        \Magento\Customer\Model\GroupFactory $groupFactory
+
     )
     {
         parent::__construct($context);
@@ -64,6 +87,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $this->_log = $log;
         $this->_synccategorieslog = $synccategorieslog;
         $this->_syncattributelog = $syncattributelog;
+        $this->_categoryFactory = $categoryFactory;
+        $this->tierPrice = $tierPrice;
+        $this->productTierPriceFactory = $productTierPriceFactory;
+        $this->groupFactory = $groupFactory;
     }
 
     public function toOptionMultiSelectArray()
@@ -75,7 +102,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             array('value' => 'Price', 'label' => 'Price'),
             array('value' => 'Delete Product', 'label' => 'Delete Product'),
             array('value' => 'Order', 'label' => 'Order'),
-            array('value' => 'Manual Sync Product', 'label' => 'Manual Sync Product')
+            array('value' => 'Manual Sync Product', 'label' => 'Manual Sync Product'),
+            array('value' => 'customer', 'label' => 'Customer Sync'),
+            array('value' => 'customer_group', 'label' => 'Sync customer Group')
         );
     }
 
@@ -800,7 +829,30 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $category->setId($data['id']);
             $parentId = $data['par_row_id'];
             $setPath = str_replace("-", " ", strtolower($data['name']));
-            $category->setUrlKey($setPath . $data['id']);
+
+            $collection = $this->_categoryFactory->create()
+                    ->getCollection()
+                    ->addAttributeToFilter('url_key',strtolower(str_replace(str_split("' "),"-",rtrim($setPath))))
+                    ->addFieldToFilter('entity_id',array('neq'=>$data['id']))
+                    ->getFirstItem();
+
+
+
+                if($collection->getId())
+                {
+                    // print_r($collection->getData());
+                    // exit;
+                     $category->setUrlKey($setPath . $data['id']);
+                     $client->setLog("Not Empty ID setPATH--".strtolower(str_replace(str_split("' "),"-",rtrim($setPath)))."::<br>", null, "categoryUrlIDKey.log");
+                }
+                else
+                {
+                      $category->setUrlKey(strtolower(str_replace(str_split("' "),"-",rtrim($setPath))));
+                     $client->setLog("Empty ID SETPATH---".strtolower(str_replace(str_split("' "),"-",rtrim($setPath)))."::<br>", null, "categoryUrlKey.log");
+                }
+
+
+            //$category->setUrlKey($setPath . $data['id']);
             $category->setPosition($data['order']);
 
             // if (!$parentId) {
@@ -915,7 +967,26 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $categoryTmp->setName($name);
             $categoryTmp->setIsActive(true);
             $categoryTmp->setIsAnchor(1);
-            $categoryTmp->setUrlKey($url . $catId);
+              $collection = $this->_categoryFactory->create()
+                    ->getCollection()
+                    ->addAttributeToFilter('url_key',strtolower(str_replace(str_split("' "),"-",rtrim($url))))
+                    ->addFieldToFilter('entity_id',array('neq'=>$catId))
+                    ->getFirstItem();
+
+                 if($collection->getId())
+                {
+                    
+                     $client->setLog("Not Empty ID".strtolower(str_replace(str_split("' "),"-",rtrim($url)))."::<br>", null, "categoryUrlIDKey.log");
+                     $categoryTmp->setUrlKey($url . $catId);
+                }
+                else
+                {
+                     $client->setLog("Empty ID".strtolower(str_replace(str_split("' "),"-",rtrim($url)))."::<br>", null, "categoryUrlKey.log");    
+                    $categoryTmp->setUrlKey(strtolower(str_replace(str_split("' "),"-",rtrim($url))));
+                  }
+
+
+          // $categoryTmp->setUrlKey($url . $catId);
             $categoryTmp->setData('description', 'description');
             $categoryTmp->setParentId($parentCategory->getId());
             $categoryTmp->setStoreId($storeId);
@@ -960,6 +1031,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         ini_set('default_socket_timeout', 900); // or whatever new value you want
         ini_set("memory_limit", "2048M");
         passthru("/bin/bash rename.sh");
+         $logFileName = "importproduct-" . date('Ymd') . ".log";
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
         $skuBasedProductSync = $objectManager->get('Magento\Framework\App\Config\ScopeConfigInterface')->getValue('qdosConfig/permissions/sku_based_product_sync');
         $manualSyncProduct = $objectManager->get('Magento\Framework\App\Config\ScopeConfigInterface')->getValue('qdosConfig/permissions/manual_sync_product');
@@ -1024,6 +1096,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 $product_id_list = $productIds; // get details of the specific product ids
                 $product = $objectManager->get("\Magento\Catalog\Model\Product")->load($product_id_list);
 
+             
                 $resultClient = $resultClient->Getproductscsv(array('store_url' => $store_url, 'PRODUCT_ID' => $product_id, 'PRODUCT_TYPE' => $product_type, 'PRODUCT_ID_LIST' => $product_id_list));
 
                 //$client->setLog("nnnnnnnnnnnn" . json_encode($resultClient, true), null, $logFileName);
@@ -1056,10 +1129,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                     }
                 }
 
-                // echo count($objCollection); exit;
-
-                $client->setLog("Products count => " . count($objCollection), null, $logFileName);
-
+                
                 /*if (isset($_SERVER['REMOTE_ADDR']) && !empty($_SERVER['REMOTE_ADDR'])) {
                   $ipAddress = $_SERVER['REMOTE_ADDR'];
                 }else{
@@ -1071,7 +1141,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                   $logMsgs[] = "Manual Sync Process";
                 }*/
 
-                $logMsgs[] = "Total Products Count = " . count($objCollection);
+                // $logMsgs[] = "Total Products Count = " . count($objCollection);
+
                 $client->setLog("CSV Generation starts", null, $logFileName);
                 $headerflag = 0;
 
@@ -1094,18 +1165,29 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 }
 
                 //echo "<pre>";print_r($arrUrlKey);exit;
-
-                if (count($objCollection) == 1) {
-                    $collection[] = $objCollection;
+                $prodObjToArrCount = 1;
+                // property_exists($objCollection, 'ID') --> TRUE
+                // if(is_array($objCollection) || is_object($objCollection)){
+                // its php 7.2 count($scalarObj) won't work so commenting this line
+                // As we are getting either obj or array. 
+                if (is_object($objCollection)) {
+                    $collection[] = $objCollection;    
+                    $client->setLog("***** Products count 1 in object ***** ", null, $logFileName);                
+                    // $client->setLog("Products count => " . $prodObjToArrCount, null, $logFileName);                
                 } else {
                     $collection = $objCollection;
+                    // To get count
+                    $prodObjToArr = $this->convertItemToArray($objCollection);
+                    $prodObjToArrCount =  count($prodObjToArr);
+                    $client->setLog("Products count => " . $prodObjToArrCount, null, $logFileName);                    
                 }
 
                 $productSkuMap = array();
                 $CodeInColumn = array();
                 $arrProductData = array();
                 foreach ($collection as $item) {
-                    $item = $this->convertItemToArray($item);
+                    $item = $this->convertItemToArray($item); // This is to convert obj into array
+                    // print_r($item);
                     $productSkuMap[$item['id']] = $item['sku'];
                     $arrProductData[$item['sku']] = $item;
 
@@ -1223,6 +1305,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                             }
                         }
 
+                        //Rahul Chavan 
+                        //date 5 feb 2020 ...group price changes
+
                         if (isset($item['groupid_price']) && ($item['price'] > 0)) {
                             $groupPrice = str_replace(':', '=', $item['groupid_price']);
                             $arrGroupPrice = explode("|", $groupPrice);
@@ -1233,14 +1318,107 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                                 $arrPercentGroupPrice[] = $arrPricing[0] . '=' . $percentGroupPrice;
                             }
                             $strPercentGroupPrice = implode("|", $arrPercentGroupPrice);
-                            $item['group_price_price'] = $strPercentGroupPrice;
+
+
+                              //Check Customer Group Exist validation
+                            $customerGroupData = $this->groupFactory->create();
+                             $group_price_string = explode("|", $strPercentGroupPrice);
+                             $grpprice=array();
+                             foreach ($group_price_string as $TpriceDataString) {
+
+
+                                    $TpriceData = explode("=", $TpriceDataString);
+
+                                    $customer_groupId= $TpriceData[0];
+
+                                    $customerGroupDatas= $customerGroupData->load($customer_groupId); 
+                                      
+                                        if(count($customerGroupDatas->getData())>0)
+                                        {
+                                        $grpprice[]=$TpriceDataString;
+                                        }
+                                        else
+                                        {
+                                        $client->setLog("Group Price Not added Customer group missing-- ".$item['sku'], null, $logFileName); 
+                                        $logMsgs[]="Group Price Not added Customer group missing-- ".$item['sku'];
+                                        }
+                                                                    
+                                }
+
+                               $grpprice=implode('|', $grpprice) ; 
+
+
+                            $item['group_price_price'] = $grpprice;
+
+                         /*   $groupid_price=$item['groupid_price'];
+                                //delete existing group price
+                              $productId = $objectManager->get('Magento\Catalog\Model\Product')->getIdBySku($item['sku']);
+
+                                if($productId)
+                                {
+                                    $resource = $objectManager->get('Magento\Framework\App\ResourceConnection');
+                                    $connection = $resource->getConnection();
+                                    $myTable = $resource->getTableName(self::TABLE_TIER_PRICE);
+
+                                    $connection->delete(
+                                        $myTable,
+                                        ['entity_id = ?' => $productId]
+                                    );
+                                 }
+                             $item['group_price_price']=$item['groupid_price'];*/
+                        }
+
+                        else
+                        {
+                             $productId = $objectManager->get('Magento\Catalog\Model\Product')->getIdBySku($item['sku']);
+                            if($productId)
+                                {
+                                    $resource = $objectManager->get('Magento\Framework\App\ResourceConnection');
+                                    $connection = $resource->getConnection();
+                                    $myTable = $resource->getTableName(self::TABLE_TIER_PRICE);
+                                     $sqls = " DELETE FROM ".$myTable." WHERE entity_id= ".$productId." AND qty=1 ";
+                                         $connection->query($sqls);
+                                    // $connection->delete(
+                                    //     $myTable,
+                                    //     ['entity_id = ?' => $productId]
+                                    // );
+                                 }
+
+
                         }
                         unset($item['groupid_price']);
                     } else {
                         $item['bundle_options'] = '';
                         $item['bundle_selections'] = '';
                         if (isset($item['groupid_price'])) {
-                            $groupPrice = str_replace(':', '=', $item['groupid_price']);
+                            //Check Customer Group Exist validation
+                            $customerGroupData = $this->groupFactory->create();
+                             $group_price_string = explode("|", $item['groupid_price']);
+                             $grpprice=array();
+                             foreach ($group_price_string as $TpriceDataString) {
+
+
+                                    $TpriceData = explode(":", $TpriceDataString);
+
+                                    $customer_groupId= $TpriceData[0];
+
+                                    $customerGroupDatas= $customerGroupData->load($customer_groupId); 
+                                       
+                                        if(count($customerGroupDatas->getData())>0)
+                                        {
+                                        $grpprice[]=$TpriceDataString;
+                                        }
+                                        else
+                                        {
+                                        $client->setLog("Group Price Not added Customer group missing-- ".$item['sku'], null, $logFileName); 
+                                        $logMsgs[]="Group Price Not added Customer group missing-- ".$item['sku'];
+                                        }
+                                                                    
+                                }
+
+                               $grpprice=implode('|', $grpprice) ; 
+
+                            $groupPrice = str_replace(':', '=', $grpprice);
                             $item['group_price_price'] = $groupPrice;
                         }
                         unset($item['groupid_price']);
@@ -1309,6 +1487,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
                     $enableTierPriceSync = $objectManager->get('Magento\Framework\App\Config\ScopeConfigInterface')->getValue('qdosConfig/permissions/tier_price_sync');
                     if ($enableTierPriceSync) {
+
+                        
+
                         if ($item['tier_price'] != '') {
                             //Added by Shailendra Gupta on 8 July 2015 for tier price sync
                             if (strtolower($item['type']) == 'bundle') {
@@ -1322,19 +1503,61 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                                 }
                                 $tierPrice = implode("|", $arrPercentTierPrice);
                             } else {
-                                $tierPrice = str_replace(":", "=", $item['tier_price']);
+                                                              
+                                     $customerGroupData = $this->groupFactory->create();
+                             $tier_price_string = explode("|", $item['tier_price']);
+                             $tier_price_str=array();
+                             foreach ($tier_price_string as $TpriceDataString) {
+
+
+                                    $TpriceData = explode(":", $TpriceDataString);
+
+                                    $customer_groupId= $TpriceData[0];
+
+                                    $customerGroupDatas= $customerGroupData->load($customer_groupId); 
+                                       
+                                        if(count($customerGroupDatas->getData())>0)
+                                        {
+                                        $tier_price_str[]=$TpriceDataString;
+                                        }
+                                        else
+                                        {
+                                        $client->setLog("Tier Price Not added Customer group missing-- ".$item['sku'], null, $logFileName); 
+                                        $logMsgs[]="Group Price Not added Customer group missing-- ".$item['sku'];
+                                        }
+                                                                    
+                                }
+
+                               $tier_price_str=implode('|', $tier_price_str) ; 
+
+                                 $tierPrice = str_replace(":", "=", $tier_price_str);
                             }
                             //End by Shailendra Gupta for tier price sync
-                            $item['tier_prices'] = $tierPrice;
+                            $item['tier_prices'] = $tierPrice; 
                             //$item['tier_prices'] = '0=5=19|1=10=18';
                             //$item['tier_prices'] = '0=4=6.80|1=4=6.80|6=4=6.80';
                         } else {
                             $item['tier_prices'] = '';
+                            $productId = $objectManager->get('Magento\Catalog\Model\Product')->getIdBySku($item['sku']);
+                            if($productId)
+                                {
+                                    $resource = $objectManager->get('Magento\Framework\App\ResourceConnection');
+                                    $connection = $resource->getConnection();
+                                    $myTable = $resource->getTableName(self::TABLE_TIER_PRICE);
+                                     $sqls = " DELETE FROM ".$myTable." WHERE entity_id= ".$productId." AND qty!=1 ";
+                                         $connection->query($sqls);
+                                    // $connection->delete(
+                                    //     $myTable,
+                                    //     ['entity_id = ?' => $productId]
+                                    // );
+                                 }
+
                         }
                     }
 
                     unset($item['tier_price']);
                     unset($item['super_attribute']);
+
                     //------------------Configurable Product Changes ----------------------------------------------
                     //------------------Downloadable Product Changes [Starts here]----------------------------------------------
                     if (strtolower($item['type']) == 'downloadable') {
@@ -1594,13 +1817,15 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 $client->setLog("Simple Product Import Started. ", null, $logFile);
                 $logMsgs[] = "<strong>Simple Product Import Started.</strong>";
                 
-                $returnMsgs1 = $this->ProductsSync($productcsv, $syncPermissions, count($objCollection), $productIds, $ipAddress, $storeId);
+                // $returnMsgs1 = $this->ProductsSync($productcsv, $syncPermissions, count($objCollection), $productIds, $ipAddress, $storeId);
+                $returnMsgs1 = $this->ProductsSync($productcsv, $syncPermissions, $prodObjToArrCount, $productIds, $ipAddress, $storeId);
                 $logMsgs[] = implode('<br />', $returnMsgs1);
 
                 $client->setLog("Other Product Import Started. ", null, $logFile);
                 $logMsgs[] = "<strong>Other Product Import Started.</strong>";
 
-                $returnMsgs2 = $this->ProductsSync($productcsvother, $syncPermissions, count($objCollection), $productIds, $ipAddress, $storeId);
+                // $returnMsgs2 = $this->ProductsSync($productcsvother, $syncPermissions, count($objCollection), $productIds, $ipAddress, $storeId);
+                $returnMsgs2 = $this->ProductsSync($productcsvother, $syncPermissions, $prodObjToArrCount, $productIds, $ipAddress, $storeId);
                 $logMsgs[] = implode('<br />', $returnMsgs2);
 
                 $client->setLog("readCsvFile end. ", null, $logFile);
@@ -1611,17 +1836,17 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
                 $message = 'success';
             } // main else
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $logMsgs[] = 'Error in processing';
-            $logMsgs[] = $this->decodeErrorMsg($e->getMessage());
+            $logMsgs[] = ($e->getMessage());
             $message = $e->getMessage();
             $client->setLog("CSV Generation failed due to following reasons - " . print_r($e->getMessage(), true), null, $logFileName);
         }
 
-        $client->setLog("reindexdata start.", null, $logFile);
+        $client->setLog("reindexdata start.", null, $logFileName);
         $logMsgs[] = "reindexdata start.";
         $this->reindexdata();
-        $client->setLog("reindexdata end.", null, $logFile);
+        $client->setLog("reindexdata end.", null, $logFileName);
         $logMsgs[] = "reindexdata end.";
 
         /*-------WRITE LOG------*/
@@ -2070,6 +2295,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                              * above line shows example for updating the tier price of two stores
                              */
                             if ($objectManager->get('Magento\Framework\App\Config\ScopeConfigInterface')->getValue('qdosConfig/permissions/tier_price_sync') && isset($data['tier_prices'])) {
+
                                 $product->setStoreId($storeId);
                                 $tier_string = explode("|", $data['tier_prices']);
 
@@ -2092,6 +2318,22 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                                 $product->setTierPrice($tier_price);
                                 $product->save();
                             }
+                            /* $qty = 7.00;//must be float value.
+                                $price = 20.00;//must be float value.
+                                $customerGroupId = 1;
+                                $sku = '24-MB02';
+                                try {
+                                    $tierPriceData = $this->productTierPriceFactory->create();
+                                    $tierPriceData->setCustomerGroupId($customerGroupId)
+                                        ->setQty($qty)
+                                        ->setValue($price);
+                                    $tierPrice = $this->tierPrice->add($sku, $tierPriceData);
+                                } catch (NoSuchEntityException $exception) {
+                                    throw new NoSuchEntityException(__($exception->getMessage()));
+                                }*/
+
+
+
                             $i++;
                         } catch (Exception $e) {
                             $client->setLog("Error while updating product, Product Id : " . $product->getId() . ". Error ->" . $e->getMessage(), null, $logFileName);

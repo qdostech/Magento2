@@ -39,6 +39,14 @@ class AttributeCronConfig extends \Magento\Framework\App\Config\Value
         $time1 = $this->getData('groups/autoSyncAttribute/fields/time1/value');
         $attributeSync3=$this->getData('groups/autoSyncAttribute/fields/add_new_sync_attribute_schedule/value');
         $time2 = $this->getData('groups/autoSyncAttribute/fields/time2/value');
+
+        $attributeSync4=$this->getData('groups/autoSyncAttribute/fields/add_new_one_sync_attribute_schedule/value');
+        $time3 = $this->getData('groups/autoSyncAttribute/fields/time3/value');
+
+        $attributeSync5=$this->getData('groups/autoSyncAttribute/fields/add_new_two_sync_attribute_schedule/value');
+        $time4 = $this->getData('groups/autoSyncAttribute/fields/time4/value');
+
+
         $daysofmonth = $this->getData('groups/autoSyncAttribute/fields/daysofmonth/value');
         $weekday = $this->getData('groups/autoSyncAttribute/fields/weekdays/value');
 
@@ -76,6 +84,7 @@ class AttributeCronConfig extends \Magento\Framework\App\Config\Value
         if (!in_array($week_day,$cronExprWeek)){
             $cronExprWeek[] = $week_day;
         }
+
 
         $cronExprString = join(' ', array(join(',',$cronExprMinute),join(',',$cronExprHour),join(',',$cronExprDay),'*',join(',',$cronExprWeek)));
         
@@ -132,12 +141,97 @@ class AttributeCronConfig extends \Magento\Framework\App\Config\Value
         }
 
         $cronExprString2 = join(' ', array(join(',',$cronExprMinute2),join(',',$cronExprHour2),join(',',$cronExprDay2),'*',join(',',$cronExprWeek2)));
+
+
+        ##############################
+        $cronExprMinute3 = $cronExprHour3 = $cronExprDay3 = $cronExprWeek3 = array();
+        if (!in_array(intval($time3['1']),$cronExprMinute3)){
+            $cronExprMinute3[] = ($frequency == $frequencyEveryMinute) ? '*/'.intval($time3['1']) : intval($time3['1']);
+        }
+
+        if ($frequency == $frequencyEveryMinute){
+            $hour3 = '*';
+        }else{
+            $hour3 = ($frequency == $frequencyEveryHour) ? '*/'.intval($time3['0']) : intval($time3['0']);
+        }
+
+        if (!in_array($hour3, $cronExprHour3)){
+            $cronExprHour3[] = $hour3;
+        }
+
+        $day3 = ($frequency == $frequencyMonthly) ? $daysofmonth : '*';
+        if (!in_array($day3,$cronExprDay3)){
+            $cronExprDay3[] = $day3;
+        }
+
+        $week_day3 = ($frequency == $frequencyWeekly) ? $weekday : '*';
+        if (!in_array($week_day3,$cronExprWeek3)){
+            $cronExprWeek3[] = $week_day3;
+        }
+
+        $cronExprString3 = join(' ', array(join(',',$cronExprMinute3),join(',',$cronExprHour3),join(',',$cronExprDay3),'*',join(',',$cronExprWeek3)));
+
+        ##############################****############
+        $cronExprMinute4 = $cronExprHour4 = $cronExprDay4 = $cronExprWeek4 = array();
+        if (!in_array(intval($time4['1']),$cronExprMinute4)){
+            $cronExprMinute4[] = ($frequency == $frequencyEveryMinute) ? '*/'.intval($time4['1']) : intval($time4['1']);
+        }
+
+        if ($frequency == $frequencyEveryMinute){
+            $hour4 = '*';
+        }else{
+            $hour4 = ($frequency == $frequencyEveryHour) ? '*/'.intval($time4['0']) : intval($time4['0']);
+        }
+
+        if (!in_array($hour4, $cronExprHour4)){
+            $cronExprHour4[] = $hour4;
+        }
+
+        $day4 = ($frequency == $frequencyMonthly) ? $daysofmonth : '*';
+        if (!in_array($day4,$cronExprDay4)){
+            $cronExprDay4[] = $day4;
+        }
+
+        $week_day4 = ($frequency == $frequencyWeekly) ? $weekday : '*';
+        if (!in_array($week_day4,$cronExprWeek4)){
+            $cronExprWeek4[] = $week_day4;
+        }
+
+        $cronExprString4 = join(' ', array(join(',',$cronExprMinute4),join(',',$cronExprHour4),join(',',$cronExprDay4),'*',join(',',$cronExprWeek4)));
+
+        ######################**************##########
+
+        if ($frequency==$frequencyDaily)
+
+        {
+
+            $cr1f=explode(" ", $cronExprString);
+            $cr2f=explode(" ", $cronExprString1);
+            $cr3f=explode(" ", $cronExprString2);
+            $cr4f=explode(" ", $cronExprString3);
+            $cr5f=explode(" ", $cronExprString4);
+            $f1="";
+            for ($i=0;$i<=4;$i++)
+            {
+
+                    $f1 .= $cr1f[$i].(($cronExprString1) ? ",". $cr2f[$i]:"")."".(($cronExprString2)?",".$cr3f[$i]:"")."".(($cronExprString3)?",".$cr4f[$i]:"")."".(($cronExprString4)?",".$cr5f[$i]:"").""."-";
+                
+            }
+            // print_r((explode("-", $f1)))
+            $f1=explode("-", $f1);
+            $cronExprString=$cronExprString1=$cronExprString2=$cronExprString3=$cronExprString4= implode(',', array_unique((explode(",", $f1[0]))))." ".implode(',', array_unique((explode(",", $f1[1]))))." ".implode(',', array_unique((explode(",", $f1[2]))))." ".implode(',', array_unique((explode(",", $f1[3]))))." ".implode(',', array_unique((explode(",", $f1[4]))));
+        }
+
+
+
+
+
         /*Log code*/
-        $writer = new \Zend\Log\Writer\Stream(BP . '/var/log/syncAttributeSwapnil.log');
+        $writer = new \Zend\Log\Writer\Stream(BP . '/var/log/syncAttributCron.log');
         $logger = new \Zend\Log\Logger();
         $logger->addWriter($writer);
 
-        $logger->info('in SyncAtt : '.$cronExprString." & ".$cronExprString1." & ".$cronExprString2);
+        $logger->info('in SyncAtt : '.$cronExprString." & ".$cronExprString1." & ".$cronExprString2." & ".$cronExprString3." & ".$cronExprString4);
 
         //echo $cronExprString;die();
 
@@ -192,6 +286,52 @@ class AttributeCronConfig extends \Magento\Framework\App\Config\Value
                     'path'
                 )->setValue(
                     $cronExprString2
+                )->setPath(
+                    self::CRON_STRING_PATH
+                )->save();
+                $this->_configValueFactory->create()->load(
+                    self::CRON_MODEL_PATH,
+                    'path'
+                )->setValue(
+                    $this->_runModelPath
+                )->setPath(
+                    self::CRON_MODEL_PATH
+                )->save();
+            }catch(\Exception $e){
+                throw new \Exception(__("We can\'t save the cron expression for Attribute."));
+            }
+        }
+
+
+        if($attributeSync4){
+            try{
+                $this->_configValueFactory->create()->load(
+                    self::CRON_STRING_PATH,
+                    'path'
+                )->setValue(
+                    $cronExprString3
+                )->setPath(
+                    self::CRON_STRING_PATH
+                )->save();
+                $this->_configValueFactory->create()->load(
+                    self::CRON_MODEL_PATH,
+                    'path'
+                )->setValue(
+                    $this->_runModelPath
+                )->setPath(
+                    self::CRON_MODEL_PATH
+                )->save();
+            }catch(\Exception $e){
+                throw new \Exception(__("We can\'t save the cron expression for Attribute."));
+            }
+        }
+        if($attributeSync5){
+            try{
+                $this->_configValueFactory->create()->load(
+                    self::CRON_STRING_PATH,
+                    'path'
+                )->setValue(
+                    $cronExprString4
                 )->setPath(
                     self::CRON_STRING_PATH
                 )->save();

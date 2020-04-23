@@ -88,6 +88,49 @@
                         <field id="qdosSync/autoSyncProduct/add_another_new_sync_product_schedule">1</field>
                     </depends>
                 </field>
+
+                <field id="add_another_new_one_sync_product_schedule" translate="label" type="select" sortOrder="12" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Add new schedule</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+						<field id="qdosSync/autoSyncProduct/auto_sync_product">1</field>
+                        <field id="qdosSync/autoSyncProduct/add_new_sync_product_schedule">1</field>
+                        <field id="qdosSync/autoSyncProduct/add_another_new_sync_product_schedule">1</field>
+                    </depends>
+                </field>
+                <field id="time3" translate="label" type="time" sortOrder="13" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Start Time</label>
+                    <depends>
+						<field id="qdosSync/autoSyncProduct/auto_sync_product">1</field>
+                        <field id="qdosSync/autoSyncProduct/add_new_sync_product_schedule">1</field>
+                        <field id="qdosSync/autoSyncProduct/add_another_new_sync_product_schedule">1</field>
+                        <field id="qdosSync/autoSyncProduct/add_another_new_one_sync_product_schedule">1</field>
+
+                    </depends>
+                </field>
+                  <field id="add_another_new_two_sync_product_schedule" translate="label" type="select" sortOrder="14" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Add new schedule</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+						<field id="qdosSync/autoSyncProduct/auto_sync_product">1</field>
+                        <field id="qdosSync/autoSyncProduct/add_new_sync_product_schedule">1</field>
+                        <field id="qdosSync/autoSyncProduct/add_another_new_sync_product_schedule">1</field>
+                         <field id="qdosSync/autoSyncProduct/add_another_new_one_sync_product_schedule">1</field>
+                    </depends>
+                </field>
+                <field id="time4" translate="label" type="time" sortOrder="15" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Start Time</label>
+                    <depends>
+						<field id="qdosSync/autoSyncProduct/auto_sync_product">1</field>
+                        <field id="qdosSync/autoSyncProduct/add_new_sync_product_schedule">1</field>
+                        <field id="qdosSync/autoSyncProduct/add_another_new_sync_product_schedule">1</field>
+                        <field id="qdosSync/autoSyncProduct/add_another_new_one_sync_product_schedule">1</field>
+                         <field id="qdosSync/autoSyncProduct/add_another_new_two_sync_product_schedule">1</field>
+
+                    </depends>
+                </field>
+
+
 			</group>
 
 			<group id="autoUpdateStock" translate="label" type="text" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1">
@@ -151,9 +194,53 @@
                 <field id="time2" translate="label" type="time" sortOrder="11" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Start Time</label>
                     <depends>
-                        <field id="qdosSync/autoUpdateStock/add_another_new_update_stock_schedule">1</field>
+                        <field id="qdosSync/autoUpdateStock/auto_update_stock">1</field>
+                        <field id="qdosSync/autoUpdateStock/add_new_update_stock_schedule">1</field>
+                         <field id="qdosSync/autoUpdateStock/add_another_new_update_stock_schedule">1</field>
                     </depends>
                 </field>
+
+
+                <field id="add_another_new_one_update_stock_schedule" translate="label" type="select" sortOrder="12" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Add new schedule</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+						<field id="qdosSync/autoUpdateStock/auto_update_stock">1</field>
+                        <field id="qdosSync/autoUpdateStock/add_new_update_stock_schedule">1</field>
+                         <field id="qdosSync/autoUpdateStock/add_another_new_update_stock_schedule">1</field>
+                    </depends>
+                </field>
+                <field id="time3" translate="label" type="time" sortOrder="13" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Start Time</label>
+                    <depends>
+                        <field id="qdosSync/autoUpdateStock/auto_update_stock">1</field>
+                        <field id="qdosSync/autoUpdateStock/add_new_update_stock_schedule">1</field>
+                         <field id="qdosSync/autoUpdateStock/add_another_new_update_stock_schedule">1</field>
+                         <field id="qdosSync/autoUpdateStock/add_another_new_one_update_stock_schedule">1</field>
+                    </depends>
+                </field>
+                <field id="add_another_new_two_update_stock_schedule" translate="label" type="select" sortOrder="14" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Add new schedule</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+						<field id="qdosSync/autoUpdateStock/auto_update_stock">1</field>
+                        <field id="qdosSync/autoUpdateStock/add_new_update_stock_schedule">1</field>
+                         <field id="qdosSync/autoUpdateStock/add_another_new_update_stock_schedule">1</field>
+                         <field id="qdosSync/autoUpdateStock/add_another_new_one_update_stock_schedule">1</field>
+                    </depends>
+                </field>
+                <field id="time4" translate="label" type="time" sortOrder="15" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Start Time</label>
+                    <depends>
+                    	<field id="qdosSync/autoUpdateStock/auto_update_stock">1</field>
+                        <field id="qdosSync/autoUpdateStock/add_new_update_stock_schedule">1</field>
+                         <field id="qdosSync/autoUpdateStock/add_another_new_update_stock_schedule">1</field>
+                         <field id="qdosSync/autoUpdateStock/add_another_new_one_update_stock_schedule">1</field>
+                        <field id="qdosSync/autoUpdateStock/add_another_new_two_update_stock_schedule">1</field>
+                    </depends>
+                </field>
+
+
 			</group>
 
 			<group id="autoUpdatePrice" translate="label" type="text" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="1">
@@ -217,9 +304,54 @@
                 <field id="time2" translate="label" type="time" sortOrder="11" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Start Time</label>
                     <depends>
+                       <field id="qdosSync/autoUpdatePrice/auto_update_price">1</field>
+                        <field id="qdosSync/autoUpdatePrice/add_new_update_price_schedule">1</field>
                         <field id="qdosSync/autoUpdatePrice/add_another_new_update_price_schedule">1</field>
                     </depends>
                 </field>
+
+ 				<field id="add_another_new_one_update_price_schedule" translate="label" type="select" sortOrder="12" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Add new schedule</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+						<field id="qdosSync/autoUpdatePrice/auto_update_price">1</field>
+                        <field id="qdosSync/autoUpdatePrice/add_new_update_price_schedule">1</field>
+                        <field id="qdosSync/autoUpdatePrice/add_another_new_update_price_schedule">1</field>
+                    </depends>
+                </field>
+                <field id="time3" translate="label" type="time" sortOrder="13" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Start Time</label>
+                    <depends>
+                    	<field id="qdosSync/autoUpdatePrice/auto_update_price">1</field>
+                        <field id="qdosSync/autoUpdatePrice/add_new_update_price_schedule">1</field>
+                        <field id="qdosSync/autoUpdatePrice/add_another_new_update_price_schedule">1</field>
+                        <field id="qdosSync/autoUpdatePrice/add_another_new_one_update_price_schedule">1</field>
+                    </depends>
+                </field>
+
+                <field id="add_another_new_two_update_price_schedule" translate="label" type="select" sortOrder="14" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Add new schedule</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+						<field id="qdosSync/autoUpdatePrice/auto_update_price">1</field>
+                        <field id="qdosSync/autoUpdatePrice/add_new_update_price_schedule">1</field>
+                        <field id="qdosSync/autoUpdatePrice/add_another_new_update_price_schedule">1</field>
+                        <field id="qdosSync/autoUpdatePrice/add_another_new_one_update_price_schedule">1</field>
+                    </depends>
+                </field>
+                <field id="time4" translate="label" type="time" sortOrder="15" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Start Time</label>
+                    <depends>
+                    	<field id="qdosSync/autoUpdatePrice/auto_update_price">1</field>
+                        <field id="qdosSync/autoUpdatePrice/add_new_update_price_schedule">1</field>
+                        <field id="qdosSync/autoUpdatePrice/add_another_new_update_price_schedule">1</field>
+                        <field id="qdosSync/autoUpdatePrice/add_another_new_one_update_price_schedule">1</field>
+                        <field id="qdosSync/autoUpdatePrice/add_another_new_two_update_price_schedule">1</field>
+                    </depends>
+                </field>
+
+
+
 			</group>
 
 			<group id="autoSyncAttribute" translate="label" type="text" sortOrder="4" showInDefault="1" showInWebsite="1">
@@ -285,9 +417,55 @@
 					<label>Start Time</label>
 					<depends>
                     	<field id="qdosSync/autoSyncAttribute/auto_sync_attribute">1</field>
+                    	<field id="qdosSync/autoSyncAttribute/add_new_schedule">1</field>
 						<field id="qdosSync/autoSyncAttribute/add_new_sync_attribute_schedule">1</field>
 					</depends>
 				</field>
+
+				<field id="add_new_one_sync_attribute_schedule" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Add new schedule</label>
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                    	<field id="qdosSync/autoSyncAttribute/auto_sync_attribute">1</field>
+                    	<field id="qdosSync/autoSyncAttribute/add_new_schedule">1</field>
+						<field id="qdosSync/autoSyncAttribute/add_new_sync_attribute_schedule">1</field>
+                    </depends>
+				</field>
+				<field id="time3" translate="label" type="time" sortOrder="11" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Start Time</label>
+					<depends>
+                    	<field id="qdosSync/autoSyncAttribute/auto_sync_attribute">1</field>
+                    	<field id="qdosSync/autoSyncAttribute/add_new_schedule">1</field>
+						<field id="qdosSync/autoSyncAttribute/add_new_sync_attribute_schedule">1</field>
+						<field id="qdosSync/autoSyncAttribute/add_new_one_sync_attribute_schedule">1</field>
+					</depends>
+				</field>
+
+				<field id="add_new_two_sync_attribute_schedule" translate="label" type="select" sortOrder="12" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Add new schedule</label>
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                    	<field id="qdosSync/autoSyncAttribute/auto_sync_attribute">1</field>
+                    	<field id="qdosSync/autoSyncAttribute/add_new_schedule">1</field>
+						<field id="qdosSync/autoSyncAttribute/add_new_sync_attribute_schedule">1</field>
+						<field id="qdosSync/autoSyncAttribute/add_new_one_sync_attribute_schedule">1</field>
+                    </depends>
+				</field>
+				<field id="time4" translate="label" type="time" sortOrder="13" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Start Time</label>
+					<depends>
+                    	<field id="qdosSync/autoSyncAttribute/auto_sync_attribute">1</field>
+                    	<field id="qdosSync/autoSyncAttribute/add_new_schedule">1</field>
+						<field id="qdosSync/autoSyncAttribute/add_new_sync_attribute_schedule">1</field>
+						<field id="qdosSync/autoSyncAttribute/add_new_one_sync_attribute_schedule">1</field>
+						<field id="qdosSync/autoSyncAttribute/add_new_two_sync_attribute_schedule">1</field>
+					</depends>
+				</field>
+
+
+
+
+
 			</group>
 
 			<group id="autoSyncDeleteProduct" translate="label" type="text" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1">
@@ -355,6 +533,48 @@
 						<field id="qdosSync/autoSyncDeleteProduct/add_new_schedule">1</field>
 					</depends>
 				</field>
+
+				<field id="add_new_one_delete_product_schedule" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Add new schedule</label>
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                    	<field id="qdosSync/autoSyncDeleteProduct/auto_delete_product">1</field>
+                        <field id="qdosSync/autoSyncDeleteProduct/add_new_schedule">1</field>
+                        <field id="qdosSync/autoSyncDeleteProduct/add_new_delete_product_schedule">1</field>
+                    </depends>
+				</field>
+				<field id="time3" translate="label" type="time" sortOrder="11" showInDefault="12" showInWebsite="0" showInStore="0">
+					<label>Start Time</label>
+					<depends>
+						<field id="qdosSync/autoSyncDeleteProduct/auto_delete_product">1</field>
+                        <field id="qdosSync/autoSyncDeleteProduct/add_new_schedule">1</field>
+                        <field id="qdosSync/autoSyncDeleteProduct/add_new_delete_product_schedule">1</field>
+						<field id="qdosSync/autoSyncDeleteProduct/add_new_one_delete_product_schedule">1</field>
+					</depends>
+				</field>
+
+				<field id="add_new_two_delete_product_schedule" translate="label" type="select" sortOrder="12" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Add new schedule</label>
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                    	<field id="qdosSync/autoSyncDeleteProduct/auto_delete_product">1</field>
+                        <field id="qdosSync/autoSyncDeleteProduct/add_new_schedule">1</field>
+                        <field id="qdosSync/autoSyncDeleteProduct/add_new_delete_product_schedule">1</field>
+						<field id="qdosSync/autoSyncDeleteProduct/add_new_one_delete_product_schedule">1</field>
+                    </depends>
+				</field>
+				<field id="time4" translate="label" type="time" sortOrder="13" showInDefault="12" showInWebsite="0" showInStore="0">
+					<label>Start Time</label>
+					<depends>
+						<field id="qdosSync/autoSyncDeleteProduct/auto_delete_product">1</field>
+                        <field id="qdosSync/autoSyncDeleteProduct/add_new_schedule">1</field>
+                        <field id="qdosSync/autoSyncDeleteProduct/add_new_delete_product_schedule">1</field>
+						<field id="qdosSync/autoSyncDeleteProduct/add_new_one_delete_product_schedule">1</field>
+						<field id="qdosSync/autoSyncDeleteProduct/add_new_two_delete_product_schedule">1</field>
+					</depends>
+				</field>
+
+
 			</group>
 
 			<group id="autoSyncCategory" translate="label" type="text" sortOrder="6" showInDefault="1" showInWebsite="1" showInStore="1">
@@ -440,6 +660,52 @@
 						<field id="qdosSync/autoSyncCategory/add_new_sync_category_schedule">1</field>
 					</depends>
 				</field>
+
+				<field id="add_new_one_sync_category_schedule" translate="label" type="select" sortOrder="12" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Add new schedule</label>
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                    	<field id="qdosSync/autoSyncCategory/auto_sync_category">1</field>
+                        <field id="qdosSync/autoSyncCategory/add_new_schedule">1</field>
+                        <field id="qdosSync/autoSyncCategory/add_new_sync_category_schedule">1</field>
+                    </depends>
+				</field>
+				<field id="time3" translate="label" type="time" sortOrder="13" showInDefault="1" showInWebsite="0" showInStore="0">
+					<label>Start Time</label>
+					<depends>						
+                    	<field id="qdosSync/autoSyncCategory/auto_sync_category">1</field>
+                        <field id="qdosSync/autoSyncCategory/add_new_schedule">1</field>
+                        <field id="qdosSync/autoSyncCategory/add_new_sync_category_schedule">1</field>
+                        <field id="qdosSync/autoSyncCategory/add_new_one_sync_category_schedule">1</field>
+					</depends>
+				</field>
+
+				<field id="add_new_two_sync_category_schedule" translate="label" type="select" sortOrder="14" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Add new schedule</label>
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                    	<field id="qdosSync/autoSyncCategory/auto_sync_category">1</field>
+                        <field id="qdosSync/autoSyncCategory/add_new_schedule">1</field>
+                        <field id="qdosSync/autoSyncCategory/add_new_sync_category_schedule">1</field>
+                        <field id="qdosSync/autoSyncCategory/add_new_one_sync_category_schedule">1</field>
+                    </depends>
+				</field>
+				<field id="time4" translate="label" type="time" sortOrder="15" showInDefault="1" showInWebsite="0" showInStore="0">
+					<label>Start Time</label>
+					<depends>						
+                    	<field id="qdosSync/autoSyncCategory/auto_sync_category">1</field>
+                        <field id="qdosSync/autoSyncCategory/add_new_schedule">1</field>
+                        <field id="qdosSync/autoSyncCategory/add_new_sync_category_schedule">1</field>
+                        <field id="qdosSync/autoSyncCategory/add_new_one_sync_category_schedule">1</field>
+                         <field id="qdosSync/autoSyncCategory/add_new_two_sync_category_schedule">1</field>
+					</depends>
+				</field>
+
+
+
+
+
+
 			</group>
 
 
@@ -520,7 +786,48 @@
 					<label>Start Time</label>
 					<depends>
                     	<field id="qdosSync/autoDeleteLogs/auto_delete_logs">1</field>
+                    	<field id="qdosSync/autoDeleteLogs/add_new_schedule">1</field>
 						<field id="qdosSync/autoDeleteLogs/add_new_delete_log_schedule">1</field>
+					</depends>
+				</field>
+
+				<field id="add_new_one_delete_log_schedule" translate="label" type="select" sortOrder="12" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Add new schedule</label>
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                    	<field id="qdosSync/autoDeleteLogs/auto_delete_logs">1</field>
+                        <field id="qdosSync/autoDeleteLogs/add_new_schedule">1</field>
+                        <field id="qdosSync/autoDeleteLogs/add_new_delete_log_schedule">1</field>
+                    </depends>
+				</field>
+				<field id="time3" translate="label" type="time" sortOrder="13" showInDefault="1" showInWebsite="0" showInStore="0">
+					<label>Start Time</label>
+					<depends>
+                    	<field id="qdosSync/autoDeleteLogs/auto_delete_logs">1</field>
+                    	<field id="qdosSync/autoDeleteLogs/add_new_schedule">1</field>
+						<field id="qdosSync/autoDeleteLogs/add_new_delete_log_schedule">1</field>
+						<field id="qdosSync/autoDeleteLogs/add_new_one_delete_log_schedule">1</field>
+					</depends>
+				</field>
+
+				<field id="add_new_two_delete_log_schedule" translate="label" type="select" sortOrder="14" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Add new schedule</label>
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                    	<field id="qdosSync/autoDeleteLogs/auto_delete_logs">1</field>
+                        <field id="qdosSync/autoDeleteLogs/add_new_schedule">1</field>
+                        <field id="qdosSync/autoDeleteLogs/add_new_delete_log_schedule">1</field>
+                        <field id="qdosSync/autoDeleteLogs/add_new_one_delete_log_schedule">1</field>
+                    </depends>
+				</field>
+				<field id="time4" translate="label" type="time" sortOrder="15" showInDefault="1" showInWebsite="0" showInStore="0">
+					<label>Start Time</label>
+					<depends>
+                    	<field id="qdosSync/autoDeleteLogs/auto_delete_logs">1</field>
+						<field id="qdosSync/autoDeleteLogs/add_new_delete_log_schedule">1</field>
+						<field id="qdosSync/autoDeleteLogs/add_new_schedule">1</field>
+						<field id="qdosSync/autoDeleteLogs/add_new_one_delete_log_schedule">1</field>
+						<field id="qdosSync/autoDeleteLogs/add_new_two_delete_log_schedule">1</field>
 					</depends>
 				</field>
 			</group>
@@ -604,6 +911,43 @@
                         <field id="qdosSync/autoDeleteOrderLogs/add_another_new_delete_order_log_schedule">1</field>
                     </depends>
                 </field>
+                  <field id="add_another_new_one_delete_order_log_schedule" translate="label" type="select" sortOrder="12" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Add new schedule</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                        <field id="qdosSync/autoDeleteOrderLogs/auto_delete_order_logs">1</field>
+                        <field id="qdosSync/autoDeleteOrderLogs/add_new_delete_order_log_schedule">1</field>
+                        <field id="qdosSync/autoDeleteOrderLogs/add_another_new_delete_order_log_schedule">1</field>
+                    </depends>
+                </field>
+                <field id="time3" translate="label" type="time" sortOrder="13" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Start Time</label>
+                    <depends>
+						<field id="qdosSync/autoDeleteOrderLogs/auto_delete_order_logs">1</field>
+                        <field id="qdosSync/autoDeleteOrderLogs/add_another_new_delete_order_log_schedule">1</field>
+                        <field id="qdosSync/autoDeleteOrderLogs/add_another_new_one_delete_order_log_schedule">1</field>
+                    </depends>
+                </field>
+
+                <field id="add_another_new_two_delete_order_log_schedule" translate="label" type="select" sortOrder="14" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Add new schedule</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                        <field id="qdosSync/autoDeleteOrderLogs/auto_delete_order_logs">1</field>
+                        <field id="qdosSync/autoDeleteOrderLogs/add_new_delete_order_log_schedule">1</field>
+                        <field id="qdosSync/autoDeleteOrderLogs/add_another_new_delete_order_log_schedule">1</field>
+                        <field id="qdosSync/autoDeleteOrderLogs/add_another_new_one_delete_order_log_schedule">1</field>
+                    </depends>
+                </field>
+                <field id="time4" translate="label" type="time" sortOrder="15" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Start Time</label>
+                    <depends>
+						<field id="qdosSync/autoDeleteOrderLogs/auto_delete_order_logs">1</field>
+                        <field id="qdosSync/autoDeleteOrderLogs/add_another_new_delete_order_log_schedule">1</field>
+                        <field id="qdosSync/autoDeleteOrderLogs/add_another_new_one_delete_order_log_schedule">1</field>
+                        <field id="qdosSync/autoDeleteOrderLogs/add_another_new_two_delete_order_log_schedule">1</field>
+                    </depends>
+                </field>
 			</group>
 
 		   <!--<group id="autoReindexing" translate="label" type="text" sortOrder="9" showInDefault="1" showInWebsite="1" showInStore="1">-->
@@ -681,6 +1025,46 @@
                     <depends>
 						<field id="qdosSync/autoReindexing/auto_reindexing">1</field>
                         <field id="qdosSync/autoReindexing/add_another_new_reindexing_schedule">1</field>
+                    </depends>
+                </field>
+
+                 <field id="add_another_new_one_reindexing_schedule" translate="label" type="select" sortOrder="12" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Add new schedule</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                        <field id="qdosSync/autoReindexing/auto_reindexing">1</field>
+                        <field id="qdosSync/autoReindexing/add_new_reindexing_schedule">1</field>
+                         <field id="qdosSync/autoReindexing/add_another_new_reindexing_schedule">1</field>
+                    </depends>
+                </field>
+                <field id="time3" translate="label" type="time" sortOrder="13" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Start Time</label>
+                    <depends>
+						<field id="qdosSync/autoReindexing/auto_reindexing">1</field>
+                        <field id="qdosSync/autoReindexing/add_new_reindexing_schedule">1</field>
+                         <field id="qdosSync/autoReindexing/add_another_new_reindexing_schedule">1</field>
+                          <field id="qdosSync/autoReindexing/add_another_new_one_reindexing_schedule">1</field>
+                    </depends>
+                </field>
+
+                 <field id="add_another_new_two_reindexing_schedule" translate="label" type="select" sortOrder="14" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Add new schedule</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                        <field id="qdosSync/autoReindexing/auto_reindexing">1</field>
+                        <field id="qdosSync/autoReindexing/add_new_reindexing_schedule">1</field>
+                         <field id="qdosSync/autoReindexing/add_another_new_reindexing_schedule">1</field>
+                         <field id="qdosSync/autoReindexing/add_another_new_one_reindexing_schedule">1</field>
+                    </depends>
+                </field>
+                <field id="time4" translate="label" type="time" sortOrder="15" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Start Time</label>
+                    <depends>
+						<field id="qdosSync/autoReindexing/auto_reindexing">1</field>
+                        <field id="qdosSync/autoReindexing/add_new_reindexing_schedule">1</field>
+                         <field id="qdosSync/autoReindexing/add_another_new_reindexing_schedule">1</field>
+                          <field id="qdosSync/autoReindexing/add_another_new_one_reindexing_schedule">1</field>
+                          <field id="qdosSync/autoReindexing/add_another_new_two_reindexing_schedule">1</field>
                     </depends>
                 </field>
 			</group>
@@ -762,6 +1146,45 @@
                         <field id="qdosSync/autoSyncNewsletter/add_another_new_sync_newsletter_schedule">1</field>
                     </depends>
                 </field>
+                 <field id="add_another_new_one_sync_newsletter_schedule" translate="label" type="select" sortOrder="12" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Add new schedule</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                        <field id="qdosSync/autoSyncNewsletter/auto_sync_newsletter">1</field>
+                        <field id="qdosSync/autoSyncNewsletter/add_new_sync_newsletter_schedule">1</field>
+                         <field id="qdosSync/autoSyncNewsletter/add_another_new_sync_newsletter_schedule">1</field>
+                    </depends>
+                </field>
+                <field id="time3" translate="label" type="time" sortOrder="13" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Start Time</label>
+                    <depends>
+						  <field id="qdosSync/autoSyncNewsletter/auto_sync_newsletter">1</field>
+                        <field id="qdosSync/autoSyncNewsletter/add_new_sync_newsletter_schedule">1</field>
+                         <field id="qdosSync/autoSyncNewsletter/add_another_new_sync_newsletter_schedule">1</field>
+                         <field id="qdosSync/autoSyncNewsletter/add_another_new_one_sync_newsletter_schedule">1</field>
+                    </depends>
+                </field>
+
+                <field id="add_another_new_two_sync_newsletter_schedule" translate="label" type="select" sortOrder="14" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Add new schedule</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                        <field id="qdosSync/autoSyncNewsletter/auto_sync_newsletter">1</field>
+                        <field id="qdosSync/autoSyncNewsletter/add_new_sync_newsletter_schedule">1</field>
+                        <field id="qdosSync/autoSyncNewsletter/add_another_new_sync_newsletter_schedule">1</field>
+                        <field id="qdosSync/autoSyncNewsletter/add_another_new_one_sync_newsletter_schedule">1</field>
+                    </depends>
+                </field>
+                <field id="time4" translate="label" type="time" sortOrder="15" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Start Time</label>
+                    <depends>
+						  <field id="qdosSync/autoSyncNewsletter/auto_sync_newsletter">1</field>
+                        <field id="qdosSync/autoSyncNewsletter/add_new_sync_newsletter_schedule">1</field>
+                         <field id="qdosSync/autoSyncNewsletter/add_another_new_sync_newsletter_schedule">1</field>
+                         <field id="qdosSync/autoSyncNewsletter/add_another_new_one_sync_newsletter_schedule">1</field>
+                          <field id="qdosSync/autoSyncNewsletter/add_another_new_two_sync_newsletter_schedule">1</field>
+                    </depends>
+                </field>
 			</group>
 
 		   <!--<group id="autoSyncOrderDetails" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">-->
@@ -834,7 +1257,46 @@
                     <label>Start Time</label>
                     <depends>
                     	<field id="qdosSync/autoSyncOrderDetails/auto_sync_order_details">1</field>
+                        <field id="qdosSync/autoSyncOrderDetails/add_new_sync_order_schedule">1</field>
                         <field id="qdosSync/autoSyncOrderDetails/add_another_new_sync_order_schedule">1</field>
+                    </depends>
+                </field>
+                <field id="add_another_new_one_sync_order_schedule" translate="label" type="select" sortOrder="12" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Add new schedule</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                        <field id="qdosSync/autoSyncOrderDetails/auto_sync_order_details">1</field>
+                        <field id="qdosSync/autoSyncOrderDetails/add_new_sync_order_schedule">1</field>
+                        <field id="qdosSync/autoSyncOrderDetails/add_another_new_sync_order_schedule">1</field>
+                    </depends>
+                </field>
+                <field id="time3" translate="label" type="time" sortOrder="13" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Start Time</label>
+                    <depends>
+                    	<field id="qdosSync/autoSyncOrderDetails/auto_sync_order_details">1</field>
+                        <field id="qdosSync/autoSyncOrderDetails/add_new_sync_order_schedule">1</field>
+                        <field id="qdosSync/autoSyncOrderDetails/add_another_new_sync_order_schedule">1</field>
+                        <field id="qdosSync/autoSyncOrderDetails/add_another_new_one_sync_order_schedule">1</field>
+                    </depends>
+                </field>
+                <field id="add_another_new_two_sync_order_schedule" translate="label" type="select" sortOrder="14" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Add new schedule</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                        <field id="qdosSync/autoSyncOrderDetails/auto_sync_order_details">1</field>
+                        <field id="qdosSync/autoSyncOrderDetails/add_new_sync_order_schedule">1</field>
+                        <field id="qdosSync/autoSyncOrderDetails/add_another_new_sync_order_schedule">1</field>
+                        <field id="qdosSync/autoSyncOrderDetails/add_another_new_one_sync_order_schedule">1</field>
+                    </depends>
+                </field>
+                <field id="time4" translate="label" type="time" sortOrder="15" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Start Time</label>
+                    <depends>
+                    	<field id="qdosSync/autoSyncOrderDetails/auto_sync_order_details">1</field>
+                        <field id="qdosSync/autoSyncOrderDetails/add_new_sync_order_schedule">1</field>
+                        <field id="qdosSync/autoSyncOrderDetails/add_another_new_sync_order_schedule">1</field>
+                        <field id="qdosSync/autoSyncOrderDetails/add_another_new_one_sync_order_schedule">1</field>
+                        <field id="qdosSync/autoSyncOrderDetails/add_another_new_two_sync_order_schedule">1</field>
                     </depends>
                 </field>
 			</group>
@@ -955,9 +1417,15 @@
 				<!-- changed all sortOrder according to added field -->
 
 
-			   <field id="check_intervel_in_hours" translate="label" type="label" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1">
+			   <field id="check_intervel_in_hours" translate="label" type="text" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1">
 				   <label> Check Interval (in hours)</label>
-			   </field>			   
+			   </field>	
+
+
+			    <field id="reset_cron_status_automatically" translate="label" type="text" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="1">
+				   <label> Reset Cron Flag Automatically(in hours)</label>
+			   </field>	
+
 			   <field id="current_cron_updated_time" translate="label" type="text" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="1">
 				   <label>Current cron Status Update Time</label>
 			   </field>

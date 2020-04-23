@@ -39,5 +39,11 @@
 		<job name="cron_order_details_sync" instance="Qdos\QdosSync\Cron\SyncOrderDetails" method="execute">
 			<config_path>crontab/default/jobs/cron_order_details_sync/schedule/cron_expr</config_path>
 		</job>
+		<!--Rahul 
+			##Added cron update status cron every 30 min -->
+		<job name="cron_status_update_time" instance="Qdos\QdosSync\Cron\CronStatusUpdateTime" method="execute">
+			<schedule>0,30 * * * *</schedule> 
+		</job>
+
 	</group>
 </config>

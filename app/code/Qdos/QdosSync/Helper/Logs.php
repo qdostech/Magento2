@@ -190,8 +190,9 @@ class Logs extends \Magento\Framework\App\Helper\AbstractHelper
 
         $cronStatusCheckInterval = $this->_scopeConfig->getValue('qdosConfig/cron_status/check_intervel_in_hours', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
 
-        //$cronStatusResetInterval = Mage::getStoreConfig('qdos_sync_config/current_cron_status/reset_cron_status_automatically');
-
+        /*rahul */
+        $cronStatusResetInterval =  $this->_scopeConfig->getValue('qdosConfig/cron_status/reset_cron_status_automatically', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);//Mage::getStoreConfig('qdos_sync_config/current_cron_status/reset_cron_status_automatically');
+    //end
         $currentDateTime = date('Y-m-d H:i:s');
         $timeDiff = strtotime($currentDateTime) - strtotime($cronStatusUpdateTime);
 
@@ -216,7 +217,7 @@ class Logs extends \Magento\Framework\App\Helper\AbstractHelper
             // Get Store ID    
             $storeId = $this->_storeManager->getStore()->getId();
 
-            $this->state->setAreaCode(\Magento\Framework\App\Area::AREA_FRONTEND);
+            //$this->state->setAreaCode(\Magento\Framework\App\Area::AREA_FRONTEND);
 
             // Set variables that can be used in email template
             $vars = array('hours' => $cronStatusCheckInterval);
@@ -263,7 +264,7 @@ class Logs extends \Magento\Framework\App\Helper\AbstractHelper
 
             // Set variables that can be used in email template
             $vars = array('hours' => $cronStatusCheckInterval);
-            $this->state->setAreaCode(\Magento\Framework\App\Area::AREA_FRONTEND);
+           // $this->state->setAreaCode(\Magento\Framework\App\Area::AREA_FRONTEND);
 
             $transport = $this->transportBuilder
                 ->setTemplateIdentifier($templateId)

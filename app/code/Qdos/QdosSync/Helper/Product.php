@@ -16,6 +16,8 @@ use Magento\Eav\Model\Entity\Attribute\Set;
 use Magento\Eav\Model\Entity\Attribute\SetFactory;
 use Magento\Eav\Model\Entity\TypeFactory;
 use Magento\Framework\Api\Filter;
+use Magento\Catalog\Api\Data\ProductTierPriceInterfaceFactory;
+use Magento\Catalog\Api\ScopedProductTierPriceManagementInterface;
 
 class Product extends \Qdos\QdosSync\Helper\Data
 {
@@ -61,6 +63,7 @@ class Product extends \Qdos\QdosSync\Helper\Data
     protected $_product;
     protected $_productInventory;
     protected $_productAction;
+    protected  $groupFactory;
 
     public function __construct(\Magento\Framework\App\Helper\Context $context,
                                 \Magento\Framework\App\Filesystem\DirectoryList $directory_list,
@@ -80,7 +83,8 @@ class Product extends \Qdos\QdosSync\Helper\Data
                                 \Magento\CatalogInventory\Model\ResourceModel\Stock\Item $stockItem,
                                 \Magento\Catalog\Model\ProductFactory $productFactory,
                                 \Magento\Catalog\Model\Product $product,
-                                \Magento\Catalog\Model\ResourceModel\Product\Action $productAction,
+                                \Magento\Catalog\Model\ResourceModel\Product\Action $productAction, \Magento\Catalog\Model\CategoryFactory $categoryFactory,ScopedProductTierPriceManagementInterface $tierPrice,
+        ProductTierPriceInterfaceFactory $productTierPriceFactory, \Magento\Customer\Model\GroupFactory $groupFactory,
         // \Qdos\QdosSync\Helper\product_inventory $product_inventory,
                                 array $data = [])
     {
@@ -102,18 +106,23 @@ class Product extends \Qdos\QdosSync\Helper\Data
         $this->_productFactory = $productFactory;
         $this->_product = $product;
         $this->_productAction = $productAction;
+        $this->_categoryFactory = $categoryFactory;
+        $this->tierPrice = $tierPrice;
+        $this->productTierPriceFactory = $productTierPriceFactory;
+        $this->groupFactory = $groupFactory;
         // $this->_productInventory = $product_inventory;
         parent::__construct($context, $directory_list, $attributeFactory, $attributeSetFactory, $attributeGroupFactory,
             $typeFactory, $attributeManagement, $attributeRepository,
             $tableFactory, $attributeOptionManagement, $optionLabelFactory, $optionFactory, $log, $synccategorieslog,
-            $syncattributelog);
+            $syncattributelog,$categoryFactory,$tierPrice,$productTierPriceFactory,$groupFactory);
     }
 
     //GetQdosDeleteProducts
     public function deleteProducts($storeId = 0)
     {
         $status = \Neo\Winery\Model\Activity::LOG_SUCCESS;
-        try {
+        try
+        {
             $base = $this->directory_list->getPath('lib_internal');
             $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
             $lib_file = $base . '/Test.php';
@@ -135,29 +144,38 @@ class Product extends \Qdos\QdosSync\Helper\Data
                 ->save();
 
             $logFileName = "deleteProducts-" . date('Ymd') . ".log";
-            $client->setLog("Delete product ", null, $logFileName);
+            $client->setLog("Delete product Started ", null, $logFileName);
             $allCategories = array();
             $resultClient = $client->getConnect($storeId);
             $store_url = $objectManager->get('Magento\Framework\App\Config\ScopeConfigInterface')->getValue('qdosConfig/store/store_url_path', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-            $resultClient = $resultClient->GetQdosDeleteProducts(array('STORE_URL' => $store_url));
+            $resultClient = $resultClient->GetQdosDeleteProductsCSV(array('STORE_URL' => $store_url));
 
-            //echo "<pre>";print_r($resultClient);exit;
+           
 
-            $result = $resultClient->GetQdosDeleteProductsResult;
+            $result = $resultClient->GetQdosDeleteProductsCSVResult;
+           // echo "<pre>";print_r($result);exit;
+           
+          //  print_r($result);exit;
             $i = 0;
-            $message = "success";
-            if (is_object($result) && isset($result->ProductDelete)) {
-                $productIds = $this->convertObjToArray($result->ProductDelete);
+            $productIds=array(); $listProductIds = $deletedProductIds = array();
+            
+            if (is_object($result) && isset($result->ProductDeleteCSV)) {
+                $client->setLog("Total Products Count = ".count($result->ProductDeleteCSV), null, $logFileName);
+
+                $logMsgs[] = "Total Products Count = ".count($result->ProductDeleteCSV);
+                
+                $message = "success";
+                $productIds = $this->convertObjToArray($result->ProductDeleteCSV);
 
                 // $this->log('BEGIN DELETE: '.count($productIds).' product(s)');
                 // $this->_logMsg[] = 'BEGIN DELETE: '.count($productIds).' product(s)';
 
                 //Mage::helper('qdossync/cache')->refreshCache();
-                $listProductIds = $deletedProductIds = array();
+               
                 foreach ($productIds as $product) {
                     if (isset($product->PRODUCT_ID) and is_numeric($product->PRODUCT_ID)) {
-                        $listProductIds[] = $product->PRODUCT_ID;
-                        //$listProductIds[$product->SKU] = $product->PRODUCT_ID;
+                        //$listProductIds[] = $product->PRODUCT_ID;
+                        $listProductIds[$product->SKU] = $product->PRODUCT_ID;
 
                     }
                 }
@@ -169,49 +187,85 @@ class Product extends \Qdos\QdosSync\Helper\Data
             //$products = $product->loadByAttribute('sku', $listProductIds);
             $productRepository = $objectManager->get('\Magento\Catalog\Model\ProductRepository');
 
-            $searchCriteria = $objectManager->get("\Magento\Framework\Api\SearchCriteriaBuilder")
-                ->addFilter(
-                    'entity_id',
-                    $listProductIds,
-                    'in'
-                )->create();
+            // $searchCriteria = $objectManager->get("\Magento\Framework\Api\SearchCriteriaBuilder")
+            //     ->addFilter(
+            //         'entity_id',
+            //         $listProductIds,
+            //         'in'
+            //     )->create();
 
-            $products = $productRepository->getList($searchCriteria)->getItems();
-            //$client->setLog(count($products), null, $logFileName);
-            //Mage::getResourceModel('catalog/product')->getProductsSku($listProductIds);
-            if (count($products)) {
-                foreach ($products as $product) {
-                    if (strlen($product['sku'])) {
+            //$products = $productRepository->getList($searchCriteria)->getItems();
+           // $productId = $objectManager->get('Magento\Catalog\Model\Product')->getIdBySku($item['sku']);
+
+      $reset_stock = $objectManager->get('Magento\Framework\App\Config\ScopeConfigInterface')->getValue('qdosConfig/permissions/reset_stock_delete_sync', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+       $prod_status= \Magento\Catalog\Model\Product\Attribute\Source\Status::STATUS_DISABLED;
+       
+            if (count($productIds)) {
+                foreach ($productIds as $product) {
+
+                         
+                 $product_id= $objectManager->get('Magento\Catalog\Model\Product')->getIdBySku($product->SKU);
+
+                    if (strlen($product_id)) {
                         try {
-
-                            $client->setLog(json_encode($product), null, $logFileName);
-                            $deletedProductIds[] = $product['entity_id'];
-                            $stockItem->setData(array());
-                            $stockItem->loadByProduct($product['entity_id']);
+                            $client->setLog(array($product_id."<br>"), null, $logFileName);
+                            //$deletedProductIds[$product->SKU] = $product['entity_id'];
+                            $deletedProductIds[$product->SKU] = $product_id;
+                            $updateProductIds[$product->SKU] = $product->PRODUCT_ID;
+                         /*   $stockItem->setData(array());
+                            $stockItem->loadByProductId($stockItem,$product_id);//product['entity_id']);
                             if ($stockItem->getId()) {
-                                $stockItem->setProductId($product['entity_id']);
+                                $stockItem->setProductId($product_id);//product['entity_id']);
                             } else {
-                                $product = $this->_product->load($product['entity_id']);
+                                $product = $this->_product->load($product_id);//product['entity_id']);
                                 // $this->_productInventory->_prepareItemForSave($stockItem, $product);
+                            }*/
+                         $product = $this->_product->load($product_id);
+                         if($reset_stock != 0){
+                           
+                            $product->setStockData(
+                                                     array('use_config_backorders'=> 0,
+                                                        'use_config_manage_stock'=> 0,
+                                                        'qty'=> 0,
+                                                        'is_in_stock'=> 0,
+                                                        'manage_stock'=> 1,
+                                                        'backorders'=>0));
+
+
+                             }
+
+                           try {
+
+                                $product->setStatus($prod_status);
+                                $product->save(); 
+                                $this->_logMsg[] = __( $product->getSku().' updated. '); 
+                            } catch (Exception $e) {
+                                $this->_logMsg[] = __( $e->getException());
                             }
 
-                            $stockItem->setData('use_config_backorders', 0);
+                            /* ###old code not working 
+                           $stockItem->setData('use_config_backorders', 0);
                             $stockItem->setData('use_config_manage_stock', 0);
                             $stockItem->setData('qty', 0);
                             $stockItem->setData('is_in_stock', 0);
                             $stockItem->setData('manage_stock', 1);
                             $stockItem->setData('backorders', 0);
-                            $stockItem->save();
+                            $stockItem->save();*/
 
                             $i++;
                             //$this->_logMsg[] = 'Changed stock: #'.$product['entity_id'];
-                            $this->log('Changed stock: #' . $product['entity_id']);
+                           $this->_logMsg[] = __('Changed stock: #' . $product['entity_id']);
                         } catch (Exception $e) {
                             $message = "fail";
                             $status = \Neo\Winery\Model\Activity::LOG_FAIL;
-                            $this->log($e->getMessage());
-                            //$this->_logMsg[] = $this->addError('Error when change product #'.$product['entity_id'].': '.$e->getMessage());
+                         //  $this->_logMsg[] = __($e->getMessage());
+                            $this->_logMsg[] = __('Error when change product #'.$product['entity_id'].': '.$e->getMessage());
+                          // $client->setLog(array("Available In magento DB with sku ".$product->getSku()."&& ID --".$product->Id()), null,"deleted_exist.log");
                         }
+                    }
+                    else
+                    {
+                         $client->setLog(array("Not In magento DB with sku ".$product->SKU."&& ID --".$product->PRODUCT_ID), null,"deleted_not_exist.log");
                     }
                 }
             }
@@ -236,16 +290,10 @@ class Product extends \Qdos\QdosSync\Helper\Data
 
                 // Mage::getSingleton('catalog/product_action')
                 //         ->updateAttributes($deletedProductIds, array('status' => $status), 0);
-                $this->_logMsg[] = __('Total of %d record(s) have been updated.', count($deletedProductIds));
-            } catch (Mage_Core_Model_Exception $e) {
-                $status = \Neo\Winery\Model\Activity::LOG_FAIL;
-                $this->_logMsg[] = $this->addError($e->getMessage());
-                $message = "fail";
-            } catch (Mage_Core_Exception $e) {
-                $status = \Neo\Winery\Model\Activity::LOG_FAIL;
-                $this->_logMsg[] = $this->addError($e->getMessage());
-                $message = "fail";
-            } catch (Exception $e) {
+              $deletedProductCount= count($deletedProductIds);
+                $this->_logMsg[] = __('Total of '.$deletedProductCount.' record(s) have been updated.');//, $deletedProductCount);
+            
+            } catch (\Exception $e) {
                 $message = "fail";
                 $status = \Neo\Winery\Model\Activity::LOG_FAIL;
                 $this->_logMsg[] = $this->addError($e->getMessage());//$this->__('An error occurred while updating the product(s) status.');
@@ -264,8 +312,9 @@ class Product extends \Qdos\QdosSync\Helper\Data
             ->setStatus($status)
             ->save();
 
-        return $message;
+        return  implode('<br>',$this->_logMsg);
     }
+
 
 
 }

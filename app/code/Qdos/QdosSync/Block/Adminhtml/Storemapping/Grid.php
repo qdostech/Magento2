@@ -107,6 +107,8 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 
 			$this->setCollection($collection);
 
+
+
 			parent::_prepareCollection();
 		  
 			return $this;
@@ -138,6 +140,15 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
         return parent::_addColumnFilterToCollection($column);
     }
 
+    protected function _filterStoreCondition($collection, $column){
+
+         if (!$value = $column->getFilter()->getValue()) {
+            return;
+        }
+
+        $this->getCollection()->addFieldToFilter('store_id', array('finset' => $value));
+    }
+
     /**
      * @return $this
      * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
@@ -162,6 +173,18 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
                 'class' => 'store_id'
             ]
         );
+        $this->addColumn(
+                    'store_ids',
+                    [
+                        'header' => __('Store Views'),
+                        'index' => 'store_id',                        
+                       // 'type' => 'store',
+                        'store_all' => true,
+                        'store_view' => true,
+                        'renderer'=>  'Qdos\QdosSync\Block\Adminhtml\Grid\Column\Renderer\Store',
+                        'filter_condition_callback' => [$this, '_filterStoreCondition']
+                    ]
+                );
 		$this->addColumn(
             'sync_type',
             [

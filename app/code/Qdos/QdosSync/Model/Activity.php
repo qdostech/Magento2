@@ -71,7 +71,10 @@ class Activity extends \Magento\Framework\Model\AbstractModel
             'export_customer_group' => 'EXPORT CUSTOMER GROUP',
             'export_customer' => 'EXPORT CUSTOMER',
             'order_status' => 'SYNC ORDER STATUS',
-            'SYNC GRAPE' => 'SYNC GRAPE'
+            'SYNC GRAPE' => 'SYNC GRAPE',
+            'get_location'=>'IMPORT LOCATION',
+            'get_location_qty'=>'IMPORT LOCATION QTY',
+            'product_image_delete'=>'DELETED IMAGES'
         );
         return $type;
     }
