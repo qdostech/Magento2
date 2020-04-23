@@ -1,6 +1,6 @@
 <?php
 namespace Qdos\Syncproducer\Block\Adminhtml;
-class Syncproducer extends \Magento\Backend\Block\Widget\Grid\Container
+class Logs extends \Magento\Backend\Block\Widget\Grid\Container
 {
     /**
      * Constructor
@@ -10,7 +10,7 @@ class Syncproducer extends \Magento\Backend\Block\Widget\Grid\Container
     protected function _construct()
     {
 		
-        $this->_controller = 'adminhtml_syncproducer';/*block grid.php directory*/
+        $this->_controller = 'adminhtml_logs';/*block grid.php directory*/
         $this->_blockGroup = 'Qdos_Syncproducer';
         $this->_headerText = __('Syncproducer');
         $this->_addButtonLabel = __('Add New Entry'); 
@@ -35,7 +35,6 @@ class Syncproducer extends \Magento\Backend\Block\Widget\Grid\Container
         ];
         $this->buttonList->add('sync_producer', $addButtonProps);
 
-
          $addButtonProps = [
             'id' => 'sync_producer_logs',
             'label' => __('Sync Producer Logs'),
@@ -59,7 +58,8 @@ class Syncproducer extends \Magento\Backend\Block\Widget\Grid\Container
         );
     }
 
-     /**
+
+    /**
      *
      *
      * @param string $type

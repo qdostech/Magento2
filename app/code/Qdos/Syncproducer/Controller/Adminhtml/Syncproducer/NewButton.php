@@ -56,27 +56,70 @@ class NewButton extends \Magento\Backend\App\Action
     public function execute()
     {
         $resultRedirect = $this->resultRedirectFactory->create();
-        $base = $this->directory_list->getPath('lib_internal');
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-        $lib_file = $base . '/Test.php';
-        require_once($lib_file);
-        $client = Test();
-        $resultClient = $client->connect();
-        $store_url = $objectManager->get('Magento\Framework\App\Config\ScopeConfigInterface')->getValue('qdosConfig/store/store_url_path');
-        try {
+        $this->_resourceConfig = $objectManager->get('\Magento\Config\Model\ResourceModel\Config');
+        $this->_scopeConfig = $objectManager->get('\Magento\Framework\App\Config\ScopeConfigInterface');
+        $cronStatus = $this->_scopeConfig->getValue('qdosConfig/cron_status/current_cron_status', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
 
-            $this->importProducer($store_id = 1, $resultClient, $store_url, $client);
+            shell_exec('php bin/magento cache:clean');
+            system('chmod -R 777 var/');
 
-            return $resultRedirect->setPath('*/*/');
+            if (strtolower($cronStatus) == 'running') {
+                $logMsg = 'Another Sync already in progress. Please wait...';
+              //  $this->_log->info($logMsg);
+                $this->messageManager->addError(__($logMsg));
+            } else {
+
+                $this->_resourceConfig->saveConfig('qdosConfig/cron_status/current_cron_status', "running", 'default', 0);
+
+                shell_exec('php bin/magento cache:clean');
+                system('chmod -R 777 var/');
+
+               // date_default_timezone_set('Asia/Kolkata');
+                $this->_resourceConfig->saveConfig('qdosConfig/cron_status/current_cron_updated_time', date("Y-m-d H:i:s"), 'default', 0);  
 
 
-        } catch (Exception $e) {
-        }
+
+                $base = $this->directory_list->getPath('lib_internal');
+                $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+                $lib_file = $base . '/Test.php';
+                require_once($lib_file);
+                $client = Test();
+                $resultClient = $client->connect();
+                $store_url = $objectManager->get('Magento\Framework\App\Config\ScopeConfigInterface')->getValue('qdosConfig/store/store_url_path');
+                try {
+
+                    $result=$this->importProducer($store_id = 1, $resultClient, $store_url, $client);
+
+                   // return $resultRedirect->setPath('*/*/');
+                     } catch (Exception $e) {
+                }
+                 if ($result) {
+                    $logMsg = 'Sync Producer were synchronized success.';
+                    //$this->_log->info($logMsg);
+                    $this->messageManager->addSuccess(__($logMsg));
+                } else {
+                    $logMsg = 'Can not synchronize some Producers.';
+                    //$this->_log->info($logMsg);
+                    $this->messageManager->addError(__($logMsg));
+                }
+
+                $this->_resourceConfig->saveConfig('qdosConfig/cron_status/current_cron_status', "not running", 'default', 0);
+
+                shell_exec('php bin/magento cache:clean');
+                system('chmod -R 777 var/');
+
+            }
+
+      $resultRedirect->setPath('*/*/');     
+      return $resultRedirect;
 
     }
 
     public function importProducer($store_id = 1, $resultClient, $store_url, $clientLog)
     {
+
+
 
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
         $logModel = $objectManager->get('\Qdos\Sync\Model\Sync');
@@ -110,9 +153,11 @@ class NewButton extends \Magento\Backend\App\Action
             $result = $client->GetProducerResult;
             if (is_object($result) && isset($result->Producer)) {
                 $_result = $this->convertObjToArray($result->Producer);
+
+                 $logMsg[]="Total Records :". count($_result) ."";
                 $clientLog->setLog("--Count--" . count($_result), null, $logFileName);
                 $success = 0;
-                $fail = 0;
+                $fail = 0;$new=0;$update=0;
                 try {
                     foreach ($_result as $producer) {
                         if (isset($producer['producer_id']) and is_numeric($producer['producer_id'])) {
@@ -150,6 +195,7 @@ class NewButton extends \Magento\Backend\App\Action
                                     $connection->query($write);
 
                                     $clientLog->setLog($producer['producer_id'] . " -- saved successfully", null, $logFileName);
+                                    $new++;
 
                                 } else {
                                     if (isset($producer['description'])) {
@@ -166,9 +212,10 @@ class NewButton extends \Magento\Backend\App\Action
                                     $_producer_load->save();
 
                                     $clientLog->setLog($producer['producer_id'] . " -- Updated successfully", null, $logFileName);
+                                    $update++;
                                 }
                                 $success = 1;
-                                $logMsg[] = $producer['producer_id'] . " --  Sync Producer ";
+                              //  $logMsg[] = $producer['producer_id'] . " --  Sync Producer ";
                             } catch (Exception $e) {
                                 $error = true;
                                 $fail = 1;
@@ -192,12 +239,16 @@ class NewButton extends \Magento\Backend\App\Action
                 } else {
                     $result = \Qdos\QdosSync\Model\Activity::LOG_SUCCESS;
                 }
-
+               
+                  $logMsg[] = "Total New Created : ".$new;
+                    $logMsg[] = "Total Update : ".$update;
 
                 $logModel->setEndTime(date('Y-m-d H:i:s'))
                     ->setStatus($result)
-                    ->setDescription('Sync Producer End')
+                    ->setDescription(implode('<br />', $logMsg))
                     ->save();
+
+                    return $result;
             }
         }
 
