@@ -21,7 +21,7 @@ class BundleProduct{
 		
 	protected $_objectManager;
 	
-	
+	 const TABLE_TIER_PRICE = 'catalog_product_entity_tier_price';
     public function __construct(
 		\Magento\Catalog\Model\ProductFactory $ProductFactory,
 		Filesystem $filesystem,
@@ -134,18 +134,146 @@ class BundleProduct{
 				$possibleGalleryData = explode( ',', $ImageFile );
 				foreach( $possibleGalleryData as $_imageForImport ) {
 					if(file_exists($imagePath.$_imageForImport)){
-						$SetProductData->addImageToMediaGallery($imagePath . $_imageForImport, $imageColumns, false, false);
+						try
+                    {   
+
+                  	 $SetProductData->addImageToMediaGallery($imagePath . $_imageForImport, $imageColumns, false, false);
+
+                	}catch(\Magento\Framework\Exception\LocalizedException $ex)
+                	{
+                		 $writer = new \Zend\Log\Writer\Stream(BP . '/var/log/images_details.log');
+                            $logger = new \Zend\Log\Logger();
+                            $logger->addWriter($writer);
+                            $logger->info('images sync ::: '.$ProcuctData['sku']."--".$imagePath.$_imageForImport.'.....<br>--'.$ex->getMessage());
+                	}
+
+
+
+
+						
 					}
 					//$SetProductData->addImageToMediaGallery($imagePath . $_imageForImport, $imageColumns, false, false);
 				}
 			}
 		}
 		
-		$SetProductData->setStockData($ProductStockdata);	
+		$SetProductData->setStockData($ProductStockdata);
+
+		 $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+            $tierPriceFactory = $objectManager->get('\Magento\Catalog\Api\Data\ProductTierPriceInterfaceFactory');
+
+///customization .....
+             if (isset($ProductSupperAttribute['group_price_price'])) {
+             
+                if ($ProductSupperAttribute['group_price_price'] != "") {
+
+                   // echo $ProductSupperAttribute['group_price_price'];exit;
+
+                     $productId = $objectManager->get('Magento\Catalog\Model\Product')->getIdBySku( $ProcuctData['sku']);
+
+                     if($productId)
+                        {
+                         $resource = $objectManager->get('Magento\Framework\App\ResourceConnection');
+                         $connection = $resource->getConnection();
+                         $myTable = $resource->getTableName(self::TABLE_TIER_PRICE);
+
+                         // $connection->delete(
+                         //     $myTable,
+                          //     ['entity_id = ?' => $productId,
+                          //     'qty = ?'=>1 ] 
+                          // );                                  
+                         $sqls = " DELETE FROM ".$myTable." WHERE entity_id= ".$productId." AND qty=1 ";
+                         $connection->query($sqls);
+
+                         }
+
+                     $tier_string = explode("|", $ProductSupperAttribute['group_price_price']);
+					$groupPrices=array();
+                     foreach ($tier_string as $TpriceDataString)
+                      {
+                        $TpriceData = explode("=", $TpriceDataString);
+                        if($TpriceData[1] >0)
+                        {
+                        $groupPrices[] = array( 'website_id'  => 0,
+                                                'cust_group'  => $TpriceData[0],
+                                                'price_qty'   => 1,
+                                                'price'=>0.00,
+                                                'percentage_value'=>$TpriceData[1]
+                                                 );
+                        }
+                       
+                        //In budle product we only set percentage_value
+                      //  $groupPrices []= $tierPriceFactory->create()->setCustomerGroupId($TpriceData[0])->setQty(1)->setPercentageValue($TpriceData[1]) ;
+                       }
+
+                $SetProductData->setTierPrice($groupPrices);
+                
+
+
+                }
+            }
 		
-		if(isset($ProductSupperAttribute['tier_prices'])) { 
-			if($ProductSupperAttribute['tier_prices']!=""){ $SetProductData->setTierPrice($ProductSupperAttribute['tier_prices']); }
+		if(isset($ProductAttributeData['tier_prices'])) { 
+			if($ProductAttributeData['tier_prices']!=""){
+				 $productId = $objectManager->get('Magento\Catalog\Model\Product')->getIdBySku( $ProcuctData['sku']);
+
+                     if($productId)
+                        {
+                         $resource = $objectManager->get('Magento\Framework\App\ResourceConnection');
+                         $connection = $resource->getConnection();
+                         $myTable = $resource->getTableName(self::TABLE_TIER_PRICE);
+
+                         // $connection->delete(
+                         //     $myTable,
+                          //     ['entity_id = ?' => $productId,
+                          //     'qty = ?'=>1 ] 
+                          // );                                  
+                         $sqls = "DELETE FROM ".$myTable." WHERE entity_id= ".$productId." AND qty!=1 ";
+                         $connection->query($sqls);
+
+                         }
+
+                     $tier_string = explode("|", $ProductAttributeData['tier_prices']);
+                     $tierPrices=array();
+                     foreach ($tier_string as $TpriceDataString)
+                      {
+                      	
+                        $TpriceData = explode("=", $TpriceDataString);
+                         if($TpriceData[2] >0)
+                        {
+                        $tierPrices[] = array( 'website_id'  =>0,
+                                                'cust_group'  => $TpriceData[0],
+                                                'price_qty'   => $TpriceData[1],
+                                                'price'=>0.00,
+                                                'percentage_value'=>$TpriceData[2]
+                                                 );
+                    		}
+                        //In budle product we only set percentage_value
+                      
+                       }
+                       
+                         $SetProductData->setTierPrice($tierPrices);
+
+
+                         
+
+
+			// $SetProductData->setTierPrice($ProductSupperAttribute['tier_prices']); }
 		}
+		}
+
+		if(isset($ProductSupperAttribute['group_price_price']) && isset($ProductAttributeData['tier_prices']))
+		{
+
+			 if($ProductSupperAttribute['group_price_price'] != "" && $ProductAttributeData['tier_prices'] != "")
+	        {
+
+
+	                 $SetProductData->setTierPrices(array_merge($groupPrices,$tierPrices));
+	                 
+
+	        }
+	    }
 
 		/*start*/
 		$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
@@ -225,8 +353,25 @@ class BundleProduct{
 			    $SetProductData->setExtensionAttributes($extension);
 			}
 		/*end*/
+		try
+		{
 		$SetProductData->save(); 
+
+		 
 		$logMsg[] = 'Product uploaded successfully sku - '.$SetProductData->getSku();
+		$writer = new \Zend\Log\Writer\Stream(BP . '/var/log/bundle_products.log');
+                            $logger = new \Zend\Log\Logger();
+                            $logger->addWriter($writer);
+                            $logger->info(' sku ::: '.$SetProductData->getSku().'  with Id.....<br>--'.$SetProductData->getId().' successfully imported');
+  
+
+		}catch(\Magento\UrlRewrite\Model\Exception\UrlAlreadyExistsException $ex)
+        {
+        	 $writer = new \Zend\Log\Writer\Stream(BP . '/var/log/urlexist.log');
+                            $logger = new \Zend\Log\Logger();
+                            $logger->addWriter($writer);
+                            $logger->info('error url key exist for sku ::: '.$ProcuctData['sku'].'.....<br>--'.$ex->getMessage());
+        }
 	
 		if(isset($ProductSupperAttribute['related'])){
 			if($ProductSupperAttribute['related']!=""){ $this->AppendReProduct($ProductSupperAttribute['related'] ,$ProcuctData['sku']); }
@@ -288,4 +433,3 @@ class BundleProduct{
 		
 	}
 }
-?>
