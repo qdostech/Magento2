@@ -234,7 +234,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
      */
     protected function _prepareMassaction()
     {
-        $this->setMassactionIdField('id');
+        $this->setMassactionIdField('log_id');
         $this->getMassactionBlock()->setFormFieldName('id');
 
         $this->getMassactionBlock()->addItem(

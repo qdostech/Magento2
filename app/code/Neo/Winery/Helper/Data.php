@@ -738,7 +738,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $storeId = $objectManager->get('\Magento\Store\Model\StoreManagerInterface')->getStore()->getStoreId();
         $this->_i++;
         $client->setLog('count: ' . $this->_i, null, "syncCategory-" . date('Ymd') . ".log");
-        $logMsg[] = 'count: ' . count($collectionData);
+        // $logMsg[] = 'count: ' . count($collectionData);
         if (is_array($collectionData) and count($collectionData) > 0 && $this->_i < 6) {
             $this->_lostDataArr = array();
             foreach ($collectionData as $items) {
