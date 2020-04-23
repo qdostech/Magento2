@@ -1,6 +1,6 @@
 <?php
 namespace Neo\Productlocation\Block\Adminhtml;
-class Productlocation extends \Magento\Backend\Block\Widget\Grid\Container
+class Alllocations extends \Magento\Backend\Block\Widget\Grid\Container
 {
     /**
      * Constructor
@@ -46,7 +46,7 @@ class Productlocation extends \Magento\Backend\Block\Widget\Grid\Container
      */
     protected function _construct()
     {
-        $this->_controller = 'adminhtml_productlocation';/*block grid.php directory*/
+        $this->_controller = 'adminhtml_alllocations';/*block grid.php directory*/
         $this->_blockGroup = 'Neo_Productlocation';
         $this->_headerText = __('Productlocation');
         $this->_addButtonLabel = __('Add Productlocation'); 
@@ -68,8 +68,8 @@ class Productlocation extends \Magento\Backend\Block\Widget\Grid\Container
         $addButtonPropsNew = [
             'id' => 'sync_productlocationlogs',
             'class' => 'primary add',
-            'label' => __('All Locations '),
-            'onclick' => "setLocation('" . $this->_getSyncLocationLogsUrl() . "')"
+            'label' => __('ALL Locations'),
+            'onclick' => "setLocation('" . $this->_getAllLocationUrl() . "')"
         ];
         
 
@@ -86,7 +86,7 @@ class Productlocation extends \Magento\Backend\Block\Widget\Grid\Container
         return $this->getUrl('productlocation/productlocation/syncproductlocation');
     }
 
-    protected function _getSyncLocationLogsUrl(){
+    protected function _getAllLocationUrl(){
         return $this->getUrl('productlocation/alllocations/index');
     }
 

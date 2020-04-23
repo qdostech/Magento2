@@ -3,7 +3,7 @@
 
     <body>
         <referenceContainer name="content">
-            <block class="Neo\Productlocation\Block\Adminhtml\Productlocation" name="productlocation_productlocation_container"/>
+            <block class="Neo\Productlocation\Block\Adminhtml\Alllocations" name="productlocation_alllocations_container"/>
        
 
         <block class="Magento\Framework\View\Element\Template" name="logfile" template="Qdos_QdosSync::log.phtml" after="productlocation_productlocation_container" />

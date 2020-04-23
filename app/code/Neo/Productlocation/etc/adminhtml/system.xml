@@ -1,0 +1,125 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © 2015 Magento. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../Config/etc/system_file.xsd">
+    <system>
+        <section id="qdosSync" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+			<label>Configuration Crons</label>
+			<tab>qdos</tab>
+			<resource>Qdos_QdosSync::system_config</resource>
+			<group id="autoSyncProductLocation" translate="label" type="text" sortOrder="1002" showInDefault="1" showInWebsite="1" showInStore="1">
+				<label>Sync Product Location </label>
+				<field id="auto_sync_productlocation" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Enable Auto Sync Product Location </label>
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+				</field>
+				 <field id="frequency" translate="label" type="select" sortOrder="2" showInDefault="1">
+					<label>Frequency</label>
+					<source_model>Qdos\QdosSync\Model\Config\Source\QdosSyncFrequency</source_model>
+					<backend_model>Neo\Productlocation\Model\Config\ProductlocationCronConfig</backend_model>
+					<depends>
+						<field id="qdosSync/autoSyncProductLocation/auto_sync_productlocation">1</field>
+					</depends>
+				</field>
+				<field id="weekdays" translate="label" type="select" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Weekdays Days</label>
+					<source_model>Magento\Config\Model\Config\Source\Locale\Weekdays</source_model>
+					<depends>
+						<field id="qdosSync/autoSyncProductLocation/frequency">W</field>
+						<field id="qdosSync/autoSyncProductLocation/auto_sync_productlocation">1</field>
+					</depends>
+				</field>
+				<field id="daysofmonth" translate="label" type="select" sortOrder="4" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Days on Month</label>
+					<source_model>Qdos\QdosSync\Model\Config\Source\QdosSyncDaysofMonth</source_model>
+					<depends>
+						<field id="qdosSync/autoSyncProductLocation/frequency">M</field>
+						<field id="qdosSync/autoSyncProductLocation/auto_sync_productlocation">1</field>
+					</depends>
+				</field>
+				<field id="time" translate="label" type="time" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Start Time</label>
+					<depends>
+						<field id="qdosSync/autoSyncProductLocation/auto_sync_productlocation">1</field>
+					</depends>
+				</field>
+				<field id="add_new_sync_productlocation_schedule" translate="label" type="select" sortOrder="6" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Add new schedule</label>
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+					<depends>
+						<field id="qdosSync/autoSyncProductLocation/auto_sync_productlocation">1</field>
+					</depends>
+				</field>
+				<field id="time2" translate="label" type="time" sortOrder="7" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Start Time</label>
+					<depends>
+						<field id="qdosSync/autoSyncProductLocation/auto_sync_productlocation">1</field>
+						<field id="qdosSync/autoSyncProductLocation/add_new_sync_productlocation_schedule">1</field>
+					</depends>
+				</field>
+				<field id="add_another_new_sync_productlocation_schedule" translate="label" type="select" sortOrder="8" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Add new schedule</label>
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+					<depends>
+						<field id="qdosSync/autoSyncProductLocation/auto_sync_productlocation">1</field>
+						<field id="qdosSync/autoSyncProductLocation/add_new_sync_productlocation_schedule">1</field>
+					</depends>
+				</field>
+				<field id="time3" translate="label" type="time" sortOrder="9" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Start Time</label>
+					<depends><!-- 
+                        <field id="qdosSync/autoSyncProductLocation/auto_sync_productlocation">1</field> -->
+						<field id="qdosSync/autoSyncProductLocation/add_new_sync_productlocation_schedule">1</field>
+						<field id="qdosSync/autoSyncProductLocation/add_another_new_sync_productlocation_schedule">1</field>
+					</depends>
+				</field>
+
+				<field id="add_another_new_one_sync_productlocation_schedule" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Add new schedule</label>
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+					<depends>
+						<field id="qdosSync/autoSyncProductLocation/auto_sync_productlocation">1</field> 
+						<field id="qdosSync/autoSyncProductLocation/add_new_sync_productlocation_schedule">1</field>
+						<field id="qdosSync/autoSyncProductLocation/add_another_new_sync_productlocation_schedule">1</field>
+					</depends>
+				</field>
+				<field id="time4" translate="label" type="time" sortOrder="11" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Start Time</label>
+					<depends>
+                        <field id="qdosSync/autoSyncProductLocation/auto_sync_productlocation">1</field> 
+						<field id="qdosSync/autoSyncProductLocation/add_new_sync_productlocation_schedule">1</field>
+						<field id="qdosSync/autoSyncProductLocation/add_another_new_sync_productlocation_schedule">1</field>
+						<field id="qdosSync/autoSyncProductLocation/add_another_new_one_sync_productlocation_schedule">1</field>
+					</depends>
+				</field>
+
+				<field id="add_another_new_two_sync_productlocation_schedule" translate="label" type="select" sortOrder="12" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Add new schedule</label>
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+					<depends>
+						<field id="qdosSync/autoSyncProductLocation/auto_sync_productlocation">1</field> 
+						<field id="qdosSync/autoSyncProductLocation/add_new_sync_productlocation_schedule">1</field>
+						<field id="qdosSync/autoSyncProductLocation/add_another_new_sync_productlocation_schedule">1</field>
+						<field id="qdosSync/autoSyncProductLocation/add_another_new_one_sync_productlocation_schedule">1</field>
+					</depends>
+				</field>
+				<field id="time5" translate="label" type="time" sortOrder="13" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Start Time</label>
+					<depends>
+                        <field id="qdosSync/autoSyncProductLocation/auto_sync_productlocation">1</field> 
+						<field id="qdosSync/autoSyncProductLocation/add_new_sync_productlocation_schedule">1</field>
+						<field id="qdosSync/autoSyncProductLocation/add_another_new_sync_productlocation_schedule">1</field>
+						<field id="qdosSync/autoSyncProductLocation/add_another_new_one_sync_productlocation_schedule">1</field>
+						<field id="qdosSync/autoSyncProductLocation/add_another_new_two_sync_productlocation_schedule">1</field>
+					</depends>
+				</field>
+
+
+			</group>
+		</section>
+    </system>
+</config>

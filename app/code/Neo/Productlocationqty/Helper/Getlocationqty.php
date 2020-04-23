@@ -32,12 +32,12 @@ class Getlocationqty extends \Magento\Framework\App\Helper\AbstractHelper
         }else{
             $ipAddress = '';
         }
-        $logModel->setActivityType('get_location')
+        $logModel->setActivityType('get_location_qty')
                  ->setStartTime($start_time)
                  ->setStatus($logModel::LOG_PENDING)
                  ->setIpAddress($ipAddress)
                  ->save(); 
-        $logFileName = "get_location_".date('Ymd').'.log';
+        $logFileName = "get_location_qty_".date('Ymd').'.log';
         $base = $this->directory_list->getPath('lib_internal');
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
         $lib_file = $base.'/Test.php'; 
@@ -56,7 +56,7 @@ class Getlocationqty extends \Magento\Framework\App\Helper\AbstractHelper
             if (is_object($result) && isset($result->LocationStock)) {
                 $objCollection = $result->LocationStock;
         }
-        // echo "<pre>"; print_r($objCollection); exit;
+        //echo "<pre>"; print_r($objCollection); exit;
         foreach($objCollection as $key=>$value){
             $data = array();
             $data['location_id'] = $value->LOCATION_ID;

@@ -22,6 +22,12 @@ class Getlocation extends \Magento\Framework\App\Helper\AbstractHelper
   //functions to sync Get Location of Products
   public function syncGetLocation($storeId = 0){
     try {
+        ini_set("soap.wsdl_cache_enabled", 0);
+        $base = $this->directory_list->getPath('lib_internal');
+        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+        $lib_file = $base.'/Test.php'; 
+        require_once($lib_file);
+        $client = Test();
         $message = 'success';
         $logModel = $this->syncModel;
         $_result = $logModel::LOG_SUCCESS;
@@ -38,23 +44,33 @@ class Getlocation extends \Magento\Framework\App\Helper\AbstractHelper
                  ->setIpAddress($ipAddress)
                  ->save(); 
         $logFileName = "get_location_".date('Ymd').'.log';
-        $base = $this->directory_list->getPath('lib_internal');
-        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-        $lib_file = $base.'/Test.php'; 
-        require_once($lib_file);
-        $client = Test();
+        $clientnew = $client->getConnect();
+    
+       $store_url = $objectManager->get('Magento\Framework\App\Config\ScopeConfigInterface')->getValue('qdosConfig/store/store_url_path', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
 
-        $clientnew = $client->connect();
-        $store_url = $objectManager->get('Magento\Framework\App\Config\ScopeConfigInterface')->getValue('qdosConfig/store/store_url_path', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-        $resultClient =  $clientnew->Getlocation(array('store_url'=> $store_url ));
+        $unset = $objectManager->get('Magento\Framework\App\Config\ScopeConfigInterface')->getValue('qdosConfig/import_product_settings/not_sync_attribute_properties', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        $unsetProperties = array();
+
+         if (strlen($unset)){
+            $unsetProperties = explode(',',$unset);
+        }
+    
+        $resultClient =  $clientnew->__call('Getlocation', array(array('store_url'=>$store_url)));//->GetLocation(array('store_url'=> $store_url));
+//var_dump($resultClient);die();
         $objCollection = array();
+
         if ($resultClient->outErrorMsg && strlen($resultClient->outErrorMsg) > 0) {
-            $logMsgs[] = 'SOAP LOGIN ERROR: ' . $resultClient->outErrorMsg;
+           echo  $logMsgs[] = 'SOAP LOGIN ERROR: ' . $resultClient->outErrorMsg; exit;
         }else{
             $result = $resultClient->GetLocationResult;
             if (is_object($result) && isset($result->Location)) {
                 $objCollection = $result->Location;
+               
         }
+
+
+   
+// if(is_array($objCollection)||is_object($objCollection)):
 
         foreach($objCollection as $key=>$value){
             $data = array();
@@ -62,12 +78,13 @@ class Getlocation extends \Magento\Framework\App\Helper\AbstractHelper
             $data[$value->LOCATION_ID]['location_name'] = $value->NAME;
             
             $existing_location = $this->productlocation->getCollection()
-                                    ->addFieldToFilter('location_id',array('eq' => $value->LOCATION_ID));
-            $logMsg[] = 'Product Id = '.$value->PRODUCT_ID;
+                                    ->addFieldToFilter('location_id',array('eq' => $value->LOCATION_ID))->getFirstItem();
+            $logMsg[] = 'Location Id = '.$value->LOCATION_ID;
             $existing_location = $existing_location->getData();
-            if ($existing_location[0]['id']) {
+            print_r($existing_location);
+            if ($existing_location) {
                 $model = $this->productlocation->addData($data[$value->LOCATION_ID])
-                    ->setId($existing_location[0]['id'])
+                    ->setId($existing_location['id'])
                     ->save();
             }else{
                 $model = $this->productlocation->addData($data[$value->LOCATION_ID])
@@ -75,7 +92,13 @@ class Getlocation extends \Magento\Framework\App\Helper\AbstractHelper
             }
         }
         $message = 'success';
+
             }
+
+        // else:
+        //     $logMsg[]="location data are empty";
+        // endif;
+
         $logModel->setEndTime(date('Y-m-d H:i:s'))
             ->setStatus($_result)
             ->setDescription(implode('<br />', $logMsg))
@@ -86,4 +109,7 @@ class Getlocation extends \Magento\Framework\App\Helper\AbstractHelper
     }
     return $message;
   }
+
+   
+
 }

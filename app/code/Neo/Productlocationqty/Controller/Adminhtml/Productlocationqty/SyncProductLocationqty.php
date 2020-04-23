@@ -1,5 +1,17 @@
 <?php
 namespace Neo\Productlocationqty\Controller\Adminhtml\Productlocationqty;
+set_time_limit(0);
+ini_set('max_execution_time', 30000);
+ini_set('memory_limit', '2048M');
+ini_set('default_socket_timeout', 2000);
+
+ini_set('display_errors', 'On');
+if (!extension_loaded("soap")) {
+    dl("php_soap.dll");
+}
+
+
+ini_set("soap.wsdl_cache_enabled", "0");
 
 class SyncProductLocationqty extends \Magento\Backend\App\Action
 {
@@ -12,8 +24,8 @@ class SyncProductLocationqty extends \Magento\Backend\App\Action
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
         $this->_resourceConfig = $objectManager->get('\Magento\Config\Model\ResourceModel\Config');
         $this->_scopeConfig = $objectManager->get('\Magento\Framework\App\Config\ScopeConfigInterface');
-        // $syncOrderStatus = $this->_scopeConfig->getValue('payment_order_mapping/permissions/order_status',\Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-        if (true) { //$syncOrderStatus
+         $synclocationqtyStatus = $this->_scopeConfig->getValue('qdosConfig/permissions/product_location_qty_sync',\Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        if ($synclocationqtyStatus) { //$syncOrderStatus
             $cronStatus = $this->_scopeConfig->getValue('qdos_sync_config/current_cron_status/cron_status',\Magento\Store\Model\ScopeInterface::SCOPE_STORE);
 
             if (strtolower($cronStatus) == 'running') {
@@ -22,7 +34,8 @@ class SyncProductLocationqty extends \Magento\Backend\App\Action
                 $this->_resourceConfig->saveConfig('qdosConfig_cron_status/cron_status/current_cron_status', "Running", 'default', 0);
                 $syncStatus = $objectManager->get('\Neo\Productlocationqty\Helper\Getlocationqty')->syncGetLocationQty();
             if ($syncStatus == 'success') {
-                $logMsg[] = 'Qdos Location Sync Successful';
+                $logMsg[] = 'Qdos Location QTY Sync Successful';
+                $this->messageManager->addSucess('Qdos Product Location Qty Sync Successful.');
             }else{
                 $logMsg[] = $syncStatus;
             }
@@ -30,6 +43,7 @@ class SyncProductLocationqty extends \Magento\Backend\App\Action
             }
         }else{
             $logMsg[] = 'Manual Sync is Disabled.';
+           $this->messageManager->addError('Manual Sync is Disabled.');
         }
         $resultRedirect = $this->resultRedirectFactory->create();
         $resultRedirect->setPath('productlocationqty/productlocationqty/index');

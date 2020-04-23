@@ -1,6 +1,6 @@
 <?php
 namespace Neo\Productlocationqty\Block\Adminhtml;
-class Productlocationqty extends \Magento\Backend\Block\Widget\Grid\Container
+class Allproductlocationqty extends \Magento\Backend\Block\Widget\Grid\Container
 {
     /**
      * Constructor
@@ -10,10 +10,10 @@ class Productlocationqty extends \Magento\Backend\Block\Widget\Grid\Container
     protected function _construct()
     {
 		
-        $this->_controller = 'adminhtml_productlocationqty';
+        $this->_controller = 'adminhtml_allproductlocationqty';
         $this->_blockGroup = 'Neo_Productlocationqty';
         $this->_headerText = __('Productlocationqty');
-        $this->_addButtonLabel = __('Add Productlocationqty'); 
+       // $this->_addButtonLabel = __('Add Productlocationqty'); 
         parent::_construct();
 		
     }   
