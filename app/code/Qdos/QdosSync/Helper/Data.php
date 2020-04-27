@@ -235,7 +235,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         // $this->_logger->info(__METHOD__);
         $base = $this->directory_list->getPath('lib_internal');
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-        $lib_file = $base . '/Test.php';
+        $lib_file = $base . '/Connection.php';
         require_once($lib_file);
         $client = Test();
         $logFileName = "import-" . date('Ymd') . ".log";
@@ -520,7 +520,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
         $base = $this->directory_list->getPath('lib_internal');
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-        $lib_file = $base . '/Test.php';
+        $lib_file = $base . '/Connection.php';
         require_once($lib_file);
         $client = Test();
 
@@ -677,7 +677,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     {
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
         $base = $this->directory_list->getPath('lib_internal');
-        $lib_file = $base . '/Test.php';
+        $lib_file = $base . '/Connection.php';
         require_once($lib_file);
         $client = Test();
         $logFileName = "syncCategory-" . date('Ymd') . ".log";
@@ -1079,7 +1079,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         */
         $logMsgs = $logMsg = $productLogIds = $hiddenProductArr = array();
         $base = $this->directory_list->getPath('lib_internal');
-        $lib_file = $base . '/Test.php';
+        $lib_file = $base . '/Connection.php';
         require_once($lib_file);
         $client = Test();
         try {
@@ -1129,7 +1129,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                     }
                 }
 
-                
+                // echo count($objCollection); exit;
+
+                $client->setLog("Products count => " . count($objCollection), null, $logFileName);
+
                 /*if (isset($_SERVER['REMOTE_ADDR']) && !empty($_SERVER['REMOTE_ADDR'])) {
                   $ipAddress = $_SERVER['REMOTE_ADDR'];
                 }else{
@@ -1141,8 +1144,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                   $logMsgs[] = "Manual Sync Process";
                 }*/
 
-                // $logMsgs[] = "Total Products Count = " . count($objCollection);
+                $logMsgs[] = "Total Products Count = " . count($objCollection);
 
+
+               // echo "<pre>";print_r($objCollection);exit;
                 $client->setLog("CSV Generation starts", null, $logFileName);
                 $headerflag = 0;
 
@@ -1165,29 +1170,18 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 }
 
                 //echo "<pre>";print_r($arrUrlKey);exit;
-                $prodObjToArrCount = 1;
-                // property_exists($objCollection, 'ID') --> TRUE
-                // if(is_array($objCollection) || is_object($objCollection)){
-                // its php 7.2 count($scalarObj) won't work so commenting this line
-                // As we are getting either obj or array. 
-                if (is_object($objCollection)) {
-                    $collection[] = $objCollection;    
-                    $client->setLog("***** Products count 1 in object ***** ", null, $logFileName);                
-                    // $client->setLog("Products count => " . $prodObjToArrCount, null, $logFileName);                
+
+                if (count($objCollection) == 1) {
+                    $collection[] = $objCollection;
                 } else {
                     $collection = $objCollection;
-                    // To get count
-                    $prodObjToArr = $this->convertItemToArray($objCollection);
-                    $prodObjToArrCount =  count($prodObjToArr);
-                    $client->setLog("Products count => " . $prodObjToArrCount, null, $logFileName);                    
                 }
 
                 $productSkuMap = array();
                 $CodeInColumn = array();
                 $arrProductData = array();
                 foreach ($collection as $item) {
-                    $item = $this->convertItemToArray($item); // This is to convert obj into array
-                    // print_r($item);
+                    $item = $this->convertItemToArray($item);
                     $productSkuMap[$item['id']] = $item['sku'];
                     $arrProductData[$item['sku']] = $item;
 
@@ -1817,15 +1811,13 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 $client->setLog("Simple Product Import Started. ", null, $logFile);
                 $logMsgs[] = "<strong>Simple Product Import Started.</strong>";
                 
-                // $returnMsgs1 = $this->ProductsSync($productcsv, $syncPermissions, count($objCollection), $productIds, $ipAddress, $storeId);
-                $returnMsgs1 = $this->ProductsSync($productcsv, $syncPermissions, $prodObjToArrCount, $productIds, $ipAddress, $storeId);
+                $returnMsgs1 = $this->ProductsSync($productcsv, $syncPermissions, count($objCollection), $productIds, $ipAddress, $storeId);
                 $logMsgs[] = implode('<br />', $returnMsgs1);
 
                 $client->setLog("Other Product Import Started. ", null, $logFile);
                 $logMsgs[] = "<strong>Other Product Import Started.</strong>";
 
-                // $returnMsgs2 = $this->ProductsSync($productcsvother, $syncPermissions, count($objCollection), $productIds, $ipAddress, $storeId);
-                $returnMsgs2 = $this->ProductsSync($productcsvother, $syncPermissions, $prodObjToArrCount, $productIds, $ipAddress, $storeId);
+                $returnMsgs2 = $this->ProductsSync($productcsvother, $syncPermissions, count($objCollection), $productIds, $ipAddress, $storeId);
                 $logMsgs[] = implode('<br />', $returnMsgs2);
 
                 $client->setLog("readCsvFile end. ", null, $logFile);
@@ -1912,7 +1904,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
 
         $base = $this->directory_list->getPath('lib_internal');
-        $lib_file = $base . '/Test.php';
+        $lib_file = $base . '/Connection.php';
         require_once($lib_file);
         $client = Test();
 
@@ -2142,7 +2134,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
 
         $base = $this->directory_list->getPath('lib_internal');
-        $lib_file = $base . '/Test.php';
+        $lib_file = $base . '/Connection.php';
         require_once($lib_file);
         $client = Test();
 
@@ -2524,7 +2516,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
             $storeId = $objectManager->get('Magento\Store\Model\StoreManagerInterface')->getStore()->getId();
             $base = $this->directory_list->getPath('lib_internal');
-            $lib_file = $base . '/Test.php';
+            $lib_file = $base . '/Connection.php';
             require_once($lib_file);
             $client = Test();
 
@@ -2562,13 +2554,15 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function exportCustomerNonRegisteredFromSubscriber($subscriber)
     {
         try {
+
+
             //$data = Mage::helper('sync/customer')->getAllCustomerAttribute();
             $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
             $data = $objectManager->get('Magento\Customer\Model\Customer')->getAttributes();
             $storeId = $subscriber->getStoreId();
 
             $base = $this->directory_list->getPath('lib_internal');
-            $lib_file = $base . '/Test.php';
+            $lib_file = $base . '/Connection.php';
             require_once($lib_file);
             $client = Test();
 
@@ -2633,14 +2627,18 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 }
                 $data[$pre . '_COMPANY'] = '';
                 $data[$pre . '_FAX'] = '';
+
             }
+          
             $result = $resultClient->CreateCustomerCSV(array('store_url' => $store_url, 'orderID' => $orderId, 'customer' => $data));
+         //   print_r($result->CreateCustomerResult());
             if ($result->outErrorMsg && strlen($result->outErrorMsg) > 0) {
                 $client->setLog('Customer: ' . $result->outErrorMsg, null, 'newsletter-sync.log', true);
                 $error = 'Customer: ' . $result->outErrorMsg;
             } else {
                 try {
-                    if ($result->CreateCustomerResult) {
+                   // var_dump($result->CreateCustomerCSVResult); exit;
+                    if ($result->CreateCustomerCSVResult) {
                         $client->setLog('Send Customer form Subscriber success', null, 'newsletter-sync.log', true);
                         $error = false;
                     }
@@ -2656,6 +2654,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $client->setLog('Send Customer in Subscriber Failed: ' . $e->getMessage(), null, 'newsletter-sync.log', true);
             //return $error;
         }
+
+        echo $error;exit;
         return $error;
     }
 
