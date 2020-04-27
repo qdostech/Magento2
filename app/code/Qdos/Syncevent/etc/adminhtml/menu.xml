@@ -6,7 +6,7 @@
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../Backend/etc/menu.xsd">
     <menu>
-       <!--  <add id="Qdos_Syncevent::qdos_syncevent_index" title="Sync Events" module="Qdos_Syncevent"  sortOrder="20" dependsOnModule="Qdos_Syncevent" action="syncevent/syncevent/index" resource="Qdos_Syncevent::qdos_syncevent_index"/> -->
-<!--AddMenu-->
+      <!--AddMenu-->
+<add id="Qdos_QdosSync::qdos_syncevent_index" title="Synch Events" module="Qdos_Syncevent"  sortOrder="70" dependsOnModule="Qdos_QdosSync" parent="Qdos_QdosSync::catalogue" action="syncevent/syncevent/index" resource="Qdos_Syncevent::qdos_syncevent_index"/>
     </menu>
 </config>

@@ -9,7 +9,7 @@
 		<add id="Qdos_QdosSync::qdos_syncproductmanual_index" title="Synch Products Manually" module="Qdos_QdosSync"  sortOrder="40" dependsOnModule="Qdos_QdosSync" parent="Qdos_QdosSync::catalogue" action="qdossync/syncproductmanual/index" resource="Qdos_QdosSync::qdos_syncproductmanual_index"/>
 		<add id="Qdos_QdosSync::qdos_syncproducer_index" title="Synch Product Producer" module="Qdos_Syncproducer"  sortOrder="50" dependsOnModule="Qdos_QdosSync" parent="Qdos_QdosSync::catalogue" action="syncproducer/syncproducer/index" resource="Qdos_Syncproducer::qdos_syncproducer_index"/>
 		<add id="Qdos_QdosSync::qdos_syncgrape_index" title="Synch Product Grape" module="Qdos_Syncproducer"  sortOrder="60" dependsOnModule="Qdos_QdosSync" parent="Qdos_QdosSync::catalogue" action="winery/syncgrape/index" resource="Qdos_Syncproducer::qdos_syncgrape_index"/>
-		<add id="Qdos_QdosSync::qdos_syncevent_index" title="Synch Events" module="Qdos_Syncevent"  sortOrder="70" dependsOnModule="Qdos_QdosSync" parent="Qdos_QdosSync::catalogue" action="syncevent/syncevent/index" resource="Qdos_Syncevent::qdos_syncevent_index"/>
+		<!-- <add id="Qdos_QdosSync::qdos_syncevent_index" title="Synch Events" module="Qdos_Syncevent"  sortOrder="70" dependsOnModule="Qdos_QdosSync" parent="Qdos_QdosSync::catalogue" action="syncevent/syncevent/index" resource="Qdos_Syncevent::qdos_syncevent_index"/> -->
 
 		<add id="Qdos_QdosSync::qdos_sync_order_multi" title="Synch Order" module="Qdos_QdosSync"  sortOrder="40" dependsOnModule="Qdos_QdosSync" parent="Neo_Mappaymentorder::order" action="ordersync/syncorder/index" resource="Qdos_QdosSync::qdos_syncgrid_index"/>
 
