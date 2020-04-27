@@ -735,7 +735,7 @@ class CsvImportHandler
 										
 										try {
 											#$filewithspacesreplaced = str_replace(" ","%20", $orgfile); //fix for urls with spaces in the Url
-											$ch = curl_init ($orgfile);
+											/*$ch = curl_init ($orgfile);
 												  curl_setopt($ch, CURLOPT_HEADER, 0);
 												  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 												  curl_setopt($ch, CURLOPT_BINARYTRANSFER,1);
@@ -745,12 +745,25 @@ class CsvImportHandler
 													#$file = '/'. $path_parts['filename']."_".$_itemCounter.".".$path_parts['extension'];
 													#$fullpath = $this->_filesystem->getDirectoryWrite(DirectoryList::MEDIA)->getAbsolutePath('catalog').'/product'. $file;
 													#if(file_exists($fullpath)) {
-														unlink($fullpath);
+													#	unlink($fullpath);
 													#}
 												  }
-												  $fp = fopen($fullpath,'x');
-														fwrite($fp, $rawdata);
-														fclose($fp);
+												  // $fp = fopen($fullpath,'x');
+														// fwrite($fp, $rawdata);
+														// fclose($fp);*/
+
+													if(!file_exists($fullpath))
+													{
+
+														$file="";
+													}						                            
+						                           // $logger->info('images sync : '.$file.'<br>');
+													//with Capital extension 
+													$fullpath_CAP = $this->_filesystem->getDirectoryWrite(DirectoryList::MEDIA)->getAbsolutePath('import').'/'.$path_parts['filename'].'.'.strtoupper($path_parts['extension']);
+													if(file_exists($fullpath_CAP))
+													{
+														$file='/'.$path_parts['filename'].'.'.strtoupper($path_parts['extension']);
+													}
 										}
 										catch (Exception $e) { echo "ERROR: " . $e; }
 										
@@ -775,10 +788,7 @@ class CsvImportHandler
 								$file="";
 							}
 
-                             $writer = new \Zend\Log\Writer\Stream(BP . '/var/log/images_details.log');
-                            $logger = new \Zend\Log\Logger();
-                            $logger->addWriter($writer);
-
+                            
                            // $logger->info('images sync : '.$file.'<br>');
 							//with Capital extension 
 							$fullpath_CAP = $this->_filesystem->getDirectoryWrite(DirectoryList::MEDIA)->getAbsolutePath('import').'/'.$path_parts['filename'].'.'.strtoupper($path_parts['extension']);
