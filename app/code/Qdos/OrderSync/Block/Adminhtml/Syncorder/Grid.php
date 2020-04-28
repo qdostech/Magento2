@@ -60,7 +60,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
     protected function _prepareCollection()
     {
 		try{
-            $connection = $this->_resource->getConnection(\Magento\Framework\App\ResourceConnection::DEFAULT_CONNECTION);
+           // $connection = $this->_resource->getConnection(\Magento\Framework\App\ResourceConnection::DEFAULT_CONNECTION);
             $orderSyncStatusTable = $this->_resource->getTableName('order_sync_status');
             $collection = $this->orderCollectionFactory->create(); 
             $collection->join(array('payment'=>'sales_order_payment'),'main_table.entity_id=parent_id','method');
