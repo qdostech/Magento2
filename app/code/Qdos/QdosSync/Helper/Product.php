@@ -292,6 +292,10 @@ class Product extends \Qdos\QdosSync\Helper\Data
                 //         ->updateAttributes($deletedProductIds, array('status' => $status), 0);
               $deletedProductCount= count($deletedProductIds);
                 $this->_logMsg[] = __('Total of '.$deletedProductCount.' record(s) have been updated.');//, $deletedProductCount);
+                if($deletedProductCount==0)
+                {
+                    $status =\Neo\Winery\Model\Activity::LOG_WARNING;
+                }
             
             } catch (\Exception $e) {
                 $message = "fail";
@@ -312,7 +316,7 @@ class Product extends \Qdos\QdosSync\Helper\Data
             ->setStatus($status)
             ->save();
 
-        return  implode('<br>',$this->_logMsg);
+        return  $message; //implode('<br>',$this->_logMsg);
     }
 
 

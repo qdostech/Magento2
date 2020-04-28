@@ -3,7 +3,7 @@
     <event name="catalog_product_save_before">
         <observer name="productsavebefore" instance="Qdos\QdosSync\Observer\Productsavebefore" />
     </event>
-    <event name="newsletter_subscriber_save_commit_after">
+    <event name="newsletter_subscriber_save_after">
     	 <observer name="newslettersubscribeafter" instance="Qdos\QdosSync\Observer\NewsletterSubscribeAfter" />
     </event>
 </config>

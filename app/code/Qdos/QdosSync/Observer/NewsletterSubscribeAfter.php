@@ -23,6 +23,8 @@ class NewsletterSubscribeAfter implements ObserverInterface
 
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
+
+
     	$writer = new \Zend\Log\Writer\Stream(BP . '/var/log/newsletter_sync.log');
         $logger = new \Zend\Log\Logger();
         $logger->addWriter($writer);
@@ -37,11 +39,12 @@ class NewsletterSubscribeAfter implements ObserverInterface
         // }
         $logger->info($observer->getEvent()->getName());
         if ($this->_customerSession->isLoggedIn()) {
-            $customer= $this->_customerSession->getCustomerData();
+            $customer= $this->_customerSession->getCustomer();
         // }
-        
-        // if ($customer->getId()){
+       
+        // if ){
             $this->_qdosHelper->exportCustomer($customer);
+            
         }else{
 
 

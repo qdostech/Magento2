@@ -2425,6 +2425,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     public function exportNewsletter($subscriberData = null, $store_id = 0)
     {
+
+
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
         $logModel = $this->_log;
         $logMsg = array();
@@ -2447,12 +2449,18 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             ->setStoreId($store_id)
             ->save();
 
+        
+
         try {
             if (!empty($subscriberData) || $subscriberData != null) {
+
                 $subscribeStatusFlag = true;
                 $logger->info('subscriberId-Data' . $subscriberData['subscriber_id'], null, 'newsletter-sync.log', true);
                 $subscribers = $objectManager->create('Magento\Newsletter\Model\ResourceModel\Subscriber\Collection')
                         ->addFieldToFilter('subscriber_id', $subscriberData['subscriber_id']);
+                       
+
+        
             } else {
                 $subscribeStatusFlag = false;
                 //$logger->info('subscriberElse', null, 'newsletter-sync.log', true);
@@ -2460,6 +2468,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             }
             $countSync = 0;
             foreach ($subscribers->getData() as $subscriber) {
+
+               
                 // check for sync subscribers record.
                 if ($subscriber->getSyncflag() == Null || $subscribeStatusFlag) {
                     $customerExist = $objectManager->create("\Magento\Customer\Model\Customer")
@@ -2477,6 +2487,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                             $message = $customerRegister;
                         }
 
+
                     } else {
                         $logger->info('subscriber:' . $subscriber->getCustomerId(), null, 'newsletter-sync.log', true);
                         if ($subscriber->getCustomerId() == 0) {
@@ -2493,8 +2504,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                     $subscriber->save();
                     ++$countSync;
                 }
-                $logger->info('Total Subscribers Sync: ' . $countSync, null, 'newsletter-sync.log', true);
+              
             }
+              $logger->info('Total Subscribers Sync: ' . $countSync, null, 'newsletter-sync.log', true);
 
         } catch (Exception $ex) {
             //$status = $logModel::LOG_ERROR;
@@ -2525,14 +2537,15 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
             $client->setLog("StoreId:" . $storeId . '|store_url:' . $store_url, null, 'newsletter-sync.log', true);
 
-            $data = $this->setDataCustomer($customer, $orderId, $incrementId);
+            $data =$customer->getData();// $this->setDataCustomer($customer, $orderId, $incrementId);
             // $data['ADDITIONAL_PARAMETERS'] = 'shoesize:'.$customer->getShoesize().'|birthday:'.$customer->getBirthday().'|mobilephone:'.$customer->getMobilephone().'|intrested:'.$customer->getIntrested().'|hearaboutus:'.$customer->getHearaboutus().'|firstname:'.$customer->getFirstname().'|lastname:'.$customer->getLastname();
 
             $client->setLog("CUSTOMER SENDING", null, 'newsletter-sync.log', true);
             $client->setLog($data, null, 'newsletter-sync.log', true);
 
             $result = $resultClient->CreateCustomerCSV(array('store_url' => $store_url, 'orderID' => $orderId, 'customer' => $data));
-            $result = $this->convertObjToArray($result);
+            $result = $this->convertObjToArray($result->CreateCustomerCSVResult);
+            //var_dump($result);exit;
             if ($result['outerrormsg'] == '') {
                 $error = false;
                 $client->setLog('Send Customer Success: ' . $customer->getId(), null, 'newsletter-sync.log', true);
