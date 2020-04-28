@@ -208,7 +208,7 @@ public function inAttributeSet($attributeSetId = 0, $attributeCode = ''){
 public function syncAttribute(){
         $base = $this->directory_list->getPath('lib_internal');
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-        $lib_file = $base.'/Test.php'; 
+        $lib_file = $base.'/Connection.php'; 
         require_once($lib_file);
         $client = Test();
         $logFileName = "import-".date('Ymd').".log";
@@ -511,7 +511,7 @@ public function addAttributeToAllAttributeSets(string $attributeCode, string $at
     private function ProductsSync($filePath, $syncPermissions) {
         $base = $this->directory_list->getPath('lib_internal');
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-        $lib_file = $base.'/Test.php'; 
+        $lib_file = $base.'/Connection.php'; 
         require_once($lib_file);
         $client = Test();
 
@@ -650,7 +650,7 @@ public function addAttributeToAllAttributeSets(string $attributeCode, string $at
   public function syncCategory(){
         $base = $this->directory_list->getPath('lib_internal');
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-        $lib_file = $base.'/Test.php'; 
+        $lib_file = $base.'/Connection.php'; 
         require_once($lib_file);
         $client = Test();
         $logFileName = "syncCategory-".date('Ymd').".log";
@@ -999,7 +999,7 @@ public function addAttributeToAllAttributeSets(string $attributeCode, string $at
 
         $base = $this->directory_list->getPath('lib_internal');
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-        $lib_file = $base.'/Test.php'; 
+        $lib_file = $base.'/Connection.php'; 
         require_once($lib_file);
         $client = Test();
         try {

@@ -204,7 +204,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         // $this->_logger->info(__METHOD__);
         $base = $this->directory_list->getPath('lib_internal');
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-        $lib_file = $base . '/Test.php';
+        $lib_file = $base . '/Connection.php';
         require_once($lib_file);
         $client = Test();
         $logFileName = "import-" . date('Ymd') . ".log";
@@ -481,7 +481,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     //     // $this->_logger->info(__METHOD__);
     //     $base = $this->directory_list->getPath('lib_internal');
     //     $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-    //     $lib_file = $base . '/Test.php';
+    //     $lib_file = $base . '/Connection.php';
     //     require_once($lib_file);
     //     $client = Test();
 
@@ -627,7 +627,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     {
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
         $base = $this->directory_list->getPath('lib_internal');
-        $lib_file = $base . '/Test.php';
+        $lib_file = $base . '/Connection.php';
         require_once($lib_file);
         $client = Test();
         $logFileName = "sync_grape_options_-" . date('Ymd') . ".log";
@@ -999,7 +999,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
         $base = $this->directory_list->getPath('lib_internal');
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-        $lib_file = $base . '/Test.php';
+        $lib_file = $base . '/Connection.php';
         require_once($lib_file);
         $client = Test();
         try {

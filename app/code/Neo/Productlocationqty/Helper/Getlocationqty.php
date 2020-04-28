@@ -40,7 +40,7 @@ class Getlocationqty extends \Magento\Framework\App\Helper\AbstractHelper
         $logFileName = "get_location_qty_".date('Ymd').'.log';
         $base = $this->directory_list->getPath('lib_internal');
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-        $lib_file = $base.'/Test.php'; 
+        $lib_file = $base.'/Connection.php'; 
         require_once($lib_file);
         $client = Test();
 

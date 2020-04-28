@@ -47,7 +47,7 @@ class Position extends \Qdos\QdosSync\Helper\Data
     public function syncPosition($productId = null, $categoryId = null, $storeId = 0)
     {
         $base = $this->directory_list->getPath('lib_internal');
-        $lib_file = $base . '/Test.php';
+        $lib_file = $base . '/Connection.php';
         require_once($lib_file);
         $client = Test();
 
@@ -125,7 +125,7 @@ class Position extends \Qdos\QdosSync\Helper\Data
             $store_url = $objectManager->get('Magento\Framework\App\Config\ScopeConfigInterface')->getValue('qdosConfig/store/store_url_path');
 
             $base = $this->directory_list->getPath('lib_internal');
-            $lib_file = $base . '/Test.php';
+            $lib_file = $base . '/Connection.php';
             require_once($lib_file);
             $client = Test();
 

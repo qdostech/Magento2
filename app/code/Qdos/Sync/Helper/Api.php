@@ -14,7 +14,7 @@ class Api extends \Magento\Framework\App\Helper\AbstractHelper
 
   protected function _getClient(){
     $base = $this->directory_list->getPath('lib_internal');
-    $lib_file = $base.'/Test.php';
+    $lib_file = $base.'/Connection.php';
     require_once($lib_file);
     $client = Test();
     return $client;
