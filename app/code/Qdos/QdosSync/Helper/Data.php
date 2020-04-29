@@ -2522,11 +2522,184 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     }
 
+//Set Customer Data
+    public function setDataCustomer($customer, $orderId, $increment_id)
+    {
+         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+
+
+       // $data = Mage::helper('qdossync/customer')->getAllCustomerAttribute($customer);
+
+       // $customerMySize = Mage::getSingleton('core/resource')
+         //   ->getConnection('core_write')
+         //   ->isTableExists(Mage::getSingleton('core/resource')->getTableName('customer_mysize_value'));
+
+     // /  if ($customerMySize){
+     //        Mage::log('export my size',null,'qdos-sync.log',true);
+     //        $sizeArr = Mage::helper('qdossync/customer')->exportMySize($customer);
+     //        $data    = array_merge($data,$sizeArr);
+     //    }
+         $customer = $objectManager->create('Magento\Customer\Model\Customer')->load($customer->getId());
+
+        if($addresses = $customer->getAddresses()){
+            $array = array();
+            foreach($addresses as $address){
+                $array[] = $address->getData();
+            }
+            $customer->setData('addresses',$array);
+        }
+
+        $subscriber = $objectManager->create(\Magento\Newsletter\Model\Subscriber::class);
+        $subscriber = $subscriber->loadByEmail($customer->getEmail());
+        if($subscriber->getId()){
+            $is_subscribed = 1; 
+        }else{
+           
+            $is_subscribed = 0;
+        }
+
+        $data['WEBSITE']                     = $customer->getWebsiteId();
+        $data['EMAIL']                       = $customer->getEmail();
+        $data['GROUP_ID']                    = $customer->getGroupId();
+        //$data['DISABLE_AUTO_GROUP_CHANGE'] = $customer->getDisableAutoGroupChange();
+        $data['DISABLE_AUTO_GROUP_CHANGE']   = 0;
+        $data['FIRSTNAME']                   = $customer->getFirstname();
+        $data['LASTNAME']                    = $customer->getLastname();
+        $data['PASSWORD_HASH']               = $customer->getPasswordHash();
+        $data['CREATED_IN']                  = $customer->getCreatedIn();
+        //$data['IS_SUBSCRIBED']               = $customer->getIsSubscribed()?$customer->getIsSubscribed():0;
+        $data['IS_SUBSCRIBED']               = $is_subscribed ? $is_subscribed : 0;
+        $data['GROUP']                       = '';
+        $data['CUSTOMER_GROUP_ID']           = (int)$customer->getGroupId();
+        $data['CUSTOMER_ID']                 = (int)$customer->getId(); //
+        $data['ORDER_ID']                    = $orderId;
+        $data['STYLIST_ID']                  = strlen($customer->getData('stylistid')) > 0?$customer->getStylistid():0;
+        $data['INCREMENT_ID']                = $increment_id;
+
+        // $stylePref = $customer->getData('style_answer');
+        // if (strlen($stylePref) > 0){
+        //     Mage::helper('qdossync/customer')->exportStylePreference($stylePref,$customer,$incrementId,$logMsg);
+        // }
+        // $iconClosest = $customer->getData('style_icon_closest');
+        // if (strlen($iconClosest) > 0){
+        //     Mage::helper('qdossync/customer')->exportStylistClosest($customer,$incrementId,$logMsg);
+        // }
+        
+        $addressId = (int) $customer->getDefaultBilling();
+        $billing   =  $customer->getAddressById($addressId);
+        if($billing->getId()){
+            $data['BILL_ADDR_FLAG']      = 1;
+            $data['BILLING_PREFIX']      = is_null($billing->getPrefix())?'':$billing->getPrefix();
+            $data['BILLING_SUFFIX']      = is_null($billing->getSuffix())?'':$billing->getSuffix();
+            $data['BILLING_FIRSTNAME']   = $billing->getFirstname();
+            $data['BILLING_MIDDLENAME']  = is_null($billing->getMiddlename())?'':$billing->getMiddlename();
+            $data['BILLING_LASTNAME']    = $billing->getLastname();
+            $data['BILLING_STREET_FULL'] = implode(' ',$billing->getStreet());
+            $data['BILLING_STREET1']     = implode(' ',$billing->getStreet(1));
+            $data['BILLING_STREET2']     = implode(' ',$billing->getStreet(2));
+            $data['BILLING_STREET3']     = implode(' ',$billing->getStreet(3));
+            $data['BILLING_STREET4']     = implode(' ',$billing->getStreet(4));
+            $data['BILLING_STREET5']     = implode(' ',$billing->getStreet(5));
+            $data['BILLING_STREET6']     = implode(' ',$billing->getStreet(6));
+            $data['BILLING_STREET7']     = implode(' ',$billing->getStreet(7));
+            $data['BILLING_STREET8']     = implode(' ',$billing->getStreet(8));
+            $data['BILLING_CITY']        = $billing->getCity();
+            $data['BILLING_REGION']      = $billing->getRegion();
+            $data['BILLING_COUNTRY']     = $billing->getCountryId();
+            $data['BILLING_POSTCODE']    = $billing->getPostcode();
+            $data['BILLING_TELEPHONE']   = $billing->getTelephone();
+            $data['BILLING_COMPANY']     = is_null($billing->getCompany())?'':$billing->getCompany();
+            $data['BILLING_FAX']         = is_null($billing->getFax())?'':$billing->getFax();
+        }else{
+            $data['BILL_ADDR_FLAG']      = 0;
+            $data['BILLING_PREFIX']      = '';
+            $data['BILLING_SUFFIX']      = '';
+            $data['BILLING_FIRSTNAME']   = '';
+            $data['BILLING_MIDDLENAME']  = '';
+            $data['BILLING_LASTNAME']    = '';
+            $data['BILLING_STREET_FULL'] = '';
+            $data['BILLING_STREET1']     = '';
+            $data['BILLING_STREET2']     = '';
+            $data['BILLING_STREET3']     = '';
+            $data['BILLING_STREET4']     = '';
+            $data['BILLING_STREET5']     = '';
+            $data['BILLING_STREET6']     = '';
+            $data['BILLING_STREET7']     = '';
+            $data['BILLING_STREET8']     = '';
+            $data['BILLING_CITY']        = '';
+            $data['BILLING_REGION']      = '';
+            $data['BILLING_COUNTRY']     = '';
+            $data['BILLING_POSTCODE']    = '';
+            $data['BILLING_TELEPHONE']   = '';
+            $data['BILLING_COMPANY']     = '';
+            $data['BILLING_FAX']         = '';
+        }
+        
+        $addressId = (int) $customer->getDefaultShipping();
+        $shipping = $customer->getAddressById($addressId);
+        if($shipping->getId()){
+            $data['SHIP_ADDR_FLAG']       = 1;
+            $data['SHIPPING_PREFIX']      = is_null($shipping->getPrefix())?'':$shipping->getPrefix();
+            $data['SHIPPING_SUFFIX']      = is_null($shipping->getSuffix())?'':$shipping->getSuffix();
+            $data['SHIPPING_FIRSTNAME']   = $shipping->getFirstname();
+            $data['SHIPPING_MIDDLENAME']  = is_null($shipping->getMiddlename())?'':$shipping->getMiddlename();
+            $data['SHIPPING_LASTNAME']    = $shipping->getLastname();
+            $data['SHIPPING_STREET_FULL'] = implode(' ',$shipping->getStreet());
+            $data['SHIPPING_STREET1']     = implode(' ',$shipping->getStreet(1));
+            $data['SHIPPING_STREET2']     = implode(' ',$shipping->getStreet(2));
+            $data['SHIPPING_STREET3']     = implode(' ',$shipping->getStreet(3));
+            $data['SHIPPING_STREET4']     = implode(' ',$shipping->getStreet(4));
+            $data['SHIPPING_STREET5']     = implode(' ',$shipping->getStreet(5));
+            $data['SHIPPING_STREET6']     = implode(' ',$shipping->getStreet(6));
+            $data['SHIPPING_STREET7']     = implode(' ',$shipping->getStreet(7));
+            $data['SHIPPING_STREET8']     = implode(' ',$shipping->getStreet(8));
+            $data['SHIPPING_CITY']        = $shipping->getCity();
+            $data['SHIPPING_REGION']      = $shipping->getRegion();
+            $data['SHIPPING_COUNTRY']     = $shipping->getCountryId();
+            $data['SHIPPING_POSTCODE']    = $shipping->getPostcode();
+            $data['SHIPPING_TELEPHONE']   = $shipping->getTelephone();
+            $data['SHIPPING_COMPANY']     = is_null($shipping->getCompany())?'':$shipping->getCompany();
+            $data['SHIPPING_FAX']         = is_null($shipping->getFax())?'':$shipping->getFax();
+        }else{
+            $data['SHIP_ADDR_FLAG']       = 0;
+            $data['SHIPPING_PREFIX']      = '';
+            $data['SHIPPING_SUFFIX']      = '';
+            $data['SHIPPING_FIRSTNAME']   = '';
+            $data['SHIPPING_MIDDLENAME']  = '';
+            $data['SHIPPING_LASTNAME']    = '';
+            $data['SHIPPING_STREET_FULL'] = '';
+            $data['SHIPPING_STREET1']     = '';
+            $data['SHIPPING_STREET2']     = '';
+            $data['SHIPPING_STREET3']     = '';
+            $data['SHIPPING_STREET4']     = '';
+            $data['SHIPPING_STREET5']     = '';
+            $data['SHIPPING_STREET6']     = '';
+            $data['SHIPPING_STREET7']     = '';
+            $data['SHIPPING_STREET8']     = '';
+            $data['SHIPPING_CITY']        = '';
+            $data['SHIPPING_REGION']      = '';
+            $data['SHIPPING_COUNTRY']     = '';
+            $data['SHIPPING_POSTCODE']    = '';
+            $data['SHIPPING_TELEPHONE']   = '';
+            $data['SHIPPING_COMPANY']     = '';
+            $data['SHIPPING_FAX']         = '';
+        }
+       
+        return $data;
+    }
+
+
+
+
+
+
     public function exportCustomer($customer, $orderId = -1, $incrementId = 0, &$logMsg = array())
     {
         try {
             $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
             $storeId = $objectManager->get('Magento\Store\Model\StoreManagerInterface')->getStore()->getId();
+            $store = $objectManager->get("\Magento\Store\Model\StoreManagerInterface")->getStore($storeId);
+            $websiteId = $store->getWebsiteId();
             $base = $this->directory_list->getPath('lib_internal');
             $lib_file = $base . '/Connection.php';
             require_once($lib_file);
@@ -2537,16 +2710,18 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
             $client->setLog("StoreId:" . $storeId . '|store_url:' . $store_url, null, 'newsletter-sync.log', true);
 
-            $data =$customer->getData();// $this->setDataCustomer($customer, $orderId, $incrementId);
+           $data =$this->setDataCustomer($customer, $orderId, $incrementId);
             // $data['ADDITIONAL_PARAMETERS'] = 'shoesize:'.$customer->getShoesize().'|birthday:'.$customer->getBirthday().'|mobilephone:'.$customer->getMobilephone().'|intrested:'.$customer->getIntrested().'|hearaboutus:'.$customer->getHearaboutus().'|firstname:'.$customer->getFirstname().'|lastname:'.$customer->getLastname();
-
-            $client->setLog("CUSTOMER SENDING", null, 'newsletter-sync.log', true);
+          
+          $client->setLog("CUSTOMER SENDING", null, 'newsletter-sync.log', true);
             $client->setLog($data, null, 'newsletter-sync.log', true);
+            
+            $result = $resultClient->CreateCustomer(array('store_url' => $store_url, 'orderID' => $orderId, 'customer' => $data));
 
-            $result = $resultClient->CreateCustomerCSV(array('store_url' => $store_url, 'orderID' => $orderId, 'customer' => $data));
-            $result = $this->convertObjToArray($result->CreateCustomerCSVResult);
-            //var_dump($result);exit;
-            if ($result['outerrormsg'] == '') {
+            $result =(array)$result;// $this->convertObjToArray($result);
+
+       
+            if ($result['outErrorMsg'] == '') {
                 $error = false;
                 $client->setLog('Send Customer Success: ' . $customer->getId(), null, 'newsletter-sync.log', true);
                 $logMsg[] = 'Send Customer Success: ' . $customer->getId();
@@ -2555,7 +2730,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 $client->setLog('Customer: ' . $result['outerrormsg'], null, 'newsletter-sync.log', true);
                 $error = $logMsg[] = 'Error send Customer: ' . $result['outerrormsg'];
             }
-            return $error;
+            return implode(",", $logMsg);
         } catch (Exception $e) {
             $client->setLog('Send Customer in Order Failed: ' . $e->getMessage(), null, 'newsletter-sync.log', true);
             $error = $logMsg[] = 'Send Customer in Order Failed: ' . $e->getMessage();
@@ -2567,8 +2742,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function exportCustomerNonRegisteredFromSubscriber($subscriber)
     {
         try {
-
-
+            $logMsg=array();
             //$data = Mage::helper('sync/customer')->getAllCustomerAttribute();
             $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
             $data = $objectManager->get('Magento\Customer\Model\Customer')->getAttributes();
@@ -2644,32 +2818,30 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             }
           
             $result = $resultClient->CreateCustomerCSV(array('store_url' => $store_url, 'orderID' => $orderId, 'customer' => $data));
-         //   print_r($result->CreateCustomerResult());
             if ($result->outErrorMsg && strlen($result->outErrorMsg) > 0) {
                 $client->setLog('Customer: ' . $result->outErrorMsg, null, 'newsletter-sync.log', true);
                 $error = 'Customer: ' . $result->outErrorMsg;
             } else {
                 try {
-                   // var_dump($result->CreateCustomerCSVResult); exit;
                     if ($result->CreateCustomerCSVResult) {
+                        $logMsg[]='Send Customer form Subscriber success';
                         $client->setLog('Send Customer form Subscriber success', null, 'newsletter-sync.log', true);
                         $error = false;
                     }
                 } catch (Exception $e) {
                     $error = 'Send Customer in Subscriber Error: ' . $e->getMessage();
                     $client->setLog('Send Customer in Subscriber Error: ' . $e->getMessage(), null, 'newsletter-sync.log', true);
-                    //return $error;
+                    return $error;
                 }
             }
 
         } catch (Exception $e) {
             $error = 'Send Customer in Subscriber Failed: ' . $e->getMessage();
             $client->setLog('Send Customer in Subscriber Failed: ' . $e->getMessage(), null, 'newsletter-sync.log', true);
-            //return $error;
+            return $error;
         }
-
-        echo $error;exit;
-        return $error;
+       
+        return $logMsg;
     }
 
     public function getSyncPermission($storeId)
@@ -2695,4 +2867,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         }
         return $syncPermissions;
     }
+
+
+
 }

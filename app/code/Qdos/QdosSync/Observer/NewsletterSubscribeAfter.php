@@ -24,38 +24,32 @@ class NewsletterSubscribeAfter implements ObserverInterface
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
 
-
-    	$writer = new \Zend\Log\Writer\Stream(BP . '/var/log/newsletter_sync.log');
+		$response="";
+    	$writer = new \Zend\Log\Writer\Stream(BP . '/var/log/newsletter-sync.log');
         $logger = new \Zend\Log\Logger();
         $logger->addWriter($writer);
-        $logger->info("event_ssss");
+        $logger->info("newsletter_sync_start");
 
         $subscriber = $observer->getEvent()->getSubscriber();
- 		$logger->info("Subscriber_Email--".$observer->getEvent()->getSubscriber()->getSubscriberEmail());
-             
+ 		$logger->info("Subscriber_Email--".$observer->getEvent()->getSubscriber()->getSubscriberEmail());             
         // $_order     = $observer->getOrder();
         // if(!$_order){
         //     return;
         // }
-        $logger->info($observer->getEvent()->getName());
+        //$logger->info($observer->getEvent()->getName());
         if ($this->_customerSession->isLoggedIn()) {
-            $customer= $this->_customerSession->getCustomer();
-        // }
-       
-        // if ){
-            $this->_qdosHelper->exportCustomer($customer);
-            
+            $customer= $this->_customerSession->getCustomer();       
+           $response= $this->_qdosHelper->exportCustomer($customer);            
         }else{
-
 
             if ($subscriber->getCustomerId() == 0){
             	
-                $this->_qdosHelper->exportCustomerNonRegisteredFromSubscriber($subscriber);
+               $response= $this->_qdosHelper->exportCustomerNonRegisteredFromSubscriber($subscriber);
 
             }
 
         }
-         $logger->info("newsletter_sync_end");
+         $logger->info("newsletter_sync_end response msg--".$response);
 
 
 
