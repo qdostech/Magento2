@@ -52,8 +52,6 @@ class NewsletterSubscribeAfter implements ObserverInterface
          $logger->info("newsletter_sync_end response msg--".$response);
 
 
-
-
     }
 
     

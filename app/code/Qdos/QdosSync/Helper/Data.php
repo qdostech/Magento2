@@ -2762,7 +2762,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $orderId = -1;
 
             $client->setLog('QDOS subscriber data', null, 'newsletter-sync.log');
-            $client->setLog($subscriber->getData(), null, 'newsletter-sync.log');
+           
 
             $data['WEBSITE'] = $websiteId;
             $data['EMAIL'] = $subscriber->getSubscriberEmail();
@@ -2816,6 +2816,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 $data[$pre . '_FAX'] = '';
 
             }
+            // $client->setLog($subscriber->getData(), null, 'newsletter-sync.log');
           
             $result = $resultClient->CreateCustomerCSV(array('store_url' => $store_url, 'orderID' => $orderId, 'customer' => $data));
             if ($result->outErrorMsg && strlen($result->outErrorMsg) > 0) {
@@ -2841,7 +2842,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             return $error;
         }
        
-        return $logMsg;
+        return implode(" ", $logMsg);
     }
 
     public function getSyncPermission($storeId)
